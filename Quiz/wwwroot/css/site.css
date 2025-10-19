@@ -1,0 +1,10 @@
+﻿.zquiz-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 64px;
+    font-weight: 700;
+    background: linear-gradient(to right, #ec4899, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1px #8dd4ff; /* viền chữ */
+    letter-spacing: 4px;
+}

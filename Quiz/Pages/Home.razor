@@ -1,0 +1,1492 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+@using Quiz.Shared
+
+
+<Header/>
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Baloo+2&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css?family=Baloo&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css?family=Baloo+Bhai+2&display=swap" rel="stylesheet"/>
+        <link href="./css/main.css" rel="stylesheet"/>
+        <title>Document</title>
+    </head>
+    <body>
+        <div class="v72_120">
+            <span class="v558_975">Loại hình ôn tập đa dạng</span>
+            <span class="v594_952">Bạn đã sẵn sàng để ôn tập hiệu quả hơn?</span>
+            <span class="v594_954">
+            Hãy dùng thử IZI QUIZ  
+            <div style = "color:#A57DBA">
+                  miễn phí
+            </div>
+            trong hôm nay!
+            </span>
+            <span class="v586_1075">Biến tài liệu của bạn thành Quiz chỉ trong 1 phút</span>
+            <span class="v586_946">Tính năng nổi bật</span>
+            <div class="v558_977">
+               <div class = "icon">
+                 <img src="images/book.svg"  width="50" height="100">
+                </div>
+                <span class="v558_981">Đọc hiểu</span>
+                <span class="v558_983">Rèn khả năng đọc nhanh, nắm ý chính.</span>
+                
+            </div>
+            <div class="v586_947">
+                <div class = "icon">
+                 <img src="images/book.svg"  width="50" height="100">
+                </div>
+                <span class="v586_948">Phân tích tài liệu</span>
+                
+                <span class="v586_1118">Tự động phân tích tài liệu (PDF, DOCX, TXT) và chuyển thành bài học có cấu trúc + quiz</span>
+            </div>
+            <div class="v586_986">
+               <div class = "icon">
+                 <img src="images/book.svg"  width="50" height="100">
+                </div>
+                <span class="v586_987">Theo dõi tiến độ</span>
+                <span class="v586_988">Lưu lại kết quả từng lần làm quiz, hỗ trợ học lại theo lỗi sai, theo dõi sự tiến bộ</span>
+                
+            </div>
+            <div class="v586_1024">
+               <div class = "icon">
+                 <img src="images/book.svg"  width="50" height="100">
+                </div>
+                <span class="v586_1025">Cá nhân hoá lộ trình</span>
+                <span class="v586_1026">Tùy chỉnh nội dung ôn tập theo tiến độ và năng lực riêng của từng học sinh, giúp tối ưu hoá thời gian học.</span>
+             
+            </div>
+            <div class="v586_1043">
+               <div class = "icon">
+                 <img src="images/book.svg"  width="50" height="100">
+                </div>
+                <span class="v586_1044">Quiz đa cấp độ</span>
+               
+            </div>
+            <div class="v558_1000">
+               <div class = "icon">
+                 <img src="images/flashcard.svg"  width="50" height="100">
+                </div>
+                <span class="v558_1001">Flashcard</span>
+                <span class="v558_1002">Học nhanh, nhớ lâu nhờ phương pháp lật thẻ.</span>
+                
+            </div>
+            <div class="v558_1019">
+               <div class = "icon">
+                 <img src="images/mc.svg"  width="50" height="100">
+                </div>
+                <span class="v558_1020">Trắc nghiệm</span>
+                <span class="v558_1021">Câu hỏi trắc nghiệm nhiều lựa chọn, đánh giá kiến thức cơ bản.</span>
+               
+            </div>
+            <div class="v558_1057">
+               <div class = "icon">
+                 <img src="images/fib.svg"  width="50" height="100">
+                </div>
+                <span class="v558_1058">Điền vào ô trống</span>
+                <span class="v558_1059">Luyện tập tính chính xác, tăng khả năng ghi nhớ chi tiết.</span>
+               
+            </div>
+            <span class="v558_1102">IZI QUIZ mang đến nhiều cách ôn tập để bạn chọn phương pháp phù hợp nhất:</span>
+            <span class="v586_1077">Tải các tài liệu bạn cần ôn tập ở dạng (PDF, DOCX, TXT) để tạo một bài test ôn tập cho riêng bạn</span>
+          
+         
+             <span class="v586_1089">
+                <button type="submit" class="submit-btn " style = "margin-left:-100px">
+                    Dùng thử 
+                    </button>
+                  hoặc
+                   <button type="submit" class="submit-btn" style = "margin-left:50px">
+                    Đăng ký ngay 
+                       
+                    </button>
+             </span>
+             
+            
+             
+         
+            <span class="v586_1091">Hệ thống câu hỏi phân cấp theo 4 mức tư duy Bloom:  Nhận biết → Hiểu → Vận dụng → Vận dụng cao</span>
+            <div class="v591_948"></div>
+            <div class="v594_951"></div>
+            
+            <span class="v594_998" style =  "margin-bottom:10px;"> 
+            <button type="submit" class="submit-btn " style = "margin-left:-200px ">
+                    Dùng thử 
+                    </button>
+                    <div class = "text" style = "margin-top:20px;">
+                       hoặc
+                    </div>
+               
+                   <button type="submit" class="submit-btn" style = "margin-left:50px">
+                    Đăng ký ngay 
+                       
+                    </button>
+                    </span>
+         
+            <div class="v594_956"></div>
+            <div class="v594_957">
+                <div class="v594_958"></div>
+                             
+                <div class="v594_961">
+                    <div class="v594_962"></div>
+                    <a class="v594_963" href ="/price">MUA GÓI </a>
+                </div>
+                <span class="v594_964"><div style = "font-size : 48px ; font-weight:900">
+                79.000 
+                </div>
+                <div class = "test" style = "font-size : 24px;margin-top :25px;font-weight:700">
+                VNĐ/ tháng
+                </div>
+                </span>
+                <span class="v594_965">Premium</span>
+                <div class="v594_966">
+                    <span class="v594_967" style="margin-left: 10px">
+                    <div style = "font-size : 18px ">
+               Làm bài kiểm tra từ quiz
+                </div>
+                
+                <div  style = "font-size : 10px">
+               Không giới hạn
+                </div>
+                 </span>
+                     <img src="images/tick2.svg"  width="40" style="margin-left: 0px;" >
+                </div>
+                <div class="v594_969">
+                    <span class="v594_967" style="margin-left: 10px">
+                    <div style = "font-size : 18px ">
+              Tạo quiz trên tài liệu 
+                </div>
+                <div  style = "font-size : 10px">
+               Không giới hạn
+                </div>
+                 </span>
+                      <img src="images/tick2.svg"  width="40" style="margin-left: 0px;" >
+                </div>
+                <div class="v594_972">
+                 <span class="v594_967" style = " margin-left:10px" >
+                    <div style = "font-size : 18px">
+              Upload tài liệu 
+                </div>
+                <div  style = "font-size : 10px;margin-left: 2px" >
+               Không giới hạn
+                </div>
+                 </span>
+                  <img src="images/tick2.svg"  width="40" style="margin-left: 0px;" >
+                </div>
+                <div class="v594_975">
+                   <span class="v594_967" style="margin-left: 10px;">
+                    <div style = "font-size : 18px ; font-weight :800">
+              AI nâng cao
+                </div>
+                <div  style = "font-size : 10px">
+              Khuyến nghị thêm câu hỏi nâng cao của kiến thức
+                </div>
+                 </span>
+                  <img src="images/tick3.svg"  width="40" style="margin-left: 0px;" >
+                  
+                </div>
+               
+                    <div class="v594_980">
+                    <div style = "font-size : 18px;margin-left : 20px;margin-top:8px;">
+                      TIẾT KIỆM NHẤT
+                    </div>
+                  
+                    </div>
+                
+              
+            </div>
+            <div class="v594_982">
+                <div class="v594_983">
+                    <span class="v594_984" style="margin-left: 10px">
+                   <div style = "font-size : 18px ">
+              Upload tài liệu 
+                </div>
+                <div  style = "font-size : 10px">
+               Không giới hạn
+                </div></span>
+                     <div class = "icon_">
+                 <img src="images/tick1.svg"  width="40" style="margin-left: 0px;" >
+                </div>
+                </div>
+                <span class="v594_986">
+                <div style = "font-size : 48px  ">
+                59.000 
+                </div>
+                <div class = "test" style = "font-size : 24px;margin-top :25px;font-weight:700">
+                VNĐ/ tháng
+                </div>
+                </span>
+                <span class="v594_987" style = "margin-bottom : 20px ">Pro</span>
+                <div class="v594_988">
+                    <span class="v594_989" style="margin-left: 10px"><div style = "font-size : 18px ">
+              Tạo quiz trên tài liệu 
+                </div>
+                <div  style = "font-size : 10px">
+               Không giới hạn
+                </div>
+                      </span>
+                    <div class = "icon_">
+                 <img src="images/tick1.svg"  width="40" style="margin-left: 0px;" >
+                </div>
+                </div>
+                <div class="v594_991">
+                    <span class="v594_992" style="margin-left: 10px"> <div style = "font-size : 18px ">
+               Làm bài kiểm tra từ quiz
+                </div>
+                
+                <div  style = "font-size : 10px">
+               Không giới hạn
+                </div></span>
+                   <div class = "icon_">
+                 <img src="images/tick1.svg"  width="40" style="margin-left: 0px;" >
+                </div>
+                </div>
+                <div class="v594_994">
+                    <div class="v594_995"></div>
+                    <a class="v594_996" href="/price">MUA GÓI </a>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
+
+
+<Footer />
+
+<style>
+ * {
+  box-sizing: border-box;
+}
+.submit-btn{
+        background: #1D059D;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 40px;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        font-family: 'Baloo 2', cursive;
+        align-items: center; 
+        margin-top: 10px;
+        margin-right:40px; 
+   
+}
+body {
+  font-size: 14px;
+}
+.icon{
+    display: flex;
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center;     /* Căn giữa theo chiều dọc */
+  /* Thêm chiều cao để thấy rõ căn dọc */
+  height: 100px; 
+ 
+}
+.logo-container img {
+  max-width: 100%; /* Giúp logo không bị tràn ra ngoài */
+}
+.v586_988{
+    width: 239px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 105px;
+  left: 11px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 18px;
+  opacity: 1;
+  text-align: center;
+}
+.v72_120 {
+  width: 100%;
+  height: 2977px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+.v558_975 {
+  width: 456px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 1018px;
+  left: 187px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 40px;
+  opacity: 1;
+  text-align: center;
+ 
+  white-space: nowrap;
+}
+.v594_952 {
+  width: 771px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 1641px;
+  left: 132px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 40px;
+  opacity: 1;
+  text-align: center;
+   white-space: nowrap;
+}
+.v594_954 {
+  width: 869px;
+  color :rgba(29,5,157,1);
+  position: absolute;
+  top: 1701px;
+  left: 130px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 40px;
+  opacity: 1;
+  text-align: center;
+   white-space: nowrap;
+    display: flex; 
+     gap: 10px;    
+}
+.v586_1075 {
+  width: 615px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 179px;
+  left: 153px;
+  font-family: Baloo;
+  font-weight: Regular;
+  font-size: 50px;
+  opacity: 1;
+  text-align: left;
+}
+.v586_946 {
+  width: 456px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 541px;
+  left: 493px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 30px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_977 {
+  width: 261px;
+  height: 193px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 1098px;
+  left: 150px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v558_981 {
+  width: 105px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 75px;
+  left: 78px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_983 {
+  width: 178px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 103px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_984 {
+  width: 43px;
+  height: 43px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: absolute;
+  top: 21px;
+  left: 109px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v558_985 {
+  width: 24px;
+  height: 22px;
+  background: url("../images/v558_985.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 10px;
+  left: 9px;
+  overflow: hidden;
+}
+
+.v586_947 {
+  width: 261px;
+  height: 236px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 621px;
+  left: 156px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v586_948 {
+  width: 183px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 75px;
+  left: 38px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+.v586_950 {
+  width: 43px;
+  height: 43px;
+  
+  opacity: 1;
+  position: absolute;
+  top: 21px;
+  left: 109px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v586_951 {
+  width: 24px;
+  height: 22px;
+  background: url("../images/v586_951.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 10px;
+  left: 9px;
+  overflow: hidden;
+}
+
+
+
+.v586_1118 {
+  width: 239px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 105px;
+  left: 11px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 18px;
+  opacity: 1;
+  text-align: center;
+}
+.v586_986 {
+  width: 261px;
+  height: 236px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 621px;
+  left: 1026px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v586_987 {
+  width: 159px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 75px;
+  left: 51px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+
+.v586_989 {
+  width: 43px;
+  height: 43px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: absolute;
+  top: 21px;
+  left: 109px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v586_990 {
+  width: 24px;
+  height: 22px;
+  background: url("../images/v586_990.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 10px;
+  left: 9px;
+  overflow: hidden;
+}
+
+
+.v586_1024 {
+  width: 261px;
+  height: 240px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 621px;
+  left: 740px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v586_1025 {
+  width: 183px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 73px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+    white-space: nowrap;
+}
+.v586_1026 {
+  width: 229px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 105px;
+  left: 14px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 18px;
+  opacity: 1;
+  text-align: center;
+}
+.v586_1027 {
+  width: 43px;
+  height: 43px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: absolute;
+  top: 21px;
+  left: 109px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v586_1028 {
+  width: 24px;
+  height: 22px;
+  background: url("../images/v586_1028.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 10px;
+  left: 9px;
+  overflow: hidden;
+}
+
+.v586_1043 {
+  width: 261px;
+  height: 236px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 621px;
+  left: 446px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v586_1044 {
+  width: 149px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 75px;
+  left: 56px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+.v586_1046 {
+  width: 43px;
+  height: 43px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: absolute;
+  top: 19px;
+  left: 109px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v586_1047 {
+  width: 24px;
+  height: 22px;
+  background: url("../images/v586_1047.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 10px;
+  left: 9px;
+  overflow: hidden;
+}
+
+.v558_1000 {
+  width: 261px;
+  height: 193px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 1098px;
+  left: 431px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v558_1001 {
+  width: 139px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 75px;
+  left: 61px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_1002 {
+  width: 182px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 108px;
+  left: 40px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 18px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_1076 {
+  width: 46px;
+  height: 46px;
+  background: url("../images/v558_1076.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 20px;
+  left: 108px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v558_1081 {
+  width: 43px;
+  height: 43px;
+  background: url("../images/v558_1081.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+.v558_1079 {
+  width: 43px;
+  height: 43px;
+  background: url("../images/v558_1079.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+.v558_1080 {
+  width: 43px;
+  height: 43px;
+  background: rgba(0,0,0,1);
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 1px solid rgba(29,5,157,1);
+}
+.v558_1077 {
+  width: 28px;
+  height: 28px;
+  background: url("../images/v558_1077.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  overflow: hidden;
+}
+.v558_1078 {
+  width: 28px;
+  height: 28px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 1px solid rgba(201,54,104,1);
+}
+.v558_1019 {
+  width: 261px;
+  height: 193px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 1304px;
+  left: 148px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v558_1020 {
+  width: 139px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 75px;
+  left: 61px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_1021 {
+  width: 178px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 110px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 18px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_1082 {
+  width: 43px;
+  height: 43px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: absolute;
+  top: 23px;
+  left: 106px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v558_1083 {
+  width: 22px;
+  height: 21px;
+  background: rgba(201,54,104,1);
+  opacity: 1;
+  position: absolute;
+  top: 11px;
+  left: 10px;
+}
+.v558_1057 {
+  width: 261px;
+  height: 193px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 1304px;
+  left: 430px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v558_1058 {
+  width: 169px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 75px;
+  left: 45px;
+  font-family: Baloo 2;
+  font-weight: Bold;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_1059 {
+  width: 165px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 108px;
+  left: 48px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 18px;
+  opacity: 1;
+  text-align: center;
+}
+.v558_1090 {
+  width: 45px;
+  height: 45px;
+  background: rgba(255,255,255,1);
+  opacity: 1;
+  position: absolute;
+  top: 23px;
+  left: 108px;
+  border-top-left-radius: 85px;
+  border-top-right-radius: 85px;
+  border-bottom-left-radius: 85px;
+  border-bottom-right-radius: 85px;
+  overflow: hidden;
+}
+.v558_1091 {
+  width: 26px;
+  height: 26px;
+  background: url("../images/v558_1091.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  overflow: hidden;
+}
+
+.v558_1102 {
+  width: 402px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 1438px;
+  left: 819px;
+  font-family: Baloo Bhai 2;
+  font-weight: Regular;
+  font-size: 22px;
+  opacity: 1;
+  text-align: center;
+}
+.v586_1077 {
+  width: 428px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 323px;
+  left: 155px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.v586_1089 {
+  width: auto; /* hoặc tăng width đủ lớn để chứa nội dung */
+  white-space: nowrap; /* ngăn xuống dòng */
+
+ 
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 421px;
+  left: 250px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 400; /* Regular là 400 */
+  font-size: 20px;
+  opacity: 1;
+  text-align: left; /* căn trái hoặc center tùy ý */
+}
+
+.v586_1091 {
+  width: 232px;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 725px;
+  left: 460px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 18px;
+  opacity: 1;
+  text-align: center;
+}
+.v591_948 {
+  width: 492px;
+  height: 301px;
+  background: url("../images/v591_948.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 187px;
+  left: 798px;
+  overflow: hidden;
+}
+.v594_951 {
+  width: 581px;
+  height: 401px;
+  background: url("../images/v594_951.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 1020px;
+  left: 731px;
+  overflow: hidden;
+}
+.v594_998 {
+  width: auto;
+  color: rgba(0,0,0,1);
+  position: absolute;
+  top: 1778px;
+  left: 331px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 20px;
+  opacity: 1;
+  text-align: center;
+  display: flex;   
+}
+
+.v594_956 {
+  width: 834px;
+  height: 498px;
+  background: rgba(213,206,253,1);
+  opacity: 1;
+  position: absolute;
+  top: 1936px;
+  left: 303px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v594_957 {
+  width: 364px;
+  height: 499px;
+ 
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 1902px;
+  left: 720px;
+  overflow: hidden;
+}
+.v594_958 {
+  width: 364px;
+  height: 499px;
+  background: rgba(29,5,157,1);
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v594_959 {
+  width: 364px;
+  height: 499px;
+  background: rgba(29,5,157,1);
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+
+.v594_961 {
+  width: 276px;
+  height: 55px;
+  
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 400px;
+  left: 44px;
+  overflow: hidden;
+}
+.v594_962 {
+  width: 276px;
+  height: 55px;
+  background: rgba(201,54,104,1);
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v594_963 {
+  width: 162px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 8px;
+  left: 53px;
+  font-family: Baloo 2;
+  font-weight: SemiBold;
+  font-size: 30px;
+  opacity: 1;
+  text-align: center;
+}
+.v594_964 {
+  width: 333px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 77px;
+  left: 21px;
+  font-family: Baloo 2;
+  font-weight: SemiBold;
+  opacity: 1;
+  text-align: left;
+  display : flex;
+  gap : 10px;
+}
+.v594_965 {
+  width: 214px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 135px;
+  left: 26px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 36px;
+  opacity: 1;
+  text-align: left;
+}
+.v594_966 {
+  width: 299px;
+  height: 55px;
+    font-weight: Regular;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 300px;
+  left: 26px;
+  overflow: hidden;
+}
+.v594_967 {
+  width: 260px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  opacity: 1;
+  text-align: left;
+}
+.v594_968 {
+  width: 25px;
+  height: 25px;
+  background: url("../images/v594_968.png");
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 1px solid rgba(255,255,255,1);
+}
+.v594_969 {
+  width: 262px;
+  height: 55px;
+  background: url("../images/v594_969.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 250px;
+  left: 26px;
+  overflow: hidden;
+}
+.v594_970 {
+  width: 223px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  opacity: 1;
+  text-align: left;
+}
+.v594_971 {
+  width: 25px;
+  height: 25px;
+  background: url("../images/v594_971.png");
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 1px solid rgba(255,255,255,1);
+}
+.v594_972 {
+  width: 262px;
+  height: 55px;
+ 
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 192px;
+  left: 26px;
+  overflow: hidden;
+}
+.v594_973 {
+  width: 223px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  opacity: 1;
+  text-align: left;
+}
+
+.v594_975 {
+  width: 338px;
+  height: 62px;
+  background: url("../images/v594_975.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 346px;
+  left: 26px;
+  overflow: hidden;
+}
+.v594_976 {
+  width: 272px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: ExtraBold;
+  font-size: 24px;
+  opacity: 1;
+  text-align: left;
+}
+.v594_977 {
+  width: 25px;
+  height: 25px;
+  background: url("../images/v594_977.png");
+  opacity: 1;
+  position: absolute;
+  top: 6px;
+  left: 0px;
+  border: 3px solid rgba(255,255,255,1);
+}
+.v594_978 {
+  width: 299px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 19px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 12px;
+  opacity: 1;
+  text-align: left;
+}
+
+.v594_980 {
+  margin-left:-20px;
+  width : 50%;
+  height:40px;
+  background: rgba(165,125,186,1);
+  opacity: 1;
+   font-family: Baloo 2;
+  top: 20px;
+  left: 180px;
+  right : 100px; 
+  border-radius: 10px;
+white-space: nowrap;
+ position: absolute;
+ color: rgba(255,255,255,1);
+}
+
+.v594_982 {
+  width: 328px;
+  height: 386px;
+ 
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 1979px;
+  left: 354px;
+  overflow: hidden;
+}
+.v594_983 {
+  width: 262px;
+  height: 55px;
+  background: url("../images/v594_983.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 115px;
+  left: 2px;
+  overflow: hidden;
+}
+.v594_984 {
+  width: 223px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  opacity: 1;
+  text-align: left;
+}
+.v594_985 {
+  width: 25px;
+  height: 25px;
+  background: url("../images/v594_985.png");
+  opacity: 1;
+  position: absolute;
+  top: 4px;
+  left: 0px;
+  border: 1px solid rgba(201,54,104,1);
+}
+.v594_986 {
+  font-weight: 900;
+  width: 328px;
+  color: #1D059D;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font-family: Baloo 2;
+  font-weight: SemiBold;
+  opacity: 1;
+  text-align: left;
+  display : flex;
+  gap:5px;
+  white-space: nowrap;
+}
+.v594_987 {
+  width: 214px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 55px;
+  left: 1px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  font-size: 36px;
+  opacity: 1;
+  text-align: left;
+}
+.v594_988 {
+  width: 262px;
+  height: 55px;
+  background: url("../images/v594_988.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 170px;
+  left: 2px;
+  overflow: hidden;
+}
+.v594_989 {
+  width: 223px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  opacity: 1;
+  text-align: left;
+}
+.v594_990 {
+  width: 25px;
+  height: 25px;
+  background: url("../images/v594_990.png");
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 1px solid rgba(201,54,104,1);
+}
+.v594_991 {
+  width: 281px;
+  height: 55px;
+  background: url("../images/v594_991.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 223px;
+  left: 2px;
+  overflow: hidden;
+}
+.v594_992 {
+  width: 242px;
+  color: rgba(29,5,157,1);
+  position: absolute;
+  top: 0px;
+  left: 39px;
+  font-family: Baloo 2;
+  font-weight: Regular;
+  opacity: 1;
+  text-align: left;
+}
+.v594_993 {
+  width: 25px;
+  height: 25px;
+  background: url("../images/v594_993.png");
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: 1px solid rgba(201,54,104,1);
+}
+.v594_994 {
+  width: 276px;
+  height:200px;
+ 
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 320px;
+  left: 2px;
+  overflow: hidden;
+}
+.v594_995 {
+  width: 276px;
+  height: 55px;
+  background: rgba(165,125,186,1);
+  opacity: 1;
+  position: absolute;
+  top: 5px;
+  left: 0px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
+}
+.v594_996 {
+  width: 162px;
+  color: rgba(255,255,255,1);
+  position: absolute;
+  top: 14px;
+  left: 53px;
+  font-family: Baloo 2;
+  font-weight: SemiBold;
+  font-size: 30px;
+  opacity: 1;
+  text-align: center;
+}
+
+
+   
+</style>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+}

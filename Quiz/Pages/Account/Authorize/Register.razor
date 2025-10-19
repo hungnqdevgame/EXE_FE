@@ -1,0 +1,523 @@
+﻿@page "/register"
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+@using Quiz.Shared
+@using Share
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+
+
+<Header />
+   <div class="form-header">
+                <h2>ĐĂNG KÝ</h2>
+            </div>
+<div class="register-container">
+   
+    
+
+
+    <div class="register-content">
+        <!-- Left side illustration -->
+       
+        <!-- Right side form -->
+        <div class="form-section">
+          
+
+            <EditForm Model="@registrationModel" OnValidSubmit="@HandleRegistration">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <InputText @bind-Value="registrationModel.FullName" placeholder="Họ và tên:" class="form-input" />
+                    <ValidationMessage For="@(() => registrationModel.FullName)" />
+                </div>
+
+                <div class="form-group">
+                    <InputText @bind-Value="registrationModel.Phone" placeholder="Số điện thoại:" class="form-input" />
+                    <ValidationMessage For="@(() => registrationModel.Phone)" />
+                </div>
+
+                <div class="form-group">
+                    <InputText @bind-Value="registrationModel.Email" placeholder="Email:" class="form-input" />
+                    <ValidationMessage For="@(() => registrationModel.Email)" />
+                </div>
+
+                <div class="form-group">
+                    <InputText type="password" @bind-Value="registrationModel.Password" placeholder="Mật khẩu:" class="form-input" />
+                    <ValidationMessage For="@(() => registrationModel.Password)" />
+                </div>
+
+                <button type="submit" class="register-btn">ĐĂNG KÝ</button>
+            </EditForm>
+
+            <div class="divider">
+                <span>HOẶC</span>
+            </div>
+
+            <div class="social-buttons">
+                <button type="google-btn" class="btn pl-4 mb-4" @onclick="LoginWithGoogleAsync">
+                             <img src="images/google_logo_1.png" alt="Google" style="width:50px; height:50px; margin-left:10px;" />
+                </button>
+                
+            </div>
+
+            <div class="login-link">
+
+                <span >Bạn chưa có tài khoản ? <a href="/login" style="text-decoration: underline;"> Đăng nhập</a></span>
+            </div>
+        </div>
+    </div>
+</div>
+<Quiz.Shared.Footer />
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+
+    .register-container {
+       font-family: 'Baloo 2', cursive;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;   /* căn giữa theo chiều dọc */
+    justify-content: flex-end; /* đẩy sang phải */
+
+    width: 40%;   /* thu nhỏ còn 40% chiều rộng (bạn có thể điều chỉnh) */
+   margin-left : 700px;
+
+    }
+
+    .register-content {
+        background: #1D059D;
+        border-radius: 20px;
+        display: flex;
+        max-width: 1000px;
+        width: 100%;
+        min-height: 600px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+      
+    }
+
+    .illustration-section {
+        flex: 1;
+        background: linear-gradient(45deg, #f8f9ff, #e8f4ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 40px;
+    }
+
+    .illustration {
+        position: relative;
+        width: 100%;
+        height: 400px;
+    }
+
+
+    .books-stack {
+        position: absolute;
+        bottom: 20px;
+        left: 40px;
+    }
+
+    .book {
+        width: 80px;
+        height: 12px;
+        border-radius: 2px;
+        margin-bottom: 2px;
+    }
+
+    .book1 {
+        background: #ff6b6b;
+    }
+
+    .book2 {
+        background: #4ecdc4;
+    }
+
+    .book3 {
+        background: #45b7d1;
+    }
+
+    .globe {
+        position: absolute;
+        top: 50px;
+        left: 20px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(45deg, #4ecdc4, #37e4ff);
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+            .nav-links a:hover {
+                color: #FF69B4;
+                transform: translateY(-2px);
+            }
+
+            .nav-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -5px;
+                left: 50%;
+                background: linear-gradient(135deg, #FFB6D6 0%, #37E4FF 100%);
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
+
+            .nav-links a:hover::after {
+                width: 100%;
+            }
+
+    .magnifying-glass {
+        position: absolute;
+        bottom: 100px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        border: 4px solid #ff6b6b;
+        border-radius: 50%;
+    }
+
+    .laptop {
+        position: absolute;
+        top: 80px;
+        right: 40px;
+        width: 200px;
+        height: 120px;
+    }
+
+   
+
+ 
+    .form-section {
+        flex: 1;
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .form-header h2 {
+        color: #000000;
+        font-size: 2rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 30px;
+        background :#000000;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'Baloo 2', cursive;
+        margin-left : 500px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-family: 'Baloo 2', cursive;
+        background: rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #D5CEFD;
+            box-shadow: 0 0 0 3px rgba(55, 228, 255, 0.1);
+            background: white;
+        }
+
+        .form-input::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+    .register-btn {
+        background: #C93668;
+        border: none;
+        border-radius: 15px;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: 600;
+        color: white;
+        width: 100%;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+    }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 182, 214, 0.4);
+        }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 25px 0;
+    }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider span {
+            padding: 0 20px;
+            color: #FFFFFF;
+            font-weight: 500;
+        }
+
+    .social-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .social-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .facebook {
+        background: #1877f2;
+    }
+
+    .google {
+        background: #db4437;
+    }
+
+    .social-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-link {
+        text-align: center;
+        color: #FFFFFF;
+        font-weight: 500;
+    }
+
+        .login-link a {
+          color : #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .login-link a:hover {
+                text-decoration: underline;
+            }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .register-content
+
+    {
+        flex-direction: column;
+        max-width: 500px;
+    }
+
+    .illustration-section {
+        display: none;
+    }
+
+    .form-section {
+        padding: 40px 30px;
+    }
+
+    }
+
+    /* Validation messages */
+    .validation-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        margin-left: 20px;
+    }
+
+    .container-fluid {
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .col, .col-auto, .col-lg-6 {
+        position: relative;
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .col {
+        flex-basis: 0;
+        flex-grow: 1;
+    }
+
+    .col-auto {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .align-items-center {
+        align-items: center !important;
+    }
+
+    .justify-content-center {
+        justify-content: center !important;
+    }
+
+    .d-flex {
+        display: flex !important;
+    }
+
+    .d-none {
+        display: none !important;
+    }
+
+    .min-vh-100 {
+        min-height: 100vh !important;
+    }
+
+    .me-2 {
+        margin-right: 0.5rem !important;
+    }
+
+    .mx-3 {
+        margin-left: 1rem !important;
+        margin-right: 1rem !important;
+    }
+
+    @@media (min-width: 992px) {
+        .col-lg-6 {
+            flex: 0 0 auto;
+            width: 50%;
+        }
+
+        .d-md-flex {
+            display: flex !important;
+        }
+    }
+
+</style>
+
+@code {
+    private RegistrationModel registrationModel = new();
+
+    private async Task HandleRegistration()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/account/register", registrationModel);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<object>();
+                Console.WriteLine(" Success: " + result);
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Error: " + error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(" Exception: " + ex.Message);
+        }
+    }
+
+    private async Task LoginWithGoogleAsync()
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(Constant.Client);
+            var result = await client.GetAsync("/authorize");
+            if (result.IsSuccessStatusCode)
+            {
+                string tep = (await result.Content.ReadAsStringAsync());
+                await JSRuntime.InvokeVoidAsync("open", tep, "_blank");
+            }
+            else;
+            // errorMessage = "Google login failed.";
+        }
+        catch (Exception ex)
+        {
+           // errorMessage = $"Google login error: {ex.Message}";
+        }
+    }
+
+
+
+    public class RegistrationModel
+    {
+        [Required(ErrorMessage = "Họ và tên là bắt buộc")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Số điện thoại là bắt buộc")]
+        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email là bắt buộc")]
+        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
+        [StringLength(100, ErrorMessage = "Mật khẩu phải có ít nhất {2} ký tự", MinimumLength = 6)]
+        public string Password { get; set; } = string.Empty;
+    }
+}

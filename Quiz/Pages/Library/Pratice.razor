@@ -1,0 +1,480 @@
+﻿@page "/practice-quiz"
+@using Shared
+@inject IJSRuntime JS
+
+<Quiz.Shared.Header/>
+<div class="quiz-practice-container">
+    <div class="container">
+        <h1 class="page-title">Thư viện bài học</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab">Upload tài liệu</button>
+            <button class="tab">Tạo Quiz</button>
+            <button class="tab active">Ôn tập</button>
+        </div>
+
+        <!-- Quiz Info -->
+        <div class="quiz-info">
+            <h2>Ôn tập - Trắc nghiệm</h2>
+            @if (!HasAnsweredAll())
+            {
+                <div class="question-counter">Số lượng câu hỏi: @questions.Count câu</div>
+            }
+            else
+            {
+                <div class="result-card">
+                    <div class="result-title">KẾT QUẢ</div>
+                    <div class="result-info">
+                        <p><strong>Tổng số câu:</strong> @questions.Count</p>
+                        <p><strong>Tổng điểm:</strong> @GetCorrectCount()/@questions.Count</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Questions List -->
+        <div class="questions-container">
+            @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+            {
+                <div class="question-item">
+                    <div class="question-header">
+                        @(index + 1). @question.Text
+                    </div>
+                    <div class="answers-grid">
+                        @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                        {
+                            <div class="answer-option @GetAnswerClass(index, ansIndex)"
+                                 @onclick="() => SelectAnswer(index, ansIndex)">
+                                <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                <span class="answer-text">@answer</span>
+                            </div>
+                        }
+                    </div>
+
+                    @if (question.UserAnswerIndex != -1)
+                    {
+                        <div class="answer-feedback">
+                            @if (question.UserAnswerIndex == question.CorrectAnswerIndex)
+                            {
+                                <span class="feedback-correct">✓ Đáp án đúng: @GetAnswerLabel(question.CorrectAnswerIndex)</span>
+                                <span class="feedback-text">✓ Đáp án bạn chọn: @GetAnswerLabel(question.UserAnswerIndex)</span>
+                            }
+                            else
+                            {
+                                <span class="feedback-wrong">✗ Đáp án đúng: @GetAnswerLabel(question.CorrectAnswerIndex)</span>
+                                <span class="feedback-text">✗ Đáp án bạn chọn: @GetAnswerLabel(question.UserAnswerIndex)</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Action Buttons (Only show after answered all) -->
+        @if (HasAnsweredAll())
+        {
+            <div class="action-buttons">
+                <button class="btn-retry" @onclick="RetryQuiz">Quay lại thư viện</button>
+                <span class="or-text">hoặc</span>
+                <button class="btn-continue" @onclick="ContinueQuiz">Tiếp tục tạo Quiz</button>
+            </div>
+        }
+    </div>
+</div>
+<Quiz.Shared.Footer />
+@code {
+    private List<QuizQuestion> questions = new List<QuizQuestion>();
+
+    protected override void OnInitialized()
+    {
+        // Sample data - Chiến dịch Điện Biên Phủ
+        questions = new List<QuizQuestion>
+        {
+            new QuizQuestion
+            {
+                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
+                Answers = new List<string> { "1946", "1975", "1954", "1968" },
+                CorrectAnswerIndex = 2,
+                UserAnswerIndex = -1
+            },
+            new QuizQuestion
+            {
+                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
+                Answers = new List<string> { "1946", "1975", "1954", "1968" },
+                CorrectAnswerIndex = 2,
+                UserAnswerIndex = -1
+            },
+            new QuizQuestion
+            {
+                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
+                Answers = new List<string> { "1946", "1975", "1954", "1968" },
+                CorrectAnswerIndex = 2,
+                UserAnswerIndex = -1
+            },
+            new QuizQuestion
+            {
+                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
+                Answers = new List<string> { "1946", "1975", "1954", "1968" },
+                CorrectAnswerIndex = 2,
+                UserAnswerIndex = -1
+            }
+        };
+    }
+
+    private void SelectAnswer(int questionIndex, int answerIndex)
+    {
+        // Chỉ cho chọn nếu chưa trả lời
+        if (questions[questionIndex].UserAnswerIndex == -1)
+        {
+            questions[questionIndex].UserAnswerIndex = answerIndex;
+        }
+    }
+
+    private bool HasAnsweredAll()
+    {
+        return questions.All(q => q.UserAnswerIndex != -1);
+    }
+
+    private int GetCorrectCount()
+    {
+        return questions.Count(q => q.UserAnswerIndex == q.CorrectAnswerIndex);
+    }
+
+    private void RetryQuiz()
+    {
+        // Reset quiz
+        foreach (var question in questions)
+        {
+            question.UserAnswerIndex = -1;
+        }
+    }
+
+    private void ContinueQuiz()
+    {
+        // Navigate to create quiz page
+        JS.InvokeVoidAsync("alert", "Chuyển đến trang tạo Quiz!");
+    }
+
+    private string GetAnswerClass(int questionIndex, int answerIndex)
+    {
+        var question = questions[questionIndex];
+
+        // Nếu chưa trả lời, không có class nào
+        if (question.UserAnswerIndex == -1)
+        {
+            return "";
+        }
+
+        // Đã trả lời - hiển thị kết quả
+        if (answerIndex == question.CorrectAnswerIndex)
+        {
+            return "correct";
+        }
+        else if (answerIndex == question.UserAnswerIndex && question.UserAnswerIndex != question.CorrectAnswerIndex)
+        {
+            return "wrong";
+        }
+
+        return "";
+    }
+
+    private string GetAnswerLabel(int index)
+    {
+        return ((char)('A' + index)).ToString();
+    }
+
+    public class QuizQuestion
+    {
+        public string Text { get; set; }
+        public List<string> Answers { get; set; }
+        public int CorrectAnswerIndex { get; set; }
+        public int UserAnswerIndex { get; set; } = -1;
+    }
+}
+<Quiz.Shared.Footer />
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .quiz-practice-container {
+        font-family: 'Baloo 2', cursive;
+        min-height: 100vh;
+        background: #ffffff;
+        padding: 40px 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Page Title */
+    .page-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #4318FF;
+        margin-bottom: 20px;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 5px;
+        border-bottom: 2px solid #e8e8e8;
+        margin-bottom: 30px;
+    }
+
+    .tab {
+        background: transparent;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #718096;
+        cursor: pointer;
+        position: relative;
+        font-family: 'Baloo 2', cursive;
+        transition: color 0.3s;
+    }
+
+        .tab:hover {
+            color: #4318FF;
+        }
+
+        .tab.active {
+            color: #4318FF;
+        }
+
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
+
+    /* Quiz Info */
+    .quiz-info {
+        margin-bottom: 30px;
+    }
+
+        .quiz-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1D059D;
+            margin-bottom: 15px;
+        }
+
+    .question-counter {
+        background: #D5CEFD;
+        padding: 12px 20px;
+        border-radius: 8px;
+        display: inline-block;
+        font-weight: 600;
+        color: #1D059D;
+    }
+
+    .result-card {
+        background: #D5CEFD;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 300px;
+    }
+
+    .result-title {
+        background: #1D059D;
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .result-info p {
+        margin: 8px 0;
+        font-size: 16px;
+        color: #2D3748;
+    }
+
+    /* Questions Container */
+    .questions-container {
+        margin-bottom: 30px;
+    }
+
+    .question-item {
+        background: #D5CEFD;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+
+    .question-header {
+        background: #1D059D;
+        color: white;
+        width: 106%;
+        padding: 25px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 20px;
+        margin-top:-24px;
+        margin-left :-24px;
+    }
+
+    .answers-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .answer-option {
+        background: white;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .answer-option:hover {
+            border-color: #4318FF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 24, 255, 0.2);
+        }
+
+        .answer-option.correct {
+            background: #51CF66;
+            border-color: #37B24D;
+            color: white;
+            cursor: default;
+        }
+
+        .answer-option.wrong {
+            background: #FF6B6B;
+            border-color: #FA5252;
+            color: white;
+            cursor: default;
+        }
+
+            .answer-option.correct:hover,
+            .answer-option.wrong:hover {
+                transform: none;
+            }
+
+    .answer-label {
+        background: #2D1B69;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .answer-option.correct .answer-label,
+    .answer-option.wrong .answer-label {
+        background: rgba(255,255,255,0.3);
+    }
+
+    .answer-text {
+        flex: 1;
+        font-weight: 600;
+        color: #2D1B69;
+    }
+
+    .answer-option.correct .answer-text,
+    .answer-option.wrong .answer-text {
+        color: white;
+    }
+
+    .answer-feedback {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 15px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .feedback-correct {
+        color: #37B24D;
+    }
+
+    .feedback-wrong {
+        color: #FA5252;
+    }
+
+    .feedback-text {
+        color: #9F7AEA;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin: 40px 0;
+    }
+
+    .btn-retry, .btn-continue {
+        background: #2D1B69;
+        color: white;
+        border: none;
+        padding: 16px 50px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+        .btn-retry:hover, .btn-continue:hover {
+            background: #1f1347;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(45, 27, 105, 0.4);
+        }
+
+    .or-text {
+        font-size: 16px;
+        color: #718096;
+        font-weight: 600;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .answers-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-practice-container {
+        padding: 20px 15px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    }
+</style>

@@ -1,0 +1,292 @@
+﻿@page "/support"
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+@using Quiz.Shared
+<!-- Header Navigation -->
+<Header/>
+ <h1 class="support-title">BẠN CẦN HỖ TRỢ?</h1>
+<div class="support-container">
+
+    <div class="support-content">
+       
+        <!-- Right side form -->
+        <div class="form-section">
+        
+            <div class="support-form">
+               
+                <EditForm Model="@supportModel" OnValidSubmit="@HandleSupportRequest">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-group">
+                        <InputText @bind-Value="supportModel.Email" placeholder="Email:" class="form-input" />
+                        <ValidationMessage For="@(() => supportModel.Email)" />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <InputText @bind-Value="supportModel.Tilte" placeholder="Tiêu đề:" class="form-input" />
+                            <ValidationMessage For="@(() => supportModel.Tilte)" />
+                        </div>
+                       
+                    </div>
+
+                    <div class="form-group">
+                        <InputText @bind-Value="supportModel.Content" placeholder="Nhập chi tiết yêu cầu bạn cần hỗ trợ:" class="form-textarea" rows="10" />
+                        <ValidationMessage For="@(() => supportModel.Content)" />
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span>Gửi</span>
+                       
+                    </button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+<Quiz.Shared.Footer />
+<style>
+    
+    .main-header {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 70px;
+    }
+
+    .support-container {
+        font-family: 'Baloo 2', cursive;
+        min-height: 100vh;
+       
+        padding: 120px 20px 40px; /* Added top padding for fixed header */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .support-content {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 25px;
+        display: flex;
+        max-width: 1200px;
+        width: 100%;
+        min-height: 600px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+    }
+
+    .support-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom : -80px; 
+        color: #000000;
+        text-align : center;
+        
+       
+        line-height: 1.2;
+    }
+
+  textarea.form-textarea:focus {
+    min-height: 250px;
+}
+ 
+
+ 
+    .form-section {
+        flex: 1;
+        background: #1D059D;
+        padding: 60px 50px;
+        display: flex;
+        align-items: center;
+       
+    }
+
+    .support-form {
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .half-width {
+        flex: 1;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 18px 25px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 25px;
+        font-size: 1rem;
+        font-family: 'Baloo 2', cursive;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        color: #333;
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 200px;
+        border-radius: 20px;
+        padding: 20px 25px;
+    }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #D5CEFD;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(55, 228, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: #999;
+            font-weight: 500;
+        }
+
+    select.form-input {
+        cursor: pointer;
+    }
+
+        select.form-input option {
+            font-family: 'Baloo 2', cursive;
+            font-weight: 500;
+        }
+
+    .submit-btn {
+        background: #A57DBA;
+        border: none;
+        border-radius: 25px;
+        padding: 20px 80px;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        font-family: 'Baloo 2', cursive;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        position: relative;
+        overflow: hidden;
+        margin-top: 10px;
+         display: block;         /* đổi thành block */
+    margin: 20px auto;      
+    }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 182, 214, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+   
+
+    .submit-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateX(5px);
+    }
+
+  
+    .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+   
+    .validation-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 8px;
+        margin-left: 25px;
+        font-weight: 500;
+    }
+
+   
+    
+
+   
+
+   
+   
+</style>
+
+@code {
+    private SupportModel supportModel = new();
+    private bool isSubmitting = false;
+
+    private async Task HandleSupportRequest()
+    {
+        isSubmitting = true;
+        try
+        {
+            // Handle support request logic here
+            Console.WriteLine($"Support request from: {supportModel.Email}");
+          
+            Console.WriteLine($"Address: {supportModel.Content}");
+           
+
+            // Add your API call here
+            await Task.Delay(1000); // Simulate API call
+
+            // Show success message or redirect
+            // You can use JSRuntime to show toast notification
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            // Handle error
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    public class SupportModel
+    {
+        [Required(ErrorMessage = "Email là bắt buộc")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Tiêu đề là bắt buộc")]
+        [StringLength(100,  ErrorMessage = "Tiêu đề không được quá 100 ký tự")]
+        public string Tilte { get; set; } = string.Empty;   
+
+       
+
+        [Required(ErrorMessage = "Nội dung là bắt buộc")]
+        [StringLength(1000, ErrorMessage = "Nội dung không được quá 1000 ký tự")]
+        public string Content { get; set; } = string.Empty;
+
+       
+    }
+}

@@ -1,0 +1,581 @@
+@page "/library"
+@inject IJSRuntime JS
+<Quiz.Shared.Header />
+<div class="library-container">
+ 
+
+    <div class="container">
+        <h1 class="page-title">Thư viện bài học</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab @(activeTab == 0 ? "active" : "")" @onclick="() => SetActiveTab(0)">
+                Upload tài liệu
+            </button>
+            <button class="tab @(activeTab == 1 ? "active" : "")" @onclick="() => SetActiveTab(1)">
+                <a href="/create-quiz">
+                    Tạo quiz
+                    </a>
+            </button>
+            <button class="tab @(activeTab == 2 ? "active" : "")" @onclick="() => SetActiveTab(2)">
+               <a href="/revision">
+                  Ôn tập
+                    </a>
+            </button>
+            <button class="tab @(activeTab == 3 ? "active" : "")" @onclick="() => SetActiveTab(3)">
+                Tài liệu & Quản lý học phần
+            </button>
+        </div>
+
+        <div class="content-area">
+            <div class="upload-section">
+                <!-- Upload Card -->
+                <div class="upload-card">
+                    <div class="upload-icon">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+                            <path d="M7 16C4.79086 16 3 14.2091 3 12C3 9.79086 4.79086 8 7 8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8C19.2091 8 21 9.79086 21 12C21 14.2091 19.2091 16 17 16" stroke="#4318FF" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 11V21M12 11L9 14M12 11L15 14" stroke="#1D059D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Upload tài liệu</h3>
+                    <p>PDF, DOCX, TXT</p>
+                    <label for="fileUpload" class="btn-upload">Tải lên</label>
+                    <InputFile id="fileUpload" OnChange="HandleFileUpload" accept=".pdf,.docx,.txt" multiple style="display:none;" />
+                </div>
+
+                <!-- View All Button -->
+                <button class="btn-view-all" @onclick="ShowAllDocuments">
+                    Xem tất cả tài liệu đã tải lên
+                </button>
+            </div>
+
+            <!-- Document History -->
+            <div class="documents-section">
+                <h2 class="section-title">Tài liệu đã tải lên</h2>
+                <div class="documents-grid">
+                    @foreach (var doc in documents)
+                    {
+                        <div class="document-card">
+                            <div class="doc-icon @GetFileTypeClass(doc.FileType)">
+                                @GetFileIcon(doc.FileType)
+                            </div>
+                            <div class="doc-info">
+                                <h4>@doc.FileName</h4>
+                                <span class="doc-type">@doc.FileType</span>
+                            </div>
+                            <p class="doc-date">Tải lên vào: @doc.UploadDate</p>
+                            <div class="doc-actions">
+                                <button class="btn-action" @onclick="() => ViewDocument(doc)">👁️</button>
+                                <button class="btn-action" @onclick="() => DownloadDocument(doc)">⬇️</button>
+                                <button class="btn-action btn-delete" @onclick="() => DeleteDocument(doc)">🗑️</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+</div>
+<Quiz.Shared.Footer />
+@code {
+    private int activeTab = 0;
+    private List<Document> documents = new List<Document>();
+
+    protected override void OnInitialized()
+    {
+        // Sample data
+        documents = new List<Document>
+        {
+            new Document { FileName = "Lịch sử VN", FileType = "PDF", UploadDate = "15/09/2025" },
+            new Document { FileName = "Mác Lenin", FileType = "DOCX", UploadDate = "15/09/2025" },
+            new Document { FileName = "RMC", FileType = "PDF", UploadDate = "15/09/2025" },
+            new Document { FileName = "Mác Lenin", FileType = "TXT", UploadDate = "15/09/2025" },
+            new Document { FileName = "VDE", FileType = "DOCX", UploadDate = "15/09/2025" },
+            new Document { FileName = "HCM", FileType = "PDF", UploadDate = "15/09/2025" },
+            new Document { FileName = "EXE", FileType = "TXT", UploadDate = "15/09/2025" },
+            new Document { FileName = "Hoá học", FileType = "PDF", UploadDate = "15/09/2025" }
+        };
+    }
+
+    private void SetActiveTab(int tab)
+    {
+        activeTab = tab;
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            var extension = Path.GetExtension(file.Name).ToUpper().TrimStart('.');
+            var allowedTypes = new[] { "PDF", "DOCX", "TXT" };
+
+            if (!allowedTypes.Contains(extension))
+            {
+                await JS.InvokeVoidAsync("alert", $"File {file.Name} không được hỗ trợ!");
+                continue;
+            }
+
+            // Add to list
+            documents.Insert(0, new Document
+            {
+                FileName = Path.GetFileNameWithoutExtension(file.Name),
+                FileType = extension,
+                UploadDate = DateTime.Now.ToString("dd/MM/yyyy")
+            });
+
+            // TODO: Upload to server
+            // var buffer = new byte[file.Size];
+            // await file.OpenReadStream().ReadAsync(buffer);
+            // await UploadToServer(buffer, file.Name, file.ContentType);
+        }
+
+        await JS.InvokeVoidAsync("alert", $"Đã tải lên {e.FileCount} file thành công!");
+    }
+
+    private void ViewDocument(Document doc)
+    {
+        // TODO: Implement view
+        JS.InvokeVoidAsync("alert", $"Xem tài liệu: {doc.FileName}");
+    }
+
+    private void DownloadDocument(Document doc)
+    {
+        // TODO: Implement download
+        JS.InvokeVoidAsync("alert", $"Tải xuống: {doc.FileName}");
+    }
+
+    private void DeleteDocument(Document doc)
+    {
+        documents.Remove(doc);
+        JS.InvokeVoidAsync("alert", $"Đã xóa: {doc.FileName}");
+    }
+
+    private void ShowAllDocuments()
+    {
+        JS.InvokeVoidAsync("alert", $"Hiển thị tất cả {documents.Count} tài liệu");
+    }
+
+    private string GetFileTypeClass(string fileType)
+    {
+        return fileType.ToLower() switch
+        {
+            "pdf" => "pdf-icon",
+            "docx" => "docx-icon",
+            "txt" => "txt-icon",
+            _ => ""
+        };
+    }
+
+    private string GetFileIcon(string fileType)
+    {
+        return fileType.ToUpper();
+    }
+
+    public class Document
+    {
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public string UploadDate { get; set; }
+    }
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body, .library-container {
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .library-container {
+        min-height: 100vh;
+        background: #ffffff;
+    }
+
+    /* Header */
+    .header {
+        background: white;
+        border-bottom: 2px solid #e8e8e8;
+        padding: 15px 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .nav-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 32px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #4318FF 0%, #9F7AEA 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .nav-menu {
+        display: flex;
+        gap: 30px;
+        align-items: center;
+    }
+
+    .nav-link {
+        color: #2D3748;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: color 0.3s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+        color: #4318FF;
+    }
+
+    .btn-register {
+        background: #4318FF;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .btn-register:hover {
+        background: #3311cc;
+        transform: translateY(-2px);
+    }
+
+    .user-icon {
+        width: 45px;
+        height: 45px;
+        background: #E9E9E9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    /* Page Title */
+    .page-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: #1D059D;
+        margin: 40px 0 30px;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 5px;
+        border-bottom: 2px solid #e8e8e8;
+        margin-bottom: 40px;
+        margin-left : 20px;
+    }
+
+    .tab {
+        background: transparent;
+        border: none;
+        padding: 15px 25px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #1D059D;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .tab.active {
+        color: #9747FF;
+    }
+
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #4318FF;
+    }
+
+    /* Content Area */
+    .content-area {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 40px;
+        margin-bottom: 60px;
+    }
+
+    /* Upload Section */
+    .upload-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .upload-card {
+        background: linear-gradient(135deg, #E9E3FF 0%, #F3F0FF 100%);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+    }
+
+    .upload-icon {
+        margin-bottom: 20px;
+    }
+
+    .upload-card h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #0C0246;
+        margin-bottom: 10px;
+    }
+
+    .upload-card p {
+        color: #718096;
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+
+    .btn-upload {
+        display: inline-block;
+        background: #1D059D;
+        color: white;
+        padding: 14px 40px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .btn-upload:hover {
+        background: #1D059D;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(67, 24, 255, 0.3);
+    }
+
+    .btn-view-all {
+        background: #1D059D;
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .btn-view-all:hover {
+        background: #1f1347;
+        transform: translateY(-2px);
+    }
+
+    /* Documents Section */
+    .documents-section {
+        flex: 1;
+        margin-left:80px;
+
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2D3748;
+        margin-bottom: 25px;
+    }
+
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .document-card {
+        background: linear-gradient(135deg, #E9E3FF 0%, #F8F6FF 100%);
+        border-radius: 16px;
+        padding: 20px;
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .document-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.15);
+    }
+
+    .doc-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 12px;
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .pdf-icon {
+        background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+    }
+
+    .docx-icon {
+        background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);
+    }
+
+    .txt-icon {
+        background: linear-gradient(135deg, #43E97B 0%, #38F9D7 100%);
+    }
+
+    .doc-info h4 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2D3748;
+        margin-bottom: 5px;
+    }
+
+    .doc-type {
+        font-size: 14px;
+        color: #718096;
+        font-weight: 600;
+    }
+
+    .doc-date {
+        font-size: 14px;
+        color: #718096;
+        margin: 12px 0;
+    }
+
+    .doc-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-action {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-action:hover {
+        background: white;
+        transform: scale(1.1);
+    }
+
+    .btn-delete:hover {
+        background: #ff6b6b;
+    }
+
+    /* Footer */
+    .footer {
+        background: linear-gradient(135deg, #E9E3FF 0%, #D4C5FF 100%);
+        padding: 60px 0 30px;
+        margin-top: 80px;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 40px;
+    }
+
+    .footer-logo {
+        font-size: 32px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #4318FF 0%, #9F7AEA 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .footer-section h4 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2D3748;
+        margin-bottom: 15px;
+    }
+
+    .footer-section a {
+        display: block;
+        color: #4A5568;
+        text-decoration: none;
+        margin-bottom: 10px;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+    .footer-section a:hover {
+        color: #4318FF;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .content-area {
+            grid-template-columns: 1fr;
+        }
+
+        .documents-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .footer-content {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .nav-menu {
+            display: none;
+        }
+
+        .documents-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .footer-content {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 28px;
+        }
+
+        .tabs {
+            overflow-x: auto;
+        }
+    }
+</style>

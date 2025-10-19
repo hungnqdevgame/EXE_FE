@@ -1,0 +1,348 @@
+﻿@page "/price"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+<Quiz.Shared.Header />
+
+<div class="pricing-container">
+    <!-- Pricing Section -->
+    <div class="pricing-section">
+        <h1 class="pricing-title">Chọn gói thanh toán</h1>
+
+        <div class="pricing-grid">
+            <!-- Pro Monthly - Selected -->
+            <div class="pricing-card @(selectedPlan == 0 ? "selected" : "")" @onclick="() => SelectPlan(0)">
+                <div class="card-header">
+                    <div class="radio-button @(selectedPlan == 0 ? "selected" : "")"></div>
+                    <div class="price-info">
+                        <span class="price">59.000</span>
+                        <span class="currency">VNĐ/ tháng</span>
+                    </div>
+                </div>
+                <div class="plan-name">Pro</div>
+            </div>
+
+            <!-- Pro 6 Months -->
+            <div class="pricing-card @(selectedPlan == 1 ? "selected" : "")" @onclick="() => SelectPlan(1)">
+                <div class="card-header">
+                    <div class="radio-button @(selectedPlan == 1 ? "selected" : "")"></div>
+                    <div class="price-info">
+                        <span class="price">269.000</span>
+                        <span class="currency">VNĐ/ 6 tháng</span>
+                        <div class="savings">Tiết kiệm 85.000 VNĐ</div>
+                    </div>
+                </div>
+                <div class="plan-name1">Pro 6 tháng</div>
+            </div>
+
+            <!-- Premium Monthly -->
+            <div class="pricing-card @(selectedPlan == 2 ? "selected" : "")" @onclick="() => SelectPlan(2)">
+                <div class="card-header">
+                    <div class="radio-button @(selectedPlan == 2 ? "selected" : "")"></div>
+                    <div class="price-info">
+                        <span class="price">79.000</span>
+                        <span class="currency">VNĐ/ tháng</span>
+                    </div>
+                </div>
+                <div class="plan-name1">Premium</div>
+                <div class="popular-badge" >PHỔ BIẾN NHẤT</div>
+            </div>
+
+            <!-- Premium 6 Months - Most Popular -->
+            <div class="pricing-card @(selectedPlan == 3 ? "selected" : "")" @onclick="() => SelectPlan(3)">
+                <div class="card-header">
+                    <div class="radio-button @(selectedPlan == 3 ? "selected" : "")"></div>
+                    <div class="price-info">
+                        <span class="price">369.000</span>
+                        <span class="currency">VNĐ/ 6 tháng</span>
+                        <div class="savings">Tiết kiệm 105.000 VNĐ</div>
+                    </div>
+                </div>
+                <div class="plan-name1">Premium 6 tháng</div>
+                <div class="popular-badge " style = "margin-right : 60px">TIẾT KIỆM NHẤT</div>
+            </div>
+        </div>
+
+        <button class="btn btn-payment" @onclick="CreatePaymentAsync">
+            THANH TOÁN
+        </button>
+    </div>
+</div>
+<Quiz.Shared.Footer />
+<style>
+    .pricing-container {
+        min-height: 100vh;
+     
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .pricing-section {
+        text-align: center;
+        max-width: 1200px;
+        width: 70%;
+        height : 163;
+    }
+
+    .pricing-title {
+        font-size: 28px;
+        color: #000000;
+        margin-bottom: 3rem;
+        font-weight: 700;
+    }
+
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+        grid-template-areas:
+            "pro-monthly pro-6months"
+            "premium-monthly premium-6months";
+       
+    }
+
+    .pricing-card:nth-child(1) {
+        grid-area: pro-monthly;
+    }
+
+    .pricing-card:nth-child(2) {
+        grid-area: pro-6months;
+    }
+
+    .pricing-card:nth-child(3) {
+        grid-area: premium-monthly;
+    }
+
+    .pricing-card:nth-child(4) {
+        grid-area: premium-6months;
+    }
+
+    .pricing-card {
+        background:   #D5CEFD;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        color : #1D059D
+
+    }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .pricing-card.selected {
+            background: #1D059D;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+            font-weight : 900;
+            
+        }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .radio-button {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #d1d5db;
+        border-radius: 50%;
+        position: relative;
+    }
+
+        .radio-button.selected {
+            border-color: white;
+            background: white;
+        }
+
+            .radio-button.selected::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 8px;
+                height: 8px;
+                background: #6366f1;
+                border-radius: 50%;
+            }
+
+    .price-info {
+        flex: 1;
+        text-align: left;
+    }
+
+    .price {
+        font-size: 48px;
+        font-weight: 700;
+    }
+
+    .currency {
+        font-size: 24px;
+        opacity: 0.8;
+        margin-left: 0.5rem;
+        font-weight : 900;
+    }
+    .currency.selected {
+        font-size: 24px;
+        opacity: 0.8;
+        margin-left: 0.5rem;
+        font-weight : 900;
+        color : #FFFFFF;
+    }
+
+    .savings {
+        font-size: 20px;
+        color: #1D059D;
+        font-weight: 600;
+        margin-top: 0px;
+    }
+
+    .pricing-card.selected .savings {
+        color: #FFFFFF;
+    }
+
+    .plan-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 40px;
+      text-align : left;
+      margin-left : 38px;
+    }
+    .plan-name1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 10px;
+      text-align : left;
+      margin-left : 38px;
+    }
+
+    .popular-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #A57DBA;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top : 90px;
+        margin-right : 90px;
+        width :143px;
+       
+    }
+
+    .btn-payment {
+        background: #C93668;
+        color: white;
+        font-size: 1.1rem;
+        padding: 1rem 3rem;
+        border-radius: 24px;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+        .btn-payment:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+    @@media (max-width: 768px) {
+        .pricing-container
+
+    {
+        padding: 1rem;
+    }
+
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 1fr);
+        grid-template-areas:
+            "pro-monthly"
+            "pro-6months"
+            "premium-monthly"
+            "premium-6months";
+    }
+
+    .pricing-title {
+        font-size: 2rem;
+    }
+
+    }
+</style>
+
+@code {
+    private int selectedPlan = 0;
+
+    private void SelectPlan(int planIndex)
+    {
+        selectedPlan = planIndex;
+        StateHasChanged();
+    }
+
+    private async Task ProcessPayment()
+    {
+        // Xử lý logic thanh toán ở đây
+        Console.WriteLine($"Processing payment for plan: {selectedPlan}");
+
+        // Ví dụ: chuyển hướng đến trang thanh toán
+        // NavigationManager.NavigateTo("/payment");
+
+        // Hoặc hiển thị thông báo
+        await Task.Delay(100); // Simulate processing
+    }
+
+    private async Task CreatePaymentAsync()
+    {
+        var amount = selectedPlan switch
+        {
+            0 => 59000,    // Pro Monthly
+            1 => 269000,   // Pro 6 Months
+            2 => 79000,    // Premium Monthly
+            3 => 369000,   // Premium 6 Months
+            _ => 0
+        };
+
+        var supscriptionType = selectedPlan switch
+        {
+            0 => "Pro",
+            1 => "Pro_Six",
+            2 => "Premium",
+            3 => "Premium_Six",
+            _ => "Basic"
+        };
+
+        var payment = new
+        {
+            SupscriptionType = supscriptionType,
+            Amount = amount
+        };
+
+        var response = await Http.PostAsJsonAsync("https://localhost:7102/api/payment/CreatePaymentUrl", payment);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            var payUrl = result["payUrl"];
+            Navigation.NavigateTo(payUrl, forceLoad: true);
+            
+        }
+    }
+}
