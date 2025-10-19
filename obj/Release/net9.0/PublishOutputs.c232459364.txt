@@ -1,0 +1,13 @@
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\web.config
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\appsettings.Development.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\appsettings.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\BLL.deps.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\DAL.deps.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\DAL.runtimeconfig.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\Quiz.Server.deps.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\Quiz.Server.runtimeconfig.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\Quiz.Server.staticwebassets.endpoints.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\Quiz.staticwebassets.endpoints.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\Share.deps.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\build\wwwroot\_framework\blazor.boot.json
+D:\EXE\Web - Copy\Quiz\bin\Release\net9.0\publish\web.config

@@ -1,0 +1,108 @@
+<div class="header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="logo ml-40">
+                <img src="images/logo.svg" alt="Logo" style="width:150px; height:40px;object-fit:cover; " />
+            </div>
+ 
+            <div class="button" style = "margin-top:-40px;">
+                <div class="nav-links">
+                    <a href="/">Trang chủ</a>
+                    <a href="/revision">Thư viện</a>
+                    <a href="/supscription">Mua gói</a>
+                    <div style= "font-size:30px;font-weight:900;color:#1D059D;">|</div>
+                    <a href="/login">Đăng nhập</a>
+                    <a href="/register">Đăng kí</a> 
+                    @* <div class="user-profile">
+                        <div class="profile-avatar">
+                            <a class="avatar-icon" href ="/profile">👤</a>
+                        </div>
+                    </div> *@
+                </div> <!-- nav-links -->
+            </div> <!-- col -->
+        </div> <!-- row -->
+    </div> <!-- container-fluid -->
+</div> <!-- header -->
+
+<style>
+/* Đẩy nội dung xuống dưới để không bị header đè */
+body {
+    margin: 0;
+    padding-top: 80px; /* chỉnh đúng chiều cao header */
+}
+
+/* Header luôn cố định */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999; /* cho chắc chắn nằm trên cùng */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 0;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Baloo 2', cursive;
+    font-weight: 600;
+    width: 100%;
+}
+
+/* Menu nav-links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* căn phải */
+    gap: 30px;
+    top:0px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #090231;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+    padding:5px 10px;
+}
+
+.nav-links a:hover {
+    color: #FFFFFF;
+    font-weight : 900;
+    transform: translateY(-2px);
+    background : #1D059D;
+    border-radius :8px;
+   
+}
+
+
+
+/* Avatar user */
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #FFB6D6, #37E4FF);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(55, 228, 255, 0.3);
+}
+
+.avatar-icon {
+    color: white;
+    font-size: 1.2rem;
+}
+</style>

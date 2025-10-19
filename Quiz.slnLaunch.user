@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Quiz.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "..\\Quiz.Server\\Quiz.Server.csproj",
+        "Action": "Start",
+        "DebugTarget": "API-HTTPS"
+      }
+    ]
+  }
+]

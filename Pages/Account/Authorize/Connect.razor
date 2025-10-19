@@ -1,0 +1,37 @@
+﻿@page "/connect/{id}"
+@using Quiz.State
+@using Share
+@inject IHttpClientFactory httpClientFactory
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider authStateProvider
+
+@code {
+    public Task<AuthenticationState> AuthState { get; set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    protected async override Task OnParametersSetAsync()
+    {
+        var client = httpClientFactory.CreateClient(Constant.Client);
+
+        try
+        {
+            var user = (await AuthState).User;
+            if(user.Identity!.IsAuthenticated)
+                Navigation.NavigateTo("/");
+
+        }catch{}
+
+        if(string.IsNullOrEmpty(Id))
+            Navigation.NavigateTo("/");
+
+        var response = await client.GetAsync($"/authorize/token/{Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            string accessToken = await response.Content.ReadAsStringAsync();
+            await localStorageService.SaveAsStringAsync(Constant.Key, accessToken);
+            var authState = (CustomAuthState)authStateProvider;
+            authState.NotifyAuthStateChanged();
+            Navigation.NavigateTo("/",true);
+        }
+        Navigation.NavigateTo("/");
+    }
+}

@@ -1,0 +1,903 @@
+@page "/test"
+@using Microsoft.AspNetCore.Components.Forms
+@inject IJSRuntime JS
+@inject HttpClient Http
+@inject IHttpClientFactory HttpClientFactory
+@using System.Text.Json;
+
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Baloo 2', cursive;
+        background: linear-gradient(180deg, #ffffff 0%, #e8e0f5 100%);
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .page-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #5b21b6;
+        margin-bottom: 30px;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 40px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .tab {
+        padding: 10px 20px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #6b7280;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+        background: transparent;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .tab.active {
+        color: #5b21b6;
+        border-bottom-color: #5b21b6;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-label {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .form-input {
+        background: #ddd6fe;
+        border: none;
+        border-radius: 12px;
+        padding: 15px 20px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        color: #1f2937;
+        outline: none;
+    }
+
+    .form-input:focus {
+        background: #c4b5fd;
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .question-type {
+        margin-top: 30px;
+    }
+
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .radio-option input[type="radio"] {
+        width: 24px;
+        height: 24px;
+        accent-color: #5b21b6;
+        cursor: pointer;
+    }
+
+    .radio-option label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+        cursor: pointer;
+    }
+
+    .upload-section {
+        background: #ddd6fe;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        margin-top: 30px;
+        position: relative;
+        transition: all 0.3s;
+    }
+
+    .upload-section.dragover {
+        background: #c4b5fd;
+        border: 2px dashed #5b21b6;
+    }
+
+    .upload-section.disabled {
+        background: #e5e7eb;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .input-mode-selector {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        background: #f3f4f6;
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .input-mode-btn {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: transparent;
+        color: #6b7280;
+    }
+
+    .input-mode-btn.active {
+        background: #5b21b6;
+        color: white;
+    }
+
+    .input-mode-btn:hover:not(.active) {
+        background: #e5e7eb;
+    }
+
+    .text-input-section {
+        margin-top: 30px;
+    }
+
+    .text-input-area {
+        width: 100%;
+        min-height: 300px;
+        background: #ddd6fe;
+        border: 2px solid #c4b5fd;
+        border-radius: 12px;
+        padding: 20px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        color: #1f2937;
+        outline: none;
+        resize: vertical;
+    }
+
+    .text-input-area:focus {
+        background: #c4b5fd;
+        border-color: #5b21b6;
+    }
+
+    .word-count {
+        text-align: right;
+        margin-top: 8px;
+        font-size: 14px;
+        color: #6b7280;
+        font-weight: 600;
+    }
+
+    .word-count.warning {
+        color: #dc2626;
+    }
+
+    .word-count.valid {
+        color: #059669;
+    }
+
+    .upload-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+    }
+
+    .upload-icon svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .upload-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+
+    .upload-subtitle {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+
+    .btn-upload {
+        background: #5b21b6;
+        color: white;
+        padding: 12px 35px;
+        border-radius: 8px;
+        border: none;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-upload:hover {
+        background: #4c1d95;
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .uploaded-file {
+        margin-top: 20px;
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .file-icon {
+        font-size: 24px;
+    }
+
+    .file-details {
+        text-align: left;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .file-size {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .remove-file {
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 15px;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        font-weight: 600;
+    }
+
+    .remove-file:hover {
+        background: #dc2626;
+    }
+
+    .btn-submit {
+        background: #5b21b6;
+        color: white;
+        padding: 15px 50px;
+        border-radius: 10px;
+        border: none;
+        font-family: 'Baloo 2', cursive;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 30px;
+        transition: background 0.3s;
+    }
+
+    .btn-submit:hover {
+        background: #4c1d95;
+    }
+
+    .btn-submit:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        font-weight: 600;
+    }
+
+    .success-message {
+        background: #d1fae5;
+        color: #065f46;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        font-weight: 600;
+    }
+</style>
+
+<main class="container">
+    <h1 class="page-title">Thư viện bài học</h1>
+    
+    <div class="tabs">
+        <button class="tab">Upload tài liệu</button>
+        <button class="tab">Tạo Quiz</button>
+        <button class="tab active">Ôn tập</button>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label class="form-label">Tiêu đề</label>
+            <input type="text" class="form-input" @bind="quizData.Title" placeholder="Nhập tiêu đề...">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Số câu</label>
+            <input type="number" class="form-input" @bind="quizData.QuestionCount" placeholder="10" min="1" max="100">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Mô tả</label>
+        <textarea class="form-input form-textarea" @bind="quizData.Description" placeholder="Nhập mô tả..."></textarea>
+    </div>
+
+    <div class="question-type">
+        <label class="form-label">Dạng câu hỏi</label>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="quiz" name="questionType" value="quiz" @onchange="() => quizData.QuestionType = QuestionType.Quiz" checked="@(quizData.QuestionType == QuestionType.Quiz)">
+                <label for="quiz">Trắc nghiệm</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="flashcard" name="questionType" value="flashcard" @onchange="() => quizData.QuestionType = QuestionType.Flashcard" checked="@(quizData.QuestionType == QuestionType.Flashcard)">
+                <label for="flashcard">Flashcard</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="question-type">
+        <label class="form-label">Mức độ câu hỏi</label>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="recognition" name="level" value="Recognition" @onchange="() => quizData.Level = QuestionLevel.Recognition" checked="@(quizData.Level == QuestionLevel.Recognition)">
+                <label for="recognition">Recognition - Nhận biết</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="comprehension" name="level" value="Comprehension" @onchange="() => quizData.Level = QuestionLevel.Comprehension" checked="@(quizData.Level == QuestionLevel.Comprehension)">
+                <label for="comprehension">Comprehension - Thông hiểu</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="application" name="level" value="Application" @onchange="() => quizData.Level = QuestionLevel.Application" checked="@(quizData.Level == QuestionLevel.Application)">
+                <label for="application">Application - Vận dụng</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="highapp" name="level" value="High Application" @onchange="() => quizData.Level = QuestionLevel.HighApplication" checked="@(quizData.Level == QuestionLevel.HighApplication)">
+                <label for="highapp">High Application - Vận dụng cao</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-mode-selector">
+        <button class="input-mode-btn @(inputMode == InputMode.Upload ? "active" : "")" 
+                @onclick="() => SwitchInputMode(InputMode.Upload)">
+            📁 Upload tài liệu
+        </button>
+        <button class="input-mode-btn @(inputMode == InputMode.Text ? "active" : "")" 
+                @onclick="() => SwitchInputMode(InputMode.Text)">
+            ✍️ Nhập văn bản
+        </button>
+    </div>
+
+    @if (inputMode == InputMode.Upload)
+    {
+        <div class="upload-section @(isDragging ? "dragover" : "")" 
+             @ondrop="HandleDrop" 
+             @ondrop:preventDefault 
+             @ondragover:preventDefault 
+             @ondragenter="HandleDragEnter" 
+             @ondragenter:preventDefault
+             @ondragleave="HandleDragLeave">
+            
+            <InputFile id="fileInput" 
+                       class="file-input" 
+                       accept=".pdf,.docx,.txt" 
+                       OnChange="HandleFileSelected" />
+            
+            <div class="upload-icon">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="35" r="20" fill="#5b89e5"/>
+                    <circle cx="40" cy="35" r="20" fill="#4a7fd4"/>
+                    <circle cx="60" cy="35" r="20" fill="#6ba3f7"/>
+                    <rect x="45" y="45" width="10" height="15" fill="#5b89e5"/>
+                    <path d="M50 60 L50 75 M40 70 L60 70" stroke="#5b89e5" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M45 65 L50 60 L55 65" stroke="#5b89e5" stroke-width="3" stroke-linecap="round" fill="none"/>
+                </svg>
+            </div>
+            <div class="upload-title">Chọn tài liệu</div>
+            <div class="upload-subtitle">PDF, DOCX, TXT (Kéo thả hoặc click để chọn)</div>
+            <label for="fileInput" class="btn-upload" style="cursor: pointer; display: inline-block;">Chọn</label>
+
+            @if (uploadedFile != null)
+            {
+                <div class="uploaded-file">
+                    <div class="file-info">
+                        <span class="file-icon">@GetFileIcon(uploadedFile.Name)</span>
+                        <div class="file-details">
+                            <div class="file-name">@uploadedFile.Name</div>
+                            <div class="file-size">@FormatFileSize(uploadedFile.Size)</div>
+                        </div>
+                    </div>
+                    <button class="remove-file" @onclick="RemoveFile">Xóa</button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-input-section">
+            <textarea class="text-input-area" 
+                      @bind="textContent" 
+                      @bind:event="oninput"
+                      placeholder="Nhập nội dung kiến thức ở đây... (Ít nhất 50 từ)">
+            </textarea>
+            <div class="word-count @(GetWordCountClass())">
+                @GetWordCount() từ @(GetWordCount() >= 50 ? "✓" : $"(Cần thêm {50 - GetWordCount()} từ)")
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="error-message">❌ @errorMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="success-message">✓ @successMessage</div>
+    }
+
+    <button class="btn-submit" @onclick="CreateQuiz" disabled="@isProcessing">
+        @if (isProcessing)
+        {
+            <span class="loading"></span>
+        }
+        Tạo và ôn tập
+    </button>
+</main>
+
+@code {
+    private QuizData quizData = new();
+    private UploadedFile? uploadedFile;
+    private bool isProcessing = false;
+    private bool isDragging = false;
+    private string errorMessage = "";
+    private string successMessage = "";
+    private string textContent = "";
+    private InputMode inputMode = InputMode.Upload;
+    private const long MaxFileSize = 10 * 1024 * 1024; // 10MB
+    private JsonElement.ArrayEnumerator? generatedQuestions; 
+    private string? knowledgeContent; 
+
+    public enum InputMode
+    {
+        Upload,
+        Text
+    }
+
+    public enum QuestionType
+    {
+        Quiz,
+        Flashcard
+    }
+
+    public enum QuestionLevel
+    {
+        Recognition,
+        Comprehension,
+        Application,
+        HighApplication
+    }
+
+    public class QuizData
+    {
+        public string Title { get; set; } = "";
+        public int QuestionCount { get; set; } = 10;
+        public string Description { get; set; } = "";
+        public QuestionType QuestionType { get; set; } = QuestionType.Quiz;
+        public QuestionLevel Level { get; set; } = QuestionLevel.Recognition;
+    }
+
+    public class UploadedFile
+    {
+        public string Name { get; set; } = "";
+        public long Size { get; set; }
+        public string Content { get; set; } = "";
+        public string FileType { get; set; } = "";
+    }
+
+    private void SwitchInputMode(InputMode mode)
+    {
+        inputMode = mode;
+        errorMessage = "";
+        successMessage = "";
+        
+        // Clear data when switching
+        if (mode == InputMode.Upload)
+        {
+            textContent = "";
+        }
+        else
+        {
+            uploadedFile = null;
+        }
+    }
+
+    private int GetWordCount()
+    {
+        if (string.IsNullOrWhiteSpace(textContent))
+            return 0;
+        
+        return textContent.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
+    private string GetWordCountClass()
+    {
+        var count = GetWordCount();
+        if (count >= 50)
+            return "valid";
+        if (count > 0)
+            return "warning";
+        return "";
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        errorMessage = "";
+        successMessage = "";
+
+        var file = e.File;
+
+        try
+        {
+            // Validate file type
+            var extension = Path.GetExtension(file.Name).ToLower();
+            if (extension != ".pdf" && extension != ".docx" && extension != ".txt")
+            {
+                errorMessage = "Chỉ hỗ trợ file PDF, DOCX, TXT";
+                return;
+            }
+
+            // Validate file size
+            if (file.Size > MaxFileSize)
+            {
+                errorMessage = "File không được vượt quá 10MB";
+                return;
+            }
+
+            // Read file content
+            string content;
+            if (extension == ".txt")
+            {
+                // Đọc file text trực tiếp
+                using var stream = file.OpenReadStream(MaxFileSize);
+                using var reader = new StreamReader(stream);
+                content = await reader.ReadToEndAsync();
+            }
+            else
+            {
+                // Đọc PDF/DOCX dưới dạng base64
+                using var stream = file.OpenReadStream(MaxFileSize);
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                var bytes = memoryStream.ToArray();
+                content = Convert.ToBase64String(bytes);
+            }
+
+            uploadedFile = new UploadedFile
+            {
+                Name = file.Name,
+                Size = file.Size,
+                Content = content,
+                FileType = file.ContentType
+            };
+
+            successMessage = $"✓ Đã tải lên: {file.Name}";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Lỗi đọc file: {ex.Message}";
+            Console.WriteLine($"Error details: {ex}");
+        }
+    }
+
+    private void HandleDragEnter(DragEventArgs e)
+    {
+        isDragging = true;
+    }
+
+    private void HandleDragLeave(DragEventArgs e)
+    {
+        isDragging = false;
+    }
+
+    private async Task HandleDrop(DragEventArgs e)
+    {
+        isDragging = false;
+        // Note: Drag & drop với InputFile cần xử lý đặc biệt trong Blazor
+        // Tính năng này có thể cần thêm JavaScript helper
+    }
+
+    private void RemoveFile()
+    {
+        uploadedFile = null;
+        errorMessage = "";
+        successMessage = "";
+    }
+
+    private string GetFileIcon(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLower();
+        return extension switch
+        {
+            ".pdf" => "📄",
+            ".docx" => "📝",
+            ".txt" => "📃",
+            _ => "📁"
+        };
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private async Task CreateQuiz()
+    {
+     errorMessage = "";
+    successMessage = "";
+
+    // ✅ Validate dữ liệu cơ bản (giống đoạn bạn có)
+    if (string.IsNullOrWhiteSpace(quizData.Title))
+    {
+        errorMessage = "Vui lòng nhập tiêu đề";
+        return;
+    }
+
+    string knowledgeContent = inputMode == InputMode.Upload
+        ? uploadedFile?.Content ?? ""
+        : textContent ?? "";
+
+    if (string.IsNullOrWhiteSpace(knowledgeContent))
+    {
+        errorMessage = "Vui lòng nhập hoặc upload nội dung kiến thức";
+        return;
+    }
+    knowledgeContent = inputMode == InputMode.Upload
+    ? uploadedFile?.Content
+    : textContent;
+
+if (string.IsNullOrWhiteSpace(knowledgeContent))
+{
+    errorMessage = "Vui lòng nhập hoặc upload nội dung kiến thức";
+    return;
+}
+
+    var wordCount = knowledgeContent.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    if (wordCount < 50)
+    {
+        errorMessage = "Nội dung phải có ít nhất 50 từ";
+        return;
+    }
+
+    isProcessing = true;
+
+    try
+    {
+        // 🧠 Gọi AI để tạo câu hỏi
+        var generateRequest = new
+        {
+            knowledge = knowledgeContent,
+            typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "flashcard",
+            level = quizData.Level.ToString(),
+            count = quizData.QuestionCount
+        };
+
+        var client = HttpClientFactory.CreateClient("FastApiClient");
+        var generateResponse = await client.PostAsJsonAsync("/data-create-question-api/generate-quiz-ai", generateRequest);
+
+        if (!generateResponse.IsSuccessStatusCode)
+        {
+            var err = await generateResponse.Content.ReadAsStringAsync();
+            errorMessage = $"❌ Không thể tạo câu hỏi từ AI: {err}";
+            return;
+        }
+
+        var resultJson = await generateResponse.Content.ReadFromJsonAsync<JsonElement>();
+        generatedQuestions = resultJson.GetProperty("data").EnumerateArray(); // 🔹 Lưu tạm danh sách câu hỏi
+
+        successMessage = "✅ Đã tạo câu hỏi thành công! Hãy xem lại và bấm 'Lưu' nếu đồng ý.";
+    }
+    catch (Exception ex)
+    {
+        errorMessage = $"Lỗi: {ex.Message}";
+    }
+    finally
+    {
+        isProcessing = false;
+    }
+    }
+    public async Task SaveAndCreate()
+    {
+             errorMessage = "";
+    successMessage = "";
+
+    if (generatedQuestions == null)
+    {
+        errorMessage = "⚠️ Chưa có câu hỏi nào được tạo. Hãy tạo trước khi lưu!";
+        return;
+    }
+
+    if (string.IsNullOrWhiteSpace(knowledgeContent))
+    {
+        errorMessage = "⚠️ Không có nội dung kiến thức để lưu!";
+        return;
+    }
+
+    try
+    {
+        var backendClient = HttpClientFactory.CreateClient("BackendApi");
+
+        // 🧠 Bước 1: Lưu nội dung gốc mà người dùng nhập
+        var saveKnowledgePayload = new
+        {
+            user_id = 1, // hoặc quizData.UserId nếu bạn có sẵn
+            text = knowledgeContent
+        };
+
+        var saveKnowledgeResponse = await backendClient.PostAsJsonAsync("/api/knowledge/save", saveKnowledgePayload);
+
+        if (!saveKnowledgeResponse.IsSuccessStatusCode)
+        {
+            var err = await saveKnowledgeResponse.Content.ReadAsStringAsync();
+            Console.WriteLine($"❌ Lỗi khi lưu nội dung kiến thức: {err}");
+        }
+        else
+        {
+            Console.WriteLine("✅ Đã lưu nội dung kiến thức thành công!");
+        }
+
+        // 🧩 Bước 2: Lưu từng câu hỏi đã tạo
+        foreach (var item in generatedQuestions.Value)
+        {
+            var question = item.GetProperty("question").GetString();
+            var answers = item.GetProperty("answers");
+            var correctAnswers = item.GetProperty("correctAnswers")
+                .EnumerateArray()
+                .Select(a => a.GetString())
+                .ToList();
+
+            var payload = new
+            {
+                setQuizId = 0,
+                question = question,
+                answers = new
+                {
+                    additionalProp1 = answers.TryGetProperty("A", out var a1) ? a1.GetString() : "",
+                    additionalProp2 = answers.TryGetProperty("B", out var a2) ? a2.GetString() : "",
+                    additionalProp3 = answers.TryGetProperty("C", out var a3) ? a3.GetString() : ""
+                },
+                correctAnswers = correctAnswers
+            };
+
+            var saveResponse = await backendClient.PostAsJsonAsync("/api/questions", payload);
+
+            if (!saveResponse.IsSuccessStatusCode)
+            {
+                var err = await saveResponse.Content.ReadAsStringAsync();
+                Console.WriteLine($"❌ Lỗi khi lưu câu hỏi: {err}");
+            }
+        }
+
+        successMessage = "✅ Đã lưu thành công nội dung và câu hỏi vào hệ thống!";
+    }
+    catch (Exception ex)
+    {
+        errorMessage = $"Lỗi khi lưu: {ex.Message}";
+    }
+
+    }
+    public class GenerateQuestionsResponse
+    {
+        public List<object> Questions { get; set; } = new();
+        public string Message { get; set; } = "";
+    }
+
+    public class SaveKnowledgeResponse
+    {
+        public int Id { get; set; }
+        public string Message { get; set; } = "";
+    }
+
+    public class CreateQuizResponse
+    {
+        public int Id { get; set; }
+        public string Message { get; set; } = "";
+    }
+
+   //private List<Question> questions = new List<Question>();
+
+    public class QuestionCreateRequest
+    {
+        public int SetQuizId { get; set; }
+        public string Question { get; set; } = string.Empty;
+        public Dictionary<string, string> Answers { get; set; } = new();
+        public List<string> CorrectAnswers { get; set; } = new();
+    }
+
+}

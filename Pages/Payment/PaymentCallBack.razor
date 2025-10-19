@@ -1,0 +1,56 @@
+﻿@page "/payment-callback"
+@using Microsoft.AspNetCore.WebUtilities
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<h3>Thanh toán</h3>
+
+@if (loading)
+{
+    <p>Đang kiểm tra trạng thái thanh toán...</p>
+}
+else if (order != null)
+{
+    <h5>Thanh toán Momo Thành công</h5>
+    <h6>OrderID : @order.OrderId</h6>
+    <h6>@order.OrderInfo</h6>
+    <h6>@order.Amount</h6>
+    <h5>Lịch sử</h5>
+    <pre>@order.Status</pre>
+}
+else
+{
+    <p>Không tìm thấy đơn hàng.</p>
+}
+
+@code {
+    private bool loading = true;
+    private OrderDto order;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // lấy orderId từ querystring: ?orderId=xxxxx
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("orderId", out var vals))
+        {
+            var orderId = vals.First();
+            try
+            {
+                order = await Http.GetFromJsonAsync<OrderDto>($"api/orders/{orderId}");
+            }
+            catch
+            {
+                order = null;
+            }
+        }
+        loading = false;
+    }
+
+    public class OrderDto
+    {
+        public string OrderId { get; set; }
+        public string OrderInfo { get; set; }
+        public decimal Amount { get; set; }
+        public string Status { get; set; }
+    }
+}

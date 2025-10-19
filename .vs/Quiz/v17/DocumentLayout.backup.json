@@ -1,0 +1,221 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\EXE\\Web\\Quiz\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|d:\\exe\\web\\quiz\\pages\\library\\createquizextract.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|solutionrelative:pages\\library\\createquizextract.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3D440AE4-F561-49C1-BEDD-D1AF51CCB5CD}|..\\Quiz.Server\\Quiz.Server.csproj|d:\\exe\\web\\quiz.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|d:\\exe\\web\\quiz\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|d:\\exe\\web\\quiz\\pages\\library\\createquizai.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|solutionrelative:pages\\library\\createquizai.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0847B37-A985-41FE-B006-CABA6A888C65}|..\\DAL\\DAL.csproj|d:\\exe\\web\\dal\\model\\quizdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3D440AE4-F561-49C1-BEDD-D1AF51CCB5CD}|..\\Quiz.Server\\Quiz.Server.csproj|d:\\exe\\web\\quiz.server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3D440AE4-F561-49C1-BEDD-D1AF51CCB5CD}|..\\Quiz.Server\\Quiz.Server.csproj|d:\\exe\\web\\quiz.server\\tokenhandler\\googleaccesstokenauthencationhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|d:\\exe\\web\\quiz\\pages\\library\\createquizpage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|solutionrelative:pages\\library\\createquizpage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0847B37-A985-41FE-B006-CABA6A888C65}|..\\DAL\\DAL.csproj|d:\\exe\\web\\dal\\dal.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3D440AE4-F561-49C1-BEDD-D1AF51CCB5CD}|..\\Quiz.Server\\Quiz.Server.csproj|d:\\exe\\web\\quiz.server\\quiz.server.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{117A2F2E-30D6-4D33-9CD0-E1C770EBD06C}|..\\BLL\\BLL.csproj|d:\\exe\\web\\bll\\bll.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0847B37-A985-41FE-B006-CABA6A888C65}|..\\DAL\\DAL.csproj|d:\\exe\\web\\dal\\model\\emailsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|d:\\exe\\web\\quiz\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{75CBA6DE-0B29-4A9E-B232-D6CCECC11D43}|Quiz.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Quiz.Server.csproj",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz.Server\\Quiz.Server.csproj",
+              "RelativeDocumentMoniker": "..\\Quiz.Server\\Quiz.Server.csproj",
+              "ToolTip": "D:\\EXE\\Web\\Quiz.Server\\Quiz.Server.csproj",
+              "RelativeToolTip": "..\\Quiz.Server\\Quiz.Server.csproj",
+              "ViewState": "AgIAABwAAAAAAAAAAABBwB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-10-17T14:26:30.998Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "QuizDBContext.cs",
+              "DocumentMoniker": "D:\\EXE\\Web\\DAL\\Model\\QuizDBContext.cs",
+              "RelativeDocumentMoniker": "..\\DAL\\Model\\QuizDBContext.cs",
+              "ToolTip": "D:\\EXE\\Web\\DAL\\Model\\QuizDBContext.cs",
+              "RelativeToolTip": "..\\DAL\\Model\\QuizDBContext.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAswAkAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-17T14:18:30.471Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz.Server\\appsettings.json",
+              "RelativeDocumentMoniker": "..\\Quiz.Server\\appsettings.json",
+              "ToolTip": "D:\\EXE\\Web\\Quiz.Server\\appsettings.json",
+              "RelativeToolTip": "..\\Quiz.Server\\appsettings.json",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAkAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-10-16T14:04:21.841Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\EXE\\Web\\Quiz\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-16T14:35:46.895Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz.Server\\Program.cs",
+              "RelativeDocumentMoniker": "..\\Quiz.Server\\Program.cs",
+              "ToolTip": "D:\\EXE\\Web\\Quiz.Server\\Program.cs",
+              "RelativeToolTip": "..\\Quiz.Server\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-17T14:14:08.362Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CreateQuizExtract.razor",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz\\Pages\\Library\\CreateQuizExtract.razor",
+              "RelativeDocumentMoniker": "Pages\\Library\\CreateQuizExtract.razor",
+              "ToolTip": "D:\\EXE\\Web\\Quiz\\Pages\\Library\\CreateQuizExtract.razor",
+              "RelativeToolTip": "Pages\\Library\\CreateQuizExtract.razor",
+              "ViewState": "AgIAAO4AAAAAAAAAAAAMwPYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-18T08:52:56.45Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "BLL.csproj",
+              "DocumentMoniker": "D:\\EXE\\Web\\BLL\\BLL.csproj",
+              "RelativeDocumentMoniker": "..\\BLL\\BLL.csproj",
+              "ToolTip": "D:\\EXE\\Web\\BLL\\BLL.csproj",
+              "RelativeToolTip": "..\\BLL\\BLL.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-10-17T14:31:50.886Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CreateQuizAI.razor",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz\\Pages\\Library\\CreateQuizAI.razor",
+              "RelativeDocumentMoniker": "Pages\\Library\\CreateQuizAI.razor",
+              "ToolTip": "D:\\EXE\\Web\\Quiz\\Pages\\Library\\CreateQuizAI.razor",
+              "RelativeToolTip": "Pages\\Library\\CreateQuizAI.razor",
+              "ViewState": "AgIAAJwAAAAAAAAAAAAAAFoCAABWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-17T17:08:21.573Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "GoogleAccessTokenAuthencationHandler.cs",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz.Server\\TokenHandler\\GoogleAccessTokenAuthencationHandler.cs",
+              "RelativeDocumentMoniker": "..\\Quiz.Server\\TokenHandler\\GoogleAccessTokenAuthencationHandler.cs",
+              "ToolTip": "D:\\EXE\\Web\\Quiz.Server\\TokenHandler\\GoogleAccessTokenAuthencationHandler.cs",
+              "RelativeToolTip": "..\\Quiz.Server\\TokenHandler\\GoogleAccessTokenAuthencationHandler.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAYwEIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-17T14:48:02.323Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "EmailSettings.cs",
+              "DocumentMoniker": "D:\\EXE\\Web\\DAL\\Model\\EmailSettings.cs",
+              "RelativeDocumentMoniker": "..\\DAL\\Model\\EmailSettings.cs",
+              "ToolTip": "D:\\EXE\\Web\\DAL\\Model\\EmailSettings.cs",
+              "RelativeToolTip": "..\\DAL\\Model\\EmailSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-17T14:18:29.259Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DAL.csproj",
+              "DocumentMoniker": "D:\\EXE\\Web\\DAL\\DAL.csproj",
+              "RelativeDocumentMoniker": "..\\DAL\\DAL.csproj",
+              "ToolTip": "D:\\EXE\\Web\\DAL\\DAL.csproj",
+              "RelativeToolTip": "..\\DAL\\DAL.csproj",
+              "ViewState": "AgIAABwAAAAAAAAAAABBwB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-10-17T14:13:39.087Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "Properties\\launchSettings.json",
+              "ToolTip": "D:\\EXE\\Web\\Quiz\\Properties\\launchSettings.json",
+              "RelativeToolTip": "Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-10-16T14:35:08.068Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "CreateQuizPage.razor",
+              "DocumentMoniker": "D:\\EXE\\Web\\Quiz\\Pages\\Library\\CreateQuizPage.razor",
+              "RelativeDocumentMoniker": "Pages\\Library\\CreateQuizPage.razor",
+              "ToolTip": "D:\\EXE\\Web\\Quiz\\Pages\\Library\\CreateQuizPage.razor",
+              "RelativeToolTip": "Pages\\Library\\CreateQuizPage.razor",
+              "ViewState": "AgIAAPIDAAAAAAAAAAAkwAwEAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-15T15:12:41.379Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

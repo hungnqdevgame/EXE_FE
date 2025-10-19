@@ -1,0 +1,556 @@
+@page "/supscription"
+<!DOCTYPE html>
+<html lang="vi">
+<Quiz.Shared.Header />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZQuiz - Nâng cấp để học tập hiệu quả hơn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Baloo 2', cursive;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: black;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: black;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Toggle Switch */
+        .billing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .toggle-container {
+            position: relative;
+            display: flex;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            padding: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .toggle-option {
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            background: #D5CEFD;
+            border: none;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        .toggle-option.active {
+            background: #1D059D;
+            color: white;
+            box-shadow: 0 2px 10px rgba(90, 103, 216, 0.3);
+        }
+
+        .toggle-option:last-child {
+            margin-left: -30px;
+        }
+
+        /* Pricing Cards */
+        .pricing-container {
+            display: flex;
+            justify-content: center;
+            gap: -10px;
+            max-width: 1500px;
+            margin: 0 auto;
+            position: relative;
+            background: #D5CEFD;
+            border-radius: 10px;
+            width: 800px;
+            top: 20px;
+        }
+
+        .pricing-card {
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+            width: 600px;
+            z-index: 1;
+            
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .pricing-card.premium {
+            background: #1D059D;
+            color: white;
+            z-index: 2;
+            margin-left: -20px;
+            box-shadow: 0 20px 60px rgba(90, 103, 216, 0.3);
+            width: 400px;
+            top: -50px;
+            left : -40px;
+        }
+
+        .pricing-card.premium:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 80px rgba(90, 103, 216, 0.4);
+        }
+
+        .best-value {
+            position: absolute;
+            top: -10px;
+            right: 30px;
+            background: #A57DBA;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            
+        }
+
+        .price-currency {
+            font-size: 24px;
+            font-weight: 900;
+            opacity: 0.8;
+            color: #1D059D;
+           
+        }
+
+        .plan-name {
+            font-size: 24px;
+            margin-bottom: 1.5rem;
+            font-weight: 900;
+            color: #1D059D;
+        }
+
+        .pricing-card.premium .plan-name {
+            color: white;
+        }
+
+        .pricing-card.premium .price-currency {
+            color: white;
+        }
+
+        .features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .feature-icon.check {
+            background: #10b981;
+            color: white;
+        }
+
+        .feature-icon.cross {
+            background: #ef4444;
+            color: white;
+        }
+
+        .pricing-card.premium .feature-icon.check {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .feature-text {
+            text-align: left;
+            flex: 1;
+            font-size: 24px;
+             font-weight: 400;
+        }
+
+        .feature-limit {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style : Regular;
+            color : #1D059D;
+        }
+
+        .cta-button {
+            width: 300px;
+            padding: 12px 0;
+            border-radius: 15px;
+            border: none;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .cta-button.pro {
+            background: #A57DBA;
+            color: white;
+        }
+
+        .cta-button.pro:hover {
+            background: #C93668;
+            transform: translateY(-2px);
+        }
+
+        .cta-button.premium {
+            background: #C93668;
+            color: white;
+        }
+
+        .cta-button.premium:hover {
+            background: linear-gradient(45deg, #dc2626, #ea580c);
+            transform: translateY(-2px);
+        }
+
+        /* Add price transition styles */
+        .price span {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+
+            .pricing-container {
+                flex-direction: column;
+                gap: 2rem;
+                align-items: center;
+            }
+
+            .pricing-card.premium {
+                margin-left: 0;
+                z-index: 1;
+            }
+        }
+
+        /* Ripple animation */
+        @@keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <h1 class="title">Nâng cấp để học tập hiệu quả hơn</h1>
+        <p class="subtitle">
+            Tạo câu hỏi và đề thi nhanh với những giải pháp thông minh. ZQuiz tận dụng sức mạnh công nghệ để nâng cao trình độ học tập của bạn.
+        </p>
+
+        <div class="billing-toggle">
+            <button class="toggle-option active" onclick="toggleBilling('monthly')">1 tháng</button>
+            <button class="toggle-option" onclick="toggleBilling('sixmonths')">6 tháng</button>
+        </div>
+
+        <div class="pricing-container">
+            <!-- Pro Plan -->
+            <div class="pricing-card">
+                <div class="price" style="color: #1D059D">
+                    <span id="pro-price">59.000</span>
+                    <span id="pro-currency" class="price-currency">VNĐ/tháng</span>
+                </div>
+                <h3 class="plan-name">Pro</h3>
+                <ul class="features" >
+                    <li class="feature" style="color: #1D059D">
+                         <img src="images/tick1.svg"  width="40" style="margin-left: 0px;" >
+                        <div class="feature-text">
+                            Upload tài liệu
+                            <div class="feature-limit">Không giới hạn</div>
+                        </div>
+                    </li>
+                    <li class="feature" style="color: #1D059D">
+                         <img src="images/tick1.svg"  width="40" style="margin-left: 0px;" >
+                        <div class="feature-text">
+                            Tạo quiz trên tài liệu
+                            <div class="feature-limit">Không giới hạn</div>
+                        </div>
+                    </li>
+                    <li class="feature" style="color: #1D059D">
+                        <img src="images/tick1.svg"  width="40" style="margin-left: 0px;" >
+                        <div class="feature-text">
+                            Làm bài kiểm tra từ quiz
+                            <div class="feature-limit">Không giới hạn</div>
+                        </div>
+                    </li>
+                </ul>
+                <button class="cta-button pro" onclick="selectPlan('pro')">
+             
+                  MUA GÓI
+               
+              
+                </button>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="pricing-card premium">
+                <div class="best-value"style = "top : 20px;margin-bottom : 20px;">TIẾT KIỆM NHẤT</div>
+                <div class="price" style = "margin-top : 45px;" >
+                    <span id="premium-price" >79.000</span>
+                    
+                    <span id="premium-currency" class="price-currency">VNĐ/tháng</span>
+                </div>
+                  <span id="sale-price" style =" text-decoration: line-through;">79.000</span>   
+                <h3 class="plan-name">Premium</h3>
+                <ul class="features">
+                    <li class="feature">
+                          <img src="images/tick2.svg"  width="40" style="margin-left: 0px;" >
+                        <div class="feature-text">
+                            Upload tài liệu
+                            <div class="feature-limit" style="color: #FFFFFF">Không giới hạn</div>
+                        </div>
+                    </li>
+                    <li class="feature">
+                        <img src="images/tick2.svg"  width="40" style="margin-left: 0px;" >
+                        <div class="feature-text">
+                            Tạo quiz trên tài liệu
+                            <div class="feature-limit" style="color: #FFFFFF;">Không giới hạn</div>
+                        </div>
+                    </li>
+                    <li class="feature">
+                          <img src="images/tick2.svg"  width="40" style="margin-left: 0px;" >
+                        <div class="feature-text">
+                            Làm bài kiểm tra từ quiz
+                            <div class="feature-limit" style="color: #FFFFFF">Không giới hạn</div>
+                        </div>
+                    </li>
+                    <li class="feature">
+                         <img src="images/tick3.svg"  width="40" style="margin-left: 0px;" >
+                        <div class="feature-text" style="font-weight :900">
+                            AI nâng cao
+                            <div class="feature-limit" style="color: #FFFFFF">Khuyến nghị thêm câu hỏi nâng cao của kiến thức</div>
+                        </div>
+                    </li>
+                </ul>
+                <button class="cta-button premium" onclick="selectPlan('premium')">MUA GÓI</button>
+            </div>
+        </div>
+    </main>
+    <Quiz.Shared.Footer />
+    <script>
+        // Pricing data
+        const pricingData = {
+            monthly: {
+                pro: 59000,
+                premium: 79000
+            },
+            sixmonths: {
+                pro: 269000,
+                premium: 369000
+            }
+        };
+
+        let currentBilling = 'monthly';
+
+        // Format price function
+        function formatPrice(price) {
+            return price.toLocaleString('vi-VN');
+        }
+
+        // Toggle billing period
+        function toggleBilling(period) {
+            currentBilling = period;
+            
+            // Update toggle buttons
+            const toggleButtons = document.querySelectorAll('.toggle-option');
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            
+            if (period === 'monthly') {
+                toggleButtons[0].classList.add('active');
+            } else {
+                toggleButtons[1].classList.add('active');
+            }
+            
+            // Update prices with animation
+            updatePrices(period);
+        }
+
+        function updatePrices(period) {
+            const proPrice = document.getElementById('pro-price');
+            const premiumPrice = document.getElementById('premium-price');
+            const proCurrency = document.getElementById('pro-currency');
+            const premiumCurrency = document.getElementById('premium-currency');
+            const salePrice = document.getElementById('sale-price')
+
+            // Fade out
+            proPrice.style.opacity = '0';
+            premiumPrice.style.opacity = '0';
+            proCurrency.style.opacity = '0';
+            premiumCurrency.style.opacity = '0';
+            salePrice.style.opacity ='0';
+
+            setTimeout(() => {
+                // Update giá
+                proPrice.textContent = formatPrice(pricingData[period].pro);
+                premiumPrice.textContent = formatPrice(pricingData[period].premium);
+
+                // Update đơn vị
+                if (period === 'monthly') {
+                    proCurrency.textContent = "VNĐ/tháng";
+                    premiumCurrency.textContent = "VNĐ/tháng";
+                } else {
+                    proCurrency.textContent = "VNĐ/6 tháng";
+                    premiumCurrency.textContent = "VNĐ/6 tháng";
+                    salePrice.textContent= "jjj";
+                }
+
+                // Fade in + animation
+                proPrice.style.opacity = '1';
+                premiumPrice.style.opacity = '1';
+                proCurrency.style.opacity = '1';
+                premiumCurrency.style.opacity = '1';
+                
+                proPrice.style.transform = 'scale(1.1)';
+                premiumPrice.style.transform = 'scale(1.1)';
+
+                setTimeout(() => {
+                    proPrice.style.transform = 'scale(1)';
+                    premiumPrice.style.transform = 'scale(1)';
+                }, 200);
+            }, 150);
+        }
+
+        function selectPlan(plan) {
+            const period = currentBilling;
+            const price = pricingData[period][plan];
+            
+            console.log(`Selected plan: ${plan}`);
+            console.log(`Billing period: ${period}`);
+            console.log(`Giá: ${price.toLocaleString('vi-VN')} VNĐ`);
+
+            // Xác định đơn vị hiển thị
+            const unit = period === 'monthly' ? '/tháng' : '/6 tháng';
+            const periodText = period === 'monthly' ? '1 tháng' : '6 tháng';
+
+         
+
+         
+                 window.location.href = "/price";
+          
+        }
+
+        // Initialize pricing on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth transitions
+            const priceElements = document.querySelectorAll('#pro-price, #premium-price, #pro-currency, #premium-currency','#sale-price');
+            priceElements.forEach(element => {
+                element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            });
+            
+            // Add hover effects to cards
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.zIndex = '10';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    if (this.classList.contains('premium')) {
+                        this.style.zIndex = '2';
+                    } else {
+                        this.style.zIndex = '1';
+                    }
+                });
+            });
+            
+            // Add ripple effect to buttons
+            const buttons = document.querySelectorAll('.cta-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

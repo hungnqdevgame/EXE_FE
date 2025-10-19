@@ -1,0 +1,253 @@
+﻿
+
+@page "/payment"
+<Quiz.Shared.Header />
+   <div class="payment-container">
+    <div class="logo-container">
+        <img src="images/logo.png" alt="Logo" class="logo" />
+    </div>
+
+    <h1 class="main-title">Thanh toán để cải thiện chức năng học tập cho IZQUIZ</h1>
+
+    <div class="content-wrapper">
+        <!-- Bên trái -->
+        <div class="left-section">
+            <h2 class="section-title">Chọn gói bạn muốn mua</h2>
+
+            <div class="plan-options">
+                <!-- Cột bên trái: PRO / PREMIUM -->
+                <div class="plan-column">
+                    <button class="plan-btn @(selectedPlan == "PRO" ? "selected" : "")" 
+                            @onclick="@(() => SelectPlan("PRO"))">
+                        PRO
+                    </button>
+
+                    <button class="plan-btn @(selectedPlan == "PREMIUM" ? "selected" : "")" 
+                            @onclick="@(() => SelectPlan("PREMIUM"))">
+                        PREMIUM
+                    </button>
+                </div>
+
+                <!-- Cột bên phải: các gói theo thời gian -->
+                <div class="plan-column">
+                    <button class="plan-btn duration @(selectedDuration == "1THANG" ? "selected" : "")" 
+                            @onclick="@(() => SelectDuration("1THANG"))">
+                        1 THÁNG
+                    </button>
+
+                    <button class="plan-btn duration @(selectedDuration == "3THANG" ? "selected" : "")" 
+                            @onclick="@(() => SelectDuration("3THANG"))">
+                        3 THÁNG
+                    </button>
+
+                    <button class="plan-btn duration @(selectedDuration == "6THANG" ? "selected" : "")" 
+                            @onclick="@(() => SelectDuration("6THANG"))">
+                        6 THÁNG
+                    </button>
+
+                    <button class="plan-btn duration @(selectedDuration == "1NAM" ? "selected" : "")" 
+                            @onclick="@(() => SelectDuration("1NAM"))">
+                        1 NĂM
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mã giảm giá -->
+            <div class="section-title">
+                <button class="plan-btn duration "
+                       <button class="register-btn" @onclick="PayMomo">ĐĂNG KÝ NGAY</button>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bên phải -->
+       <div class="right-section">
+    <h2 class="section-title">Phương thức thanh toán</h2>
+    <div class="payment-methods">
+        <img src="/images/momo_logo.png" alt="Momo" class="payment-icon" />
+      
+    </div>
+</div>
+        
+
+    </div>
+</div>
+
+
+<style>
+   body {
+  margin: 0;
+  font-family: "Baloo 2", cursive;
+ 
+}
+       .logo-container {
+   width: 192px;  
+  height: 53px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px; 
+   margin-left: 80px;
+}
+
+.logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  aspect-ratio: 163/45;
+}
+.main-title {
+    
+  color: #000;
+  font-family: "Baloo 2", cursive;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+
+  text-align: left;   /* chữ căn trái */
+   margin-left: 80px;
+   margin-bottom : 40px;
+}
+.section-title{
+     color: #000;
+  font-family: "Baloo 2";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+
+  text-align: left;   /* chữ căn trái */
+   margin-left: 80px;
+}
+
+.plan-options {
+  display: flex;        /* 2 cột nằm ngang */
+  gap: 60px;            /* khoảng cách giữa 2 cột */
+  margin-left: 80px;    /* căn lề trái cùng với title */
+  margin-bottom: 30px;
+}
+
+.plan-column {
+  display: flex;
+  flex-direction: column; /* các nút trong cột xếp dọc */
+  gap: 15px;              /* khoảng cách giữa các nút */
+}
+
+.plan-btn {
+  width: 200px;
+  height: 54px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 10px ;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #FFB6D6, #37E4FF);  
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #ffff;
+}
+
+.plan-btn.selected {
+  background: #000;
+  color: #fff;
+}
+.content-wrapper {
+  display: flex;             
+  gap: 60px;                 
+  align-items: flex-start;     
+  margin-left: 80px;         
+  margin-right: 80px;         
+}
+.left-section {
+  flex: 1;                     /* chiếm 1 phần */
+}
+.right-section {
+  flex: 1;
+}
+
+.payment-methods {
+  display: flex;              /* dàn hàng ngang */
+  flex-direction: row;        /* mặc định là ngang */
+  justify-content: flex-start;/* căn trái */
+  gap: 20px;                  /* khoảng cách giữa logo */
+  margin-left: 80px;          /* thụt lề ngang cùng với title */
+  margin-top: 10px;           /* cách tiêu đề một chút */
+}
+
+.payment-icon {
+  width: 80px;       /* chỉnh size logo */
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.payment-icon:hover {
+  transform: scale(1.1);  /* hover phóng to nhẹ */
+}
+.discount-input {
+    width: 250px;         /* chiều rộng */
+    height: 40px;         /* chiều cao */
+    padding: 8px 12px;    /* khoảng cách trong */
+    border: 1px solid #ccc;
+    border-radius: 8px;   /* bo góc */
+    outline: none;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.discount-input:focus {
+    border-color: #000;   /* khi focus viền đậm hơn */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* hiệu ứng sáng */
+}
+.duration-btn {
+        background: linear-gradient(135deg, #FFB6D6, #37E4FF);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: 'Baloo 2', cursive;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0.7;
+    }
+
+        .duration-btn:hover, .duration-btn.active {
+            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 182, 214, 0.4);
+        }
+
+    
+</style>
+<Quiz.Shared.Footer />
+@code {
+    private string selectedPlan = "";
+    private string selectedDuration = "";
+    private string discountCode = "";
+    private string cardNumber = "";
+    private string cardName = "";
+    private string expiryDate = "";
+    private string cvc = "";
+  
+
+    private void SelectPlan(string plan) => selectedPlan = plan;
+
+    private void SelectDuration(string duration) => selectedDuration = duration;
+
+    private void CompleteOrder()
+    {
+        Console.WriteLine($"Plan: {selectedPlan}, Duration: {selectedDuration}");
+        Console.WriteLine($"Card: {cardNumber}, Name: {cardName}");
+    }
+
+    private void PayMomo()
+    {
+        var momoUrl = "https://momo.vn/thanhtoan"; 
+        NavigationManager.NavigateTo(momoUrl, true);
+    }
+}

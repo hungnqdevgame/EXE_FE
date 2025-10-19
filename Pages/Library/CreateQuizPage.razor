@@ -1,0 +1,1051 @@
+﻿@page "/create-quiz"
+@using System.Collections
+
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@inject IHttpClientFactory HttpClientFactory
+<Quiz.Shared.Header />
+<div class="quiz-creator-container">
+    <div class="container">
+        <h1 class="page-title">Thư viện bài học</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+             <button class="tab" @onclick="() => NavigateToTab(2)">Ôn tập</button>
+            <button class="tab active" @onclick="() => NavigateToTab(1)">Tạo Quiz</button>
+           
+    
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-wrapper">
+            @if (currentStep == 1)
+            {
+                <!-- Step 1: Choose Quiz Creation Method -->
+                <div class="step-container fade-in">
+                    <h2 class="step-title">Chọn công cụ tạo Quiz</h2>
+                    <div class="creation-options">
+                        <button class="option-button @(creationMethod == "manual" ? "selected" : "")"
+                                @onclick='() => SelectCreationMethod("manual")'>
+                            <h3>Tạo Thủ Công</h3>
+                            <p>Tự tạo câu hỏi và đáp án theo ý muốn</p>
+                        </button>
+
+                        <button class="option-button @(creationMethod == "ai" ? "selected" : "")"
+                                @onclick='() => SelectCreationMethod("ai")'>
+                            <h3>Sử dụng AI</h3>
+                            <p>AI tự động tạo quiz từ tài liệu của bạn</p>
+                        </button>
+                        <button class="option-button @(creationMethod == "tag" ? "selected" : "")"
+                                @onclick='() => SelectCreationMethod("tag")'>
+                            <h3>Học cùng AI</h3>
+                            <p>AI tự động tạo quiz theo chủ đề của bạn</p>
+                        </button>
+                        <button class="option-button @(creationMethod == "extract" ? "selected" : "")"
+                                @onclick='() => SelectCreationMethod("extract")'>
+                            <h3>Tạo quiz tự động</h3>
+                            <p>Tạo quiz theo mẫu</p>
+                        </button>
+                        
+                        
+                    </div>
+                    <button class="btn-next" @onclick="NextStep" disabled="@(string.IsNullOrEmpty(creationMethod))">
+                        Tiếp theo →
+                    </button>
+                </div>
+            }
+            else if (currentStep == 2)
+            {
+                <!-- Step 2: Manual Quiz Creation Form -->
+                <div class="step-container fade-in">
+                    <h2 class="step-title">Tạo Quiz</h2>
+
+                    <div class="quiz-form">
+                        <!-- Quiz Info -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tiêu đề</label>
+                                <input type="text" @bind="quizTitle" class="form-input" placeholder="Nhập tiêu đề bài quiz..." />
+                                <label>Mô tả</label>
+                                <textarea @bind="quizDescription" class="form-textarea" rows="4" placeholder="Nhập mô tả bài quiz..."></textarea>
+                            </div>
+                            <div class="form-group half">
+                              
+                                <div class="counter-display" style ="margin-top:45px;">Tổng cộng: <strong>@questions.Count</strong> câu</div>
+                               
+                            </div>
+                        </div>
+
+                        <!-- Current Question View -->
+                        <div class="questions-section">
+                            @if (questions.Count > 0)
+                            {
+                                <div class="question-navigation">
+                                    <button class="btn-nav" @onclick="PreviousQuestion" disabled="@(currentQuestionIndex <= 0)">
+                                        ← Câu trước
+                                    </button>
+                                    <span class="question-counter">Câu @(currentQuestionIndex + 1) / @questions.Count</span>
+                                    <button class="btn-nav" @onclick="NextQuestion" disabled="@(currentQuestionIndex >= questions.Count - 1)">
+                                        Câu sau →
+                                    </button>
+                                </div>
+
+                                <div class="question-card">
+                                    <div class="question-header">
+                                        <span class="question-number">@(currentQuestionIndex + 1)</span>
+                                        <button class="btn-remove" @onclick="() => RemoveQuestion(currentQuestionIndex)">🗑️</button>
+                                    </div>
+
+                                    <div class="form-group">
+                                     
+                                        <textarea @bind="questions[currentQuestionIndex].Text" class="form-textarea" rows="3" placeholder="Nhập câu hỏi..."></textarea>
+                                    </div>
+
+                                    @foreach (var (answer, ansIndex) in questions[currentQuestionIndex].Answers.Select((a, i) => (a, i)))
+                                    {
+                                        <div class="answer-item">
+                                            <input type="text" @bind="answer.Text" class="form-input" placeholder="Đáp án @(GetAnswerLabel(ansIndex))" />
+                                          
+                                                <input type="checkbox" @bind="answer.IsCorrect" />
+                                        
+                                        </div>
+                                    }
+                                </div>
+
+                                <button class="btn-add-question" @onclick="AddNewQuestion">
+                                    + Thêm câu hỏi
+                                </button>
+                            }
+                        </div>
+
+                        <button class="btn-create-quiz" @onclick="CreateQuiz" disabled="@(questions.Count == 0 || string.IsNullOrWhiteSpace(quizTitle))">
+                            Xem lại & Xác nhận
+                        </button>
+                    </div>
+
+                    <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
+                </div>
+            }
+            else if (currentStep == 3)
+            {
+                <!-- Step 3: Review All Questions -->
+                <div class="step-container fade-in">
+                    <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
+
+                    <div class="review-section">
+                        <div class="quiz-info-review">
+                            <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                            
+                            <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
+                            
+                        </div>
+
+                        <div class="questions-list">
+                            @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+                            {
+                                <div class="question-review-item">
+                                    <div class="question-review-header">
+                                        <span class="question-review-number">Câu @(index + 1)</span>
+                                        <div class="question-review-actions">
+                                            <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
+                                            <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)">Xóa</button>
+                                        </div>
+                                    </div>
+                                    <div class="question-review-content">
+                                        <p><strong>Câu hỏi:</strong> @question.Text</p>
+                                        <div class="answers-review">
+                                            @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                            {
+                                                <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
+                                                    <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                                    <span class="answer-text">@answer.Text</span>
+                                                    @if (answer.IsCorrect)
+                                                    {
+                                                        <span class="correct-badge">Đúng</span>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
+                            <button class="btn-confirm-quiz" @onclick="ConfirmAndCreateQuiz">Xác nhận tạo Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<Quiz.Shared.Footer />
+@code {
+    private int currentStep = 1;
+    private string creationMethod = "";
+    private string answerType = "single";
+    private int currentQuestionIndex = 0;
+
+    // Quiz form data
+    private string quizTitle = "";
+    private int quizTime = 30;
+    private string quizDescription = "";
+
+    private List<Question> questions = new List<Question>();
+
+    public class QuestionCreateRequest
+    {
+        public int SetQuizId { get; set; }
+        public string Question { get; set; } = string.Empty;
+        public Dictionary<string, string> Answers { get; set; } = new();
+        public List<string> CorrectAnswers { get; set; } = new();
+    }
+
+   
+    protected override void OnInitialized()
+    {
+        // Initialize empty - user will add questions manually
+    }
+
+    private void NavigateToTab(int tab)
+    {
+        switch(tab)
+        {
+            case 0:
+            Navigation.NavigateTo("/library");
+            break;
+        
+        case 2:
+            Navigation.NavigateTo("/revision");
+            break;
+        default:
+            Navigation.NavigateTo("/");
+            break;
+        }
+        
+    }
+
+    private void SelectCreationMethod(string method)
+    {
+        creationMethod = method;
+       
+    }
+
+    private void NextStep()
+    {
+        if (currentStep == 1 && !string.IsNullOrEmpty(creationMethod))
+        {
+            if(creationMethod == "ai")
+            {
+                Navigation.NavigateTo("/quiz-ai");
+                return;
+            }
+            else if(creationMethod == "tag")
+            {
+                Navigation.NavigateTo("/quiz-tag");
+                return;
+            }
+            else if(creationMethod == "extract")
+            {
+                Navigation.NavigateTo("/quiz-extract");
+                return;
+            }
+            else
+            {
+            currentStep = 2;
+            // Tạo 1 câu hỏi đầu tiên
+            if (questions.Count == 0)
+            {
+                AddNewQuestion();
+            }
+            }
+           
+        }
+    }
+
+    private void PreviousStep()
+    {
+        if (currentStep > 1)
+        {
+            currentStep--;
+        }
+    }
+
+    private void NextQuestion()
+    {
+        if (currentQuestionIndex < questions.Count - 1)
+        {
+            currentQuestionIndex++;
+        }
+    }
+
+    private void PreviousQuestion()
+    {
+        if (currentQuestionIndex > 0)
+        {
+            currentQuestionIndex--;
+        }
+    }
+
+    private void AddNewQuestion()
+    {
+        questions.Add(new Question
+        {
+            Text = "",
+            Answers = new List<Answer>
+            {
+                new Answer { Text = "", IsCorrect = true },
+                new Answer { Text = "", IsCorrect = false },
+                new Answer { Text = "", IsCorrect = false },
+                new Answer { Text = "", IsCorrect = false }
+            }
+        });
+        // Di chuyển tới câu hỏi mới vừa tạo
+        currentQuestionIndex = questions.Count - 1;
+    }
+
+    private void RemoveQuestion(int index)
+    {
+        if (questions.Count > 1)
+        {
+            questions.RemoveAt(index);
+            // Điều chỉnh index nếu cần
+            if (currentQuestionIndex >= questions.Count)
+            {
+                currentQuestionIndex = questions.Count - 1;
+            }
+        }
+    }
+
+    private void DeleteQuestionFromReview(int index)
+    {
+        if (questions.Count > 1)
+        {
+            questions.RemoveAt(index);
+        }
+    }
+
+    private void SetCorrectAnswer(int questionIndex, int answerIndex)
+    {
+        foreach (var answer in questions[questionIndex].Answers)
+        {
+            answer.IsCorrect = false;
+        }
+        questions[questionIndex].Answers[answerIndex].IsCorrect = true;
+    }
+
+    private string GetAnswerLabel(int index)
+    {
+        return ((char)('A' + index)).ToString();
+    }
+
+    private void CreateQuiz()
+    {
+        if (string.IsNullOrWhiteSpace(quizTitle))
+        {
+            JS.InvokeVoidAsync("alert", "Vui lòng nhập tiêu đề!");
+            return;
+        }
+
+        if (questions.Count == 0)
+        {
+            JS.InvokeVoidAsync("alert", "Vui lòng thêm ít nhất 1 câu hỏi!");
+            return;
+        }
+
+        if (questions.Any(q => string.IsNullOrWhiteSpace(q.Text)))
+        {
+            JS.InvokeVoidAsync("alert", "Vui lòng nhập đầy đủ câu hỏi!");
+            return;
+        }
+
+        // Chuyển sang bước 3 (Review)
+        currentStep = 3;
+    }
+
+    private void EditQuestion(int index)
+    {
+        // Quay lại bước 2 để sửa câu hỏi
+        currentStep = 2;
+        currentQuestionIndex = index;
+    }
+
+    private async Task ConfirmAndCreateQuiz()
+    {
+        // 🔹 Tạo client kết nối FastAPI
+        var client = HttpClientFactory.CreateClient("FastApiClient");
+
+        // 🔹 Gửi từng câu hỏi sang FastAPI
+        foreach (var q in questions)
+        {
+            var request = new QuestionCreateRequest
+            {
+                SetQuizId = 0,
+                Question = q.Text,
+                Answers = q.Answers
+                    .Select((a, i) => new { Key = $"Answer{i + 1}", Value = a.Text })
+                    .ToDictionary(x => x.Key, x => x.Value),
+                CorrectAnswers = q.Answers
+                    .Where(a => a.IsCorrect)
+                    .Select(a => a.Text)
+                    .ToList()
+            };
+
+            // 🔹 Gọi endpoint FastAPI
+            var response = await client.PostAsJsonAsync("/question-api/questions", request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi gửi sang FastAPI: {error}");
+                return;
+            }
+        }
+
+        await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã gửi thành công tới FastAPI!");
+        ResetForm();
+    }
+
+    private void ResetForm()
+    {
+        currentStep = 1;
+        creationMethod = "";
+        quizTitle = "";
+        quizDescription = "";
+        questions.Clear();
+        currentQuestionIndex = 0;
+        answerType = "single";
+        quizTime = 30;
+    }
+
+    public class Question
+    {
+        public string Text { get; set; }
+        public List<Answer> Answers { get; set; }
+    }
+
+    public class Answer
+    {
+        public string Text { get; set; }
+        public bool IsCorrect { get; set; }
+    }
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .quiz-creator-container {
+        font-family: 'Baloo 2', cursive;
+        min-height: 100vh;
+        background: #ffffff;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .page-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: #1D059D;
+        margin: 40px 0 30px;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 5px;
+        border-bottom: 2px solid #e8e8e8;
+        margin-bottom: 40px;
+    }
+
+    .tab {
+        background: transparent;
+        border: none;
+        padding: 15px 25px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #718096;
+        cursor: pointer;
+        position: relative;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .tab.active {
+        color: #4318FF;
+    }
+
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #4318FF;
+    }
+
+    .content-wrapper {
+        min-height: 500px;
+        margin-bottom: 60px;
+    }
+
+    .step-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .step-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2D3748;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    /* Creation Options */
+    .creation-options {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .option-button {
+        background: #1D059D;
+        border: 3px solid transparent;
+        padding: 50px 30px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+        font-family: 'Baloo 2', cursive;
+        color: white;
+    }
+
+    .option-button:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
+        border-color: #4318FF;
+    }
+
+    .option-button.selected {
+        border-color: #D5CEFD;
+        background: #D5CEFD;
+        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
+    }
+
+    .option-button.selected h3,
+    .option-button.selected p {
+        color: black;
+    }
+
+    .option-button h3 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .option-button p {
+        font-size: 16px;
+    }
+
+    /* Quiz Form */
+    .quiz-form {
+        border-radius: 20px;
+        margin-bottom: 30px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group.half {
+        grid-column: 2;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 700;
+        color: #2D3748;
+        margin-bottom: 10px;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .counter-display {
+        background: #D5CEFD;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 16px;
+        color: #2D1B69;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #D5CEFD;
+        border-radius: 12px;
+        font-size: 16px;
+        font-family: 'Baloo 2', cursive;
+        background: white;
+        transition: border-color 0.3s;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+        outline: none;
+        border-color: #4318FF;
+    }
+
+    .form-textarea {
+        resize: vertical;
+    }
+
+    /* Radio Group */
+    .radio-group {
+        display: flex;
+        gap: 30px;
+    }
+
+    .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        color: #4318FF;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .radio-label input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .questions-section {
+        margin-top: 30px;
+    }
+
+    .question-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        background: #D5CEFD;
+        padding: 15px 20px;
+        border-radius: 12px;
+    }
+
+    .question-counter {
+        font-weight: 700;
+        color: #2D1B69;
+        font-size: 18px;
+    }
+
+    .btn-nav {
+        background: #4318FF;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+        background: #2D1B69;
+        transform: translateY(-2px);
+    }
+
+    .btn-nav:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .question-card {
+        background: #D5CEFD;
+        padding: 25px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .question-number {
+        background: #2D1B69;
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .btn-remove {
+        background: transparent;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    .btn-remove:hover {
+        opacity: 1;
+    }
+
+    .answer-item {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .answer-item input[type="text"] {
+        flex: 1;
+    }
+
+    .answer-item input[type="radio"],
+    .answer-item input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+    }
+
+    .btn-add-question {
+        background: #4318FF;
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        margin: 20px auto;
+        transition: all 0.3s;
+        display: block;
+    }
+
+    .btn-add-question:hover {
+        background: #2D1B69;
+        transform: translateY(-2px);
+    }
+
+    /* Buttons */
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 40px;
+    }
+
+    .btn-next, .btn-back, .btn-create-quiz {
+        padding: 16px 40px;
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+    .btn-next {
+        background: #D5CEFD;
+        color: black;
+        margin-left: 340px;
+    }
+
+    .btn-next:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #4318FF;
+        color: white;
+    }
+
+    .btn-next:not(:disabled):hover {
+        background: #4318FF;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
+    }
+
+    .btn-back {
+        background: #E2E8F0;
+        color: #2D3748;
+    }
+
+    .btn-back:hover {
+        background: #CBD5E0;
+    }
+
+    .btn-create-quiz {
+        background: #1D059D;
+        color: white;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .btn-create-quiz:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-create-quiz:not(:disabled):hover {
+        background: #1f1347;
+        transform: translateY(-3px);
+    }
+
+    /* Review Section */
+    .review-section {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .quiz-info-review {
+        background: #D5CEFD;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .quiz-info-review p {
+        margin: 10px 0;
+        font-size: 16px;
+        color: #2D3748;
+    }
+
+    .quiz-info-review strong {
+        color: #2D1B69;
+    }
+
+    .questions-list {
+        margin-bottom: 30px;
+    }
+
+    .question-review-item {
+        background: #D5CEFD;
+        border: 2px solid #D5CEFD;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .question-review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #D5CEFD;
+    }
+
+    .question-review-number {
+        background: #2D1B69;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .question-review-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-edit {
+        background: #1D059D;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
+
+    .btn-edit:hover {
+        background: #2D1B69;
+        transform: translateY(-2px);
+    }
+
+    .btn-delete-review {
+        background: #FF6B6B;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
+
+    .btn-delete-review:hover {
+        background: #FA5252;
+        transform: translateY(-2px);
+    }
+
+    .question-review-content {
+        padding: 15px;
+    }
+
+    .question-review-content p {
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #2D3748;
+    }
+
+    .answers-review {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .answer-review {
+        background: white;
+        border: 2px solid #D5CEFD;
+        border-radius: 8px;
+        padding: 12px 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s;
+    }
+  .answer-review.correct {
+        background: #E6FFE6;
+        border-color: #70E539;
+    }
+
+    .answer-label {
+        background: #1D059D;
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .answer-text {
+        flex: 1;
+        color: #2D3748;
+        font-size: 15px;
+    }
+
+    .correct-badge {
+        background: #70E539;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .btn-confirm-quiz {
+        background: #1D059D;
+        color: white;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+    .btn-confirm-quiz:hover {
+        background: #70E539;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px ;
+    }
+
+    /* Animation */
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .creation-options {
+            grid-template-columns: 1fr;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-next {
+            margin-left: 0;
+        }
+
+        .question-navigation {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .question-review-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .btn-edit, .btn-delete-review {
+            width: 100%;
+        }
+    }
+</style>
