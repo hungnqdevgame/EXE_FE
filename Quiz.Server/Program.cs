@@ -189,7 +189,7 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-✅ CORS trước Authentication
+//✅ CORS trước Authentication
 app.UseCors(builder =>
 {
     builder.AllowAnyHeader()
