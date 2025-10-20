@@ -138,7 +138,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy.WithOrigins(
-                "https://exe-fe-gules.vercel.app",
+                "https://exe-backend-j428.onrender.com",
                 "https://localhost:7078"
             )
             .AllowAnyHeader()
