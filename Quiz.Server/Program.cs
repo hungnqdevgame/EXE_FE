@@ -181,7 +181,7 @@ app.UseCors(builder =>
 {
     builder.AllowAnyHeader()
            .AllowAnyMethod()
-           .WithOrigins("https://localhost:7078");
+           .WithOrigins("https://exe-fe-gules.vercel.app");
 });
 
 if (app.Environment.IsDevelopment())
