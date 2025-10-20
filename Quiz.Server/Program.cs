@@ -133,6 +133,19 @@ builder.Services.AddScoped<ISupscriptionRepository, SupscriptionRepository>();
 builder.Services.AddScoped<ISupscriptionService, SupscriptionService>();
 builder.Services.AddScoped<ISetQuizService, SetQuizService>();
 builder.Services.AddScoped<ISetQuizRepository, SetQuizRepository>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins(
+                "https://exe-fe-gules.vercel.app",
+                "https://localhost:7078" // optional local dev
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // needed if you send auth headers
+    });
+});
 
 builder.Services.AddScoped(sp => new HttpClient
 {
@@ -192,7 +205,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("FrontendPolicy");
 // ✅ Middleware thứ tự đúng
 app.UseAuthentication();
 app.UseAuthorization();
