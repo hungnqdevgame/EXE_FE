@@ -136,7 +136,7 @@ builder.Services.AddScoped<ISetQuizRepository, SetQuizRepository>();
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7102")
+    BaseAddress = new Uri("https://exe-fe-gules.vercel.app")
 });
 
 // 🔹 Swagger setup
