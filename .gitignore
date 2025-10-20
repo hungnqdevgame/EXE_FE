@@ -18,3 +18,4 @@ wwwroot/node_modules/
 # Secrets
 appsettings.Development.json
 appsettings.Local.json
+appsettings.*.json
