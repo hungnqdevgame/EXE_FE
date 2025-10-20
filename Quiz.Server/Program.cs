@@ -189,13 +189,13 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// ✅ CORS trước Authentication
-// app.UseCors(builder =>
-// {
-//     builder.AllowAnyHeader()
-//            .AllowAnyMethod()
-//            .WithOrigins("https://exe-fe-gules.vercel.app");
-// });
+✅ CORS trước Authentication
+app.UseCors(builder =>
+{
+    builder.AllowAnyHeader()
+           .AllowAnyMethod()
+           .WithOrigins("https://exe-fe-gules.vercel.app");
+});
 
 if (app.Environment.IsDevelopment())
 {
