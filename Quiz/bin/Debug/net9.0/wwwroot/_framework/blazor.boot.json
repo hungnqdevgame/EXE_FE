@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Quiz",
   "resources": {
-    "hash": "sha256-guFesjmA/NqfLeL+wjq+FWwVpy2quPcy+SF4f0FnAoQ=",
+    "hash": "sha256-tzs5iyFDLW4Vb9E45GKVXS8YXPDviyWM8yZSxcQCSFI=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Authorization.z6jo10m0rd.wasm": "Microsoft.AspNetCore.Authorization.wasm",
       "Microsoft.AspNetCore.Components.65wbz7t8mt.wasm": "Microsoft.AspNetCore.Components.wasm",
@@ -210,10 +210,10 @@
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
       "icudt_EFIGS.tptq2av103.dat": "icudt_EFIGS.dat",
       "icudt_no_CJK.lfu7j35m59.dat": "icudt_no_CJK.dat",
-      "Share.gk0a8xfnol.wasm": "Share.wasm",
-      "Share.ew0lndgdk4.pdb": "Share.pdb",
-      "Quiz.3jcoji8zcy.wasm": "Quiz.wasm",
-      "Quiz.iwa00a5362.pdb": "Quiz.pdb"
+      "Share.johzicx2t4.wasm": "Share.wasm",
+      "Share.1ehpfwa0e1.pdb": "Share.pdb",
+      "Quiz.y5bxr9lxrr.wasm": "Quiz.wasm",
+      "Quiz.8slz3vvtmo.pdb": "Quiz.pdb"
     },
     "jsModuleNative": {
       "dotnet.native.9ih887ebfz.js": "sha256-oS7IRiQoVt9ThQ7Y2UM3XoeY0JqPD02cg9IvRdufn2w="
@@ -432,12 +432,12 @@
       "WindowsBase.vy2l5u79y6.wasm": "sha256-ufB9Mo5joMyUs3DzXWWBFFIZNEVrt6h9N5stYB6Oln4=",
       "mscorlib.xd6mv31d55.wasm": "sha256-1YSLR2eZt3ceALFV//vZUF2AloxVil3VlrW1zZYPSEI=",
       "netstandard.kaml52uspo.wasm": "sha256-HLEwBpLfzKw2/zGSVzHzFJxznCkt/WIjahrziiMrOpA=",
-      "Share.gk0a8xfnol.wasm": "sha256-YP1I3LfilDhbMXF+Qzgg6YazYRVvl0dEldW3arRc9GI=",
-      "Quiz.3jcoji8zcy.wasm": "sha256-bxDXNWQoG6pgvpa8T4j49wUwVGebD3B1BWhiwGmrRU0="
+      "Share.johzicx2t4.wasm": "sha256-Q9aAkM3VP0h04P+sTqN8u7PmEfwYAAbYeam884psOCQ=",
+      "Quiz.y5bxr9lxrr.wasm": "sha256-OvqqexM87aDtXR9Oz6rbDxjtpkvNyZMKf2flUgm74AE="
     },
     "pdb": {
-      "Share.ew0lndgdk4.pdb": "sha256-zgJF0YTgGbpT16Vr6QbJYX8UeJ9dkhKnf5Q9jAhzQCQ=",
-      "Quiz.iwa00a5362.pdb": "sha256-Mq8+iAyGvbZWi9VaTnci2qcvQAE7lWMEXeAqze3K1PQ="
+      "Share.1ehpfwa0e1.pdb": "sha256-t0xwuRBt2WH3nQ8RZO+oyDe9eGU/wiRwp6+CKpPaZ1M=",
+      "Quiz.8slz3vvtmo.pdb": "sha256-CEhGgjF7rNhlEKBLdFMYg/9TnaOSo9lVLeJrnARvqFU="
     }
   },
   "cacheBootResources": true,
