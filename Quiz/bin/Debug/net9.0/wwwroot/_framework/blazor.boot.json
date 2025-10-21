@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Quiz",
   "resources": {
-    "hash": "sha256-UFznpsiTJS+e4NJ/khlIWrEXV8hutOXyc//PH9/rUmk=",
+    "hash": "sha256-7qLdI1WlLqt5749tp6HAIxzFRasSrFRnkmEYLVU59VA=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Authorization.z6jo10m0rd.wasm": "Microsoft.AspNetCore.Authorization.wasm",
       "Microsoft.AspNetCore.Components.65wbz7t8mt.wasm": "Microsoft.AspNetCore.Components.wasm",
@@ -212,8 +212,8 @@
       "icudt_no_CJK.lfu7j35m59.dat": "icudt_no_CJK.dat",
       "Share.qcj817dn7o.wasm": "Share.wasm",
       "Share.7df9djh055.pdb": "Share.pdb",
-      "Quiz.eie6imaujo.wasm": "Quiz.wasm",
-      "Quiz.yc7uk2hjrp.pdb": "Quiz.pdb"
+      "Quiz.tcwrfyohin.wasm": "Quiz.wasm",
+      "Quiz.7yppstthxm.pdb": "Quiz.pdb"
     },
     "jsModuleNative": {
       "dotnet.native.9ih887ebfz.js": "sha256-oS7IRiQoVt9ThQ7Y2UM3XoeY0JqPD02cg9IvRdufn2w="
@@ -433,11 +433,11 @@
       "mscorlib.xd6mv31d55.wasm": "sha256-1YSLR2eZt3ceALFV//vZUF2AloxVil3VlrW1zZYPSEI=",
       "netstandard.kaml52uspo.wasm": "sha256-HLEwBpLfzKw2/zGSVzHzFJxznCkt/WIjahrziiMrOpA=",
       "Share.qcj817dn7o.wasm": "sha256-+sDsaZKPnW46nysjEiZ1IFI92/CL61R96em+QCIO7o4=",
-      "Quiz.eie6imaujo.wasm": "sha256-9hhxE5nDLxszy4A8tpcf24x+5O3ZXgeNVvizRX0Z3Ok="
+      "Quiz.tcwrfyohin.wasm": "sha256-cyyIyhNcXMa4d7ugaxTm7uNKunGZePZZ8S9TO6fHQYo="
     },
     "pdb": {
       "Share.7df9djh055.pdb": "sha256-Cx9HQS/1e94d4Ql2LjMtjKnrrL5JPyyWBYJLMT2BAUU=",
-      "Quiz.yc7uk2hjrp.pdb": "sha256-PtOWdcsQQevwOLJiGPlh0unr/f2qdBBUtC+Y+nMblBM="
+      "Quiz.7yppstthxm.pdb": "sha256-n48E7jgIj7Rsgog/PB3YJb3c4p/eU0Dh6FE/7UHUm3Y="
     }
   },
   "cacheBootResources": true,

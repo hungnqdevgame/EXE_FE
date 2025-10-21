@@ -23,7 +23,18 @@ namespace Quiz.Server.Controllers
             {
                 return NotFound(new { Message = "User not found" });
             }
-            return Ok(user);
+
+            var profile = new
+            {
+                user.Id,
+                user.Email,
+                user.FullName,
+                user.SubscriptionId,
+                user.Birthday
+               
+            };
+
+            return Ok(profile);
         }
 
         [HttpPut("update")]
@@ -43,5 +54,16 @@ namespace Quiz.Server.Controllers
             var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
+
+        //[HttpGet("proflie/{userId}")]
+        //public async Task<IActionResult> GetProfile()
+        //{
+        //   var profile = new
+        //   {
+        //       Name = "User Service",
+        //       Version = "1.0.0",
+        //       Description = "Service for managing user data and subscriptions"
+        //   };
+        //}
     }
 }

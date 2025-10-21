@@ -203,7 +203,7 @@
         public List<string> CorrectAnswers { get; set; } = new();
     }
 
-   
+
     protected override void OnInitialized()
     {
         // Initialize empty - user will add questions manually
@@ -214,23 +214,23 @@
         switch(tab)
         {
             case 0:
-            Navigation.NavigateTo("/library");
-            break;
-        
-        case 2:
-            Navigation.NavigateTo("/revision");
-            break;
-        default:
-            Navigation.NavigateTo("/");
-            break;
+                Navigation.NavigateTo("/library");
+                break;
+
+            case 2:
+                Navigation.NavigateTo("/revision");
+                break;
+            default:
+                Navigation.NavigateTo("/");
+                break;
         }
-        
+
     }
 
     private void SelectCreationMethod(string method)
     {
         creationMethod = method;
-       
+
     }
 
     private void NextStep()
@@ -254,14 +254,14 @@
             }
             else
             {
-            currentStep = 2;
-            // Tạo 1 câu hỏi đầu tiên
-            if (questions.Count == 0)
-            {
-                AddNewQuestion();
+                currentStep = 2;
+                // Tạo 1 câu hỏi đầu tiên
+                if (questions.Count == 0)
+                {
+                    AddNewQuestion();
+                }
             }
-            }
-           
+
         }
     }
 
@@ -371,55 +371,106 @@
         currentStep = 2;
         currentQuestionIndex = index;
     }
-
     private async Task ConfirmAndCreateQuiz()
     {
-        // 🔹 Tạo client kết nối FastAPI
-        var client = HttpClientFactory.CreateClient("FastApiClient");
-
-        // 🔹 Gửi từng câu hỏi sang FastAPI
-        foreach (var q in questions)
+        try
         {
-            var request = new QuestionCreateRequest
+            // 🔹 Lấy token từ localStorage
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (string.IsNullOrEmpty(token))
             {
-                SetQuizId = 4,
-                Question = q.Text,
-                Answers = q.Answers
-                    .Select((a, i) => new { Key = $"Answer{i + 1}", Value = a.Text })
-                    .ToDictionary(x => x.Key, x => x.Value),
-                CorrectAnswers = q.Answers
-                    .Where(a => a.IsCorrect)
-                    .Select(a => a.Text)
-                    .ToList()
-            };
-
-            // 🔹 Gọi endpoint FastAPI
-            var response = await client.PostAsJsonAsync("/question-api/questions", request);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi gửi sang FastAPI: {error}");
+                await JS.InvokeVoidAsync("alert", "⚠️ Bạn cần đăng nhập trước khi tạo quiz.");
+                Navigation.NavigateTo("/login");
                 return;
             }
 
+            // 🔹 Gắn token vào header Authorization
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            // 🔹 Kiểm tra danh sách câu hỏi
+            if (questions == null || questions.Count == 0)
+            {
+                await JS.InvokeVoidAsync("alert", "⚠️ Bạn chưa thêm câu hỏi nào!");
+                return;
+            }
+
+            // 🔹 1️⃣ Tạo SetQuiz trước trên ASP.NET backend
             var setQuizPayload = new SetQuizRequest
             {
                 Title = quizTitle,
                 Description = quizDescription
             };
 
-            var setQuizResponse = await Http.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
+            var setQuizResponse = await Http.PostAsJsonAsync(
+                "https://exe-backend-j428.onrender.com/api/SetQuiz/create",
+                setQuizPayload);
 
+            if (!setQuizResponse.IsSuccessStatusCode)
+            {
+                var error = await setQuizResponse.Content.ReadAsStringAsync();
+                await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi tạo SetQuiz trên backend: {error}");
+                return;
+            }
+
+            // 🔹 Đọc SetQuizId trả về từ backend
+            var result = await setQuizResponse.Content.ReadFromJsonAsync<SetQuizResponse>();
+            if (result == null || result.SetQuizId <= 0)
+            {
+                await JS.InvokeVoidAsync("alert", "❌ Không thể lấy ID của SetQuiz vừa tạo!");
+                return;
+            }
+
+            int setQuizId = result.SetQuizId;
+
+            // 🔹 2️⃣ Gửi từng câu hỏi sang FastAPI
+            var fastApiClient = HttpClientFactory.CreateClient("FastApiClient");
+
+            foreach (var q in questions)
+            {
+                var request = new QuestionCreateRequest
+                {
+                    SetQuizId = setQuizId,
+                    Question = q.Text,
+                    Answers = q.Answers
+                        .Select((a, i) => new { Key = $"additionalProp{i + 1}", Value = a.Text })
+                        .ToDictionary(x => x.Key, x => x.Value),
+                    CorrectAnswers = q.Answers
+                        .Where(a => a.IsCorrect)
+                        .Select(a => a.Text)
+                        .ToList()
+                };
+
+                var response = await fastApiClient.PostAsJsonAsync("/question-api/questions", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var err = await response.Content.ReadAsStringAsync();
+                    await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi gửi câu hỏi sang FastAPI: {err}");
+                    return;
+                }
+            }
+
+            // 🔹 3️⃣ Thành công
+            await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã được tạo thành công!");
+
+            ResetForm();
+            Navigation.NavigateTo($"/pratice/{setQuizId}");
         }
-
-        await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã gửi thành công tới FastAPI!");
-        ResetForm();
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"⚠️ Lỗi khi tạo quiz: {ex.Message}");
+        }
     }
     public class SetQuizRequest
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+    }
+
+    public class SetQuizResponse
+    {
+        public int SetQuizId { get; set; }
     }
 
     private void ResetForm()

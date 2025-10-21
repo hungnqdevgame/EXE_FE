@@ -39,7 +39,7 @@
             </div>
 
             <!-- Questions Preview List -->
-            <div class="questions-container">
+             <div class="questions-container">
                 @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
                 {
                     <div class="question-item preview-mode">
@@ -57,7 +57,8 @@
                         </div>
                     </div>
                 }
-            </div>
+            </div> 
+           
 
             <div class="action-buttons">
                 <button class="btn-start-quiz" @onclick="StartQuiz">

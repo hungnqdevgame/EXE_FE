@@ -416,17 +416,53 @@
                 await JS.InvokeVoidAsync("console.warn", "SaveAndCreate aborted - no questions");
                 return;
             }
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                errorMessage = "⚠️ Không tìm thấy token. Hãy đăng nhập lại!";
+                return;
+            }
 
+            token = token.Trim();
 
+            // 🔹 Decode JWT để lấy userId
+            int userId = 0;
+            try
+            {
+                var parts = token.Split('.');
+                if (parts.Length == 3)
+                {
+                    var payload = parts[1];
+                    payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                    var jsonBytes = Convert.FromBase64String(payload);
+                    var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                    var doc = System.Text.Json.JsonDocument.Parse(json);
 
+                    if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
+                    {
+                        int.TryParse(userIdProp.GetString(), out userId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("console.error", "JWT parse failed", ex.Message);
+            }
 
+            if (userId == 0)
+            {
+                errorMessage = "⚠️ Không tìm thấy userId hợp lệ trong token!";
+                return;
+            }
 
+            // 🔹 Gắn token vào HttpClient (Bearer)
             var backendClient = HttpClientFactory.CreateClient("FastApiClient");
-
+            backendClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             // Save knowledge content
             var saveKnowledgePayload = new
             {
-                user_id = 1,
+                user_id = userId,
                 text = knowledgeContent
             };
 
@@ -439,8 +475,22 @@
                 Description = quizData.Description
             };
 
-            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com//api/SetQuiz/create", setQuizPayload);
-           
+            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
+       
+            if (!setQuizResponse.IsSuccessStatusCode)
+            {
+                var error = await setQuizResponse.Content.ReadAsStringAsync();
+                await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi tạo SetQuiz trên backend: {error}");
+                return;
+            }
+
+            // 🔹 Đọc SetQuizId trả về từ backend
+            var result = await setQuizResponse.Content.ReadFromJsonAsync<SetQuizResponse>();
+            if (result == null || result.SetQuizId <= 0)
+            {
+                await JS.InvokeVoidAsync("alert", "❌ Không thể lấy ID của SetQuiz vừa tạo!");
+                return;
+            }
 
             // Save each question
             int idx = 0;
@@ -459,7 +509,7 @@
 
                 var payload = new
                 {
-                    setQuizId = 0,
+                    setQuizId = result.SetQuizId,
                     question = question.Text,
                     answers = answers,
                     correctAnswers = correctAnswers
@@ -503,6 +553,10 @@
             isProcessing = false;
             StateHasChanged();
         }
+    }
+    public class SetQuizResponse
+    {
+        public int SetQuizId { get; set; }
     }
 
     public class SetQuizRequest

@@ -174,7 +174,7 @@
                         <div class="quiz-info-review">
                             <p><strong>Tiêu đề:</strong> @quizTitle</p>
                             <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
-                            <p><strong>Loại:</strong> @(answerType == "single" ? "Chọn một đáp án" : "Chọn nhiều đáp án")</p>
+                          
                         </div>
 
                         <div class="questions-list">
@@ -617,38 +617,61 @@
             };
 
             var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
+            if (!setQuizResponse.IsSuccessStatusCode)
+            {
+                var error = await setQuizResponse.Content.ReadAsStringAsync();
+                await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi tạo SetQuiz trên backend: {error}");
+                return;
+            }
+
+            // 🔹 Đọc SetQuizId trả về từ backend
+            var result = await setQuizResponse.Content.ReadFromJsonAsync<SetQuizResponse>();
+            if (result == null || result.SetQuizId <= 0)
+            {
+                await JS.InvokeVoidAsync("alert", "❌ Không thể lấy ID của SetQuiz vừa tạo!");
+                return;
+            }
             // 🔹 Save questions
             int idx = 0;
             foreach (var question in questions)
             {
                 idx++;
-                var answers = question.Answers.ToDictionary(
-                    a => GetAnswerLabel(question.Answers.IndexOf(a)),
-                    a => a.Text);
+
+                // Tạo answers đúng định dạng JSON object
+                var answers = new Dictionary<string, string>();
+                for (int i = 0; i < question.Answers.Count; i++)
+                {
+                    answers.Add($"additionalProp{i + 1}", question.Answers[i].Text);
+                }
 
                 var correctAnswers = question.Answers
-                    .Select((a, i) => new { Answer = a, Index = i })
-                    .Where(x => x.Answer.IsCorrect)
-                    .Select(x => GetAnswerLabel(x.Index))
+                    .Where(a => a.IsCorrect)
+                    .Select(a => a.Text)
                     .ToList();
 
                 var payload = new
                 {
-                    setQuizId = 0, // hoặc set đúng nếu đã có SetQuiz
+                    setQuizId = result.SetQuizId,
                     question = question.Text,
                     answers = answers,
                     correctAnswers = correctAnswers
                 };
 
-                await JS.InvokeVoidAsync("console.log", $"Saving question #{idx}", payload);
+                var payloadJson = System.Text.Json.JsonSerializer.Serialize(payload);
+                await JS.InvokeVoidAsync("console.log", $"Saving question #{idx}", payloadJson);
 
                 var saveResponse = await backendClient.PostAsJsonAsync("/question-api/questions", payload);
                 var saveRespBody = await saveResponse.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("console.log", new { questionIndex = idx, status = (int)saveResponse.StatusCode, body = saveRespBody });
+                await JS.InvokeVoidAsync("console.log", new
+                {
+                    questionIndex = idx,
+                    status = (int)saveResponse.StatusCode,
+                    body = saveRespBody
+                });
 
                 if (!saveResponse.IsSuccessStatusCode)
                 {
-                    errorMessage = $"Lỗi khi lưu câu hỏi #{idx}";
+                    errorMessage = $"❌ Lỗi khi lưu câu hỏi #{idx}";
                     Console.WriteLine($"Save question #{idx} failed: {saveRespBody}");
                     return;
                 }
@@ -671,7 +694,10 @@
             StateHasChanged();
         }
     }
-
+    public class SetQuizResponse
+    {
+        public int SetQuizId { get; set; }
+    }
 
 
     public class GenerateQuestionsResponse

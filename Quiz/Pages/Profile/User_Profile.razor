@@ -202,36 +202,90 @@
     private bool isEditing = false;
     private int selectedTab = 0;
 
-    private UserProfile userProfile = new UserProfile
-    {
-        FullName = "Nguyễn Văn A",
-        Email = "NguyenA@gmail.com",
-        DateOfBirth = "01/01/2000",
-        Profession = "Học sinh",
-        School = "FPT",
-        SubscriptionType = "Basic"
-    };
+    private UserProfile userProfile = new UserProfile();
+
 
     private UserProfile originalProfile;
 
     public void NavigateToTab(int tab)
     {
-     if(tab == 1)
+        if(tab == 1)
         {
             Navigate.NavigateTo("/price");
         }
     }
-    protected override void OnInitialized()
+    private string errorMessage = "";
+    private string successMessage = "";
+    private bool isProcessing = false;
+    private int userId;
+    private bool isLoading = true;  
+
+    protected override async Task OnInitializedAsync()
     {
-        originalProfile = new UserProfile
+        try
         {
-            FullName = userProfile.FullName,
-            Email = userProfile.Email,
-            DateOfBirth = userProfile.DateOfBirth,
-            Profession = userProfile.Profession,
-            School = userProfile.School,
-            SubscriptionType = userProfile.SubscriptionType
-        };
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                errorMessage = "⚠️ Không tìm thấy token. Hãy đăng nhập lại!";
+                return;
+            }
+
+            // 🔹 Decode token để lấy userId
+            int userId = DecodeUserIdFromToken(token);
+            if (userId == 0)
+            {
+                errorMessage = "⚠️ Token không hợp lệ hoặc thiếu userId.";
+                return;
+            }
+
+            // 🔹 Gắn token vào header Authorization
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            // 🔹 Gọi API để lấy thông tin user
+            userProfile = await Http.GetFromJsonAsync<UserProfile>(
+                $"https://exe-backend-j428.onrender.com/api/User/{userId}"
+            );
+
+            await JS.InvokeVoidAsync("console.log", "✅ User data loaded:", userProfile);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Lỗi khi tải thông tin: {ex.Message}";
+            await JS.InvokeVoidAsync("console.error", "Get user error:", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged(); // cập nhật UI
+        }
+    }
+    private int DecodeUserIdFromToken(string token)
+    {
+        try
+        {
+            var parts = token.Split('.');
+            if (parts.Length == 3)
+            {
+                var payload = parts[1];
+                payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                var jsonBytes = Convert.FromBase64String(payload);
+                var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+
+                if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
+                {
+                    int.TryParse(userIdProp.GetString(), out int id);
+                    return id;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Decode JWT failed: {ex.Message}");
+        }
+        return 0;
     }
 
     private async Task HandleAvatarUpload(InputFileChangeEventArgs e)
@@ -264,8 +318,7 @@
         userProfile.FullName = originalProfile.FullName;
         userProfile.Email = originalProfile.Email;
         userProfile.DateOfBirth = originalProfile.DateOfBirth;
-        userProfile.Profession = originalProfile.Profession;
-        userProfile.School = originalProfile.School;
+      
     }
 
     private async Task SaveProfile()
@@ -276,8 +329,7 @@
             FullName = userProfile.FullName,
             Email = userProfile.Email,
             DateOfBirth = userProfile.DateOfBirth,
-            Profession = userProfile.Profession,
-            School = userProfile.School,
+         
             SubscriptionType = userProfile.SubscriptionType
         };
         
@@ -300,8 +352,7 @@
         public string FullName { get; set; }
         public string Email { get; set; }
         public string DateOfBirth { get; set; }
-        public string Profession { get; set; }
-        public string School { get; set; }
+      
         public string SubscriptionType { get; set; }
     }
 }
