@@ -1,28 +1,146 @@
-﻿@page "/practice-quiz"
+﻿@page "/practice/{setQuizId:int}"
 @using Shared
 @inject IJSRuntime JS
+@inject HttpClient Http
+@inject NavigationManager Navigation
 
-<Quiz.Shared.Header/>
+<Quiz.Shared.Header />
 <div class="quiz-practice-container">
     <div class="container">
         <h1 class="page-title">Thư viện bài học</h1>
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab">Upload tài liệu</button>
-            <button class="tab">Tạo Quiz</button>
             <button class="tab active">Ôn tập</button>
+            <button class="tab">Tạo Quiz</button>
+          
         </div>
 
-        <!-- Quiz Info -->
-        <div class="quiz-info">
-            <h2>Ôn tập - Trắc nghiệm</h2>
-            @if (!HasAnsweredAll())
-            {
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <p>Đang tải câu hỏi...</p>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                <p>❌ @errorMessage</p>
+                <button class="btn-retry" @onclick="() => GoBack()">Quay lại</button>
+            </div>
+        }
+        else if (showPreview)
+        {
+            <!-- Phase 1: Preview - Xem trước tất cả câu hỏi -->
+            <div class="quiz-info">
+                <h2>Ôn tập - Trắc nghiệm</h2>
                 <div class="question-counter">Số lượng câu hỏi: @questions.Count câu</div>
-            }
-            else
-            {
+            </div>
+
+            <!-- Questions Preview List -->
+            <div class="questions-container">
+                @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+                {
+                    <div class="question-item preview-mode">
+                        <div class="question-header">
+                            @(index + 1). @question.Text
+                        </div>
+                        <div class="answers-grid">
+                            @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                            {
+                                <div class="answer-option disabled">
+                                    <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                    <span class="answer-text">@answer</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-start-quiz" @onclick="StartQuiz">
+                    Làm bài
+                </button>
+                <button class="btn-back-secondary" @onclick="GoBack">
+                    Quay lại
+                </button>
+            </div>
+        }
+        @* else if (quizStarted && !showResults)
+        {
+            <!-- Quiz Preview - Chưa bắt đầu -->
+            <div class="quiz-preview">
+                <div class="preview-card">
+                    <div class="preview-icon">📝</div>
+                    <h2 class="preview-title">Ôn tập - Trắc nghiệm</h2>
+                    <div class="preview-info">
+                        <div class="info-item">
+                            <span class="info-icon">📊</span>
+                            <span class="info-text">Số lượng câu hỏi: <strong>@questions.Count câu</strong></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">⏱️</span>
+                            <span class="info-text">Không giới hạn thời gian</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">✅</span>
+                            <span class="info-text">Chọn đáp án và bấm "Kiểm tra" để xem kết quả</span>
+                        </div>
+                    </div>
+                    <button class="btn-start" @onclick="StartQuiz">
+                        Bắt đầu làm bài
+                    </button>
+                    <button class="btn-back" @onclick="GoBack">
+                        Quay lại
+                    </button>
+                </div>
+            </div>
+        } *@
+        else if (quizStarted && !showResults)
+        {
+            <!-- Phase 2: Doing Quiz - Đang làm bài -->
+            <div class="quiz-info">
+                <h2>Ôn tập - Trắc nghiệm</h2>
+                <div class="question-counter">Số lượng câu hỏi: @questions.Count câu</div>
+            </div>
+
+            <!-- Questions List -->
+            <div class="questions-container">
+                @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+                {
+                    <div class="question-item">
+                        <div class="question-header">
+                            @(index + 1). @question.Text
+                        </div>
+                        <div class="answers-grid">
+                            @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                            {
+                                <div class="answer-option @(question.UserAnswerIndex == ansIndex ? "selected" : "")"
+                                     @onclick="() => SelectAnswer(index, ansIndex)">
+                                    <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                    <span class="answer-text">@answer</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Submit Button -->
+            <div class="action-buttons">
+                <button class="btn-submit" @onclick="SubmitQuiz" disabled="@(!HasAnsweredAll())">
+                    Nộp bài
+                </button>
+            </div>
+        }
+        else
+        {
+            <!-- Phase 3: Results - Kết quả -->
+            <!-- Quiz Info -->
+            <div class="quiz-info">
+                <h2>Bài Quiz đã được hoàn thành!</h2>
                 <div class="result-card">
                     <div class="result-title">KẾT QUẢ</div>
                     <div class="result-info">
@@ -30,52 +148,45 @@
                         <p><strong>Tổng điểm:</strong> @GetCorrectCount()/@questions.Count</p>
                     </div>
                 </div>
-            }
-        </div>
+            </div>
 
-        <!-- Questions List -->
-        <div class="questions-container">
-            @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
-            {
-                <div class="question-item">
-                    <div class="question-header">
-                        @(index + 1). @question.Text
-                    </div>
-                    <div class="answers-grid">
-                        @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
-                        {
-                            <div class="answer-option @GetAnswerClass(index, ansIndex)"
-                                 @onclick="() => SelectAnswer(index, ansIndex)">
-                                <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
-                                <span class="answer-text">@answer</span>
-                            </div>
-                        }
-                    </div>
+            <!-- Questions List with Results -->
+            <div class="questions-container">
+                @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+                {
+                    <div class="question-item">
+                        <div class="question-header">
+                            @(index + 1). @question.Text
+                        </div>
+                        <div class="answers-grid">
+                            @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                            {
+                                <div class="answer-option @GetAnswerClass(index, ansIndex)">
+                                    <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                    <span class="answer-text">@answer</span>
+                                </div>
+                            }
+                        </div>
 
-                    @if (question.UserAnswerIndex != -1)
-                    {
                         <div class="answer-feedback">
                             @if (question.UserAnswerIndex == question.CorrectAnswerIndex)
                             {
                                 <span class="feedback-correct">✓ Đáp án đúng: @GetAnswerLabel(question.CorrectAnswerIndex)</span>
-                                <span class="feedback-text">✓ Đáp án bạn chọn: @GetAnswerLabel(question.UserAnswerIndex)</span>
+                                <span class="feedback-text-correct">✓ Đáp án bạn chọn: @GetAnswerLabel(question.UserAnswerIndex)</span>
                             }
                             else
                             {
                                 <span class="feedback-wrong">✗ Đáp án đúng: @GetAnswerLabel(question.CorrectAnswerIndex)</span>
-                                <span class="feedback-text">✗ Đáp án bạn chọn: @GetAnswerLabel(question.UserAnswerIndex)</span>
+                                <span class="feedback-text-wrong">✗ Đáp án bạn chọn: @GetAnswerLabel(question.UserAnswerIndex)</span>
                             }
                         </div>
-                    }
-                </div>
-            }
-        </div>
+                    </div>
+                }
+            </div>
 
-        <!-- Action Buttons (Only show after answered all) -->
-        @if (HasAnsweredAll())
-        {
+            <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="btn-retry" @onclick="RetryQuiz">Quay lại thư viện</button>
+                <button class="btn-retry" @onclick="GoBackToLibrary">Quay lại thư viện</button>
                 <span class="or-text">hoặc</span>
                 <button class="btn-continue" @onclick="ContinueQuiz">Tiếp tục tạo Quiz</button>
             </div>
@@ -83,57 +194,210 @@
     </div>
 </div>
 <Quiz.Shared.Footer />
-@code {
-    private List<QuizQuestion> questions = new List<QuizQuestion>();
 
-    protected override void OnInitialized()
+@code {
+    [Parameter]
+    public int setQuizId { get; set; }
+
+    private List<QuizQuestion> questions = new List<QuizQuestion>();
+    private bool isLoading = true;
+    private string errorMessage = "";
+    private bool showResults = false;
+    private bool quizStarted = false; // Đang làm bài
+    private bool showPreview = true; // Xem trước câu hỏi
+
+    public void GoBack()
     {
-        // Sample data - Chiến dịch Điện Biên Phủ
-        questions = new List<QuizQuestion>
+        Navigation.NavigateTo("/revision");
+    }
+
+    private void StartQuiz()
+    {
+        quizStarted = true;
+        showPreview = false;
+    }
+
+    private void SubmitQuiz()
+    {
+        if (HasAnsweredAll())
         {
-            new QuizQuestion
+            showResults = true;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadQuestions();
+    }
+
+    private async Task LoadQuestions()
+    {
+        isLoading = true;
+        errorMessage = "";
+
+        try
+        {
+            // Lấy token từ localStorage
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+            if (string.IsNullOrWhiteSpace(token))
             {
-                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
-                Answers = new List<string> { "1946", "1975", "1954", "1968" },
-                CorrectAnswerIndex = 2,
-                UserAnswerIndex = -1
-            },
-            new QuizQuestion
-            {
-                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
-                Answers = new List<string> { "1946", "1975", "1954", "1968" },
-                CorrectAnswerIndex = 2,
-                UserAnswerIndex = -1
-            },
-            new QuizQuestion
-            {
-                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
-                Answers = new List<string> { "1946", "1975", "1954", "1968" },
-                CorrectAnswerIndex = 2,
-                UserAnswerIndex = -1
-            },
-            new QuizQuestion
-            {
-                Text = "Chiến dịch Điện Biên Phủ diễn ra vào năm nào?",
-                Answers = new List<string> { "1946", "1975", "1954", "1968" },
-                CorrectAnswerIndex = 2,
-                UserAnswerIndex = -1
+                errorMessage = "Bạn chưa đăng nhập. Vui lòng đăng nhập lại.";
+                Navigation.NavigateTo("/login");
+                return;
             }
-        };
+
+            token = token.Trim();
+
+            // Gọi API lấy câu hỏi theo setQuizId
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://exe-createquiz.onrender.com/question-api/questions/{setQuizId}");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseText = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"API Response: {responseText}");
+
+                List<ApiQuestion> apiQuestions = new List<ApiQuestion>();
+
+                try
+                {
+                    var jsonDoc = System.Text.Json.JsonDocument.Parse(responseText);
+                    var root = jsonDoc.RootElement;
+
+                    // Kiểm tra xem response là array hay object
+                    if (root.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        // Nếu là array
+                        apiQuestions = System.Text.Json.JsonSerializer.Deserialize<List<ApiQuestion>>(responseText);
+                    }
+                    else if (root.ValueKind == System.Text.Json.JsonValueKind.Object)
+                    {
+                        // Nếu là object đơn lẻ, thêm vào list
+                        var singleQuestion = System.Text.Json.JsonSerializer.Deserialize<ApiQuestion>(responseText);
+                        if (singleQuestion != null)
+                        {
+                            apiQuestions.Add(singleQuestion);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Parse error: {ex.Message}");
+                    errorMessage = "Không thể đọc dữ liệu từ API. Format không đúng.";
+                    return;
+                }
+
+                if (apiQuestions == null || !apiQuestions.Any())
+                {
+                    errorMessage = "Không tìm thấy câu hỏi nào cho bộ quiz này.";
+                    return;
+                }
+
+                // Convert từ API format sang UI format
+                questions = apiQuestions.Select(q => new QuizQuestion
+                {
+                    Text = q.Question ?? "",
+                    Answers = GetAllAnswers(q),
+                    CorrectAnswerIndex = GetCorrectAnswerIndex(q),
+                    UserAnswerIndex = -1
+                }).ToList();
+
+                Console.WriteLine($"✅ Đã load {questions.Count} câu hỏi");
+
+                // Debug log
+                foreach (var q in questions)
+                {
+                    Console.WriteLine($"Question: {q.Text}");
+                    Console.WriteLine($"Answers: {string.Join(", ", q.Answers)}");
+                    Console.WriteLine($"Correct Index: {q.CorrectAnswerIndex}");
+                }
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                errorMessage = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                errorMessage = $"Không thể tải câu hỏi. Mã lỗi: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Lỗi khi tải câu hỏi: {ex.Message}";
+            Console.WriteLine($"Error loading questions: {ex}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private List<string> GetAllAnswers(ApiQuestion apiQuestion)
+    {
+        // Lấy tất cả đáp án từ answers object
+        var answersList = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(apiQuestion.Answers?.AdditionalProp1))
+            answersList.Add(apiQuestion.Answers.AdditionalProp1);
+        if (!string.IsNullOrWhiteSpace(apiQuestion.Answers?.AdditionalProp2))
+            answersList.Add(apiQuestion.Answers.AdditionalProp2);
+        if (!string.IsNullOrWhiteSpace(apiQuestion.Answers?.AdditionalProp3))
+            answersList.Add(apiQuestion.Answers.AdditionalProp3);
+        if (!string.IsNullOrWhiteSpace(apiQuestion.Answers?.AdditionalProp4))
+            answersList.Add(apiQuestion.Answers.AdditionalProp4);
+
+        // Thêm đáp án đúng nếu nó không có trong danh sách
+        if (apiQuestion.CorrectAnswers != null && apiQuestion.CorrectAnswers.Any())
+        {
+            foreach (var correctAns in apiQuestion.CorrectAnswers)
+            {
+                if (!string.IsNullOrWhiteSpace(correctAns) &&
+                    !answersList.Any(a => a.Equals(correctAns, StringComparison.OrdinalIgnoreCase)))
+                {
+                    answersList.Add(correctAns);
+                }
+            }
+        }
+
+        return answersList;
+    }
+
+    private int GetCorrectAnswerIndex(ApiQuestion apiQuestion)
+    {
+        if (apiQuestion.CorrectAnswers == null || !apiQuestion.CorrectAnswers.Any())
+            return 0;
+
+        var correctAnswer = apiQuestion.CorrectAnswers.First();
+        var allAnswers = GetAllAnswers(apiQuestion);
+
+        var index = allAnswers.FindIndex(a => a.Equals(correctAnswer, StringComparison.OrdinalIgnoreCase));
+        return index >= 0 ? index : 0;
     }
 
     private void SelectAnswer(int questionIndex, int answerIndex)
     {
-        // Chỉ cho chọn nếu chưa trả lời
-        if (questions[questionIndex].UserAnswerIndex == -1)
+        // Chỉ cho chọn khi đang làm bài và chưa nộp
+        if (quizStarted && !showResults)
         {
             questions[questionIndex].UserAnswerIndex = answerIndex;
         }
     }
 
+    private void CheckAnswers()
+    {
+        if (HasAnsweredAll())
+        {
+            showResults = true;
+        }
+    }
+
     private bool HasAnsweredAll()
     {
-        return questions.All(q => q.UserAnswerIndex != -1);
+        return questions.Any() && questions.All(q => q.UserAnswerIndex != -1);
     }
 
     private int GetCorrectCount()
@@ -141,39 +405,33 @@
         return questions.Count(q => q.UserAnswerIndex == q.CorrectAnswerIndex);
     }
 
-    private void RetryQuiz()
+    private void GoBackToLibrary()
     {
-        // Reset quiz
-        foreach (var question in questions)
-        {
-            question.UserAnswerIndex = -1;
-        }
+        Navigation.NavigateTo("/revision");
     }
 
     private void ContinueQuiz()
     {
-        // Navigate to create quiz page
-        JS.InvokeVoidAsync("alert", "Chuyển đến trang tạo Quiz!");
+        Navigation.NavigateTo("/create-quiz");
     }
 
     private string GetAnswerClass(int questionIndex, int answerIndex)
     {
         var question = questions[questionIndex];
 
-        // Nếu chưa trả lời, không có class nào
-        if (question.UserAnswerIndex == -1)
+        // Nếu đang xem kết quả
+        if (showResults)
         {
-            return "";
-        }
-
-        // Đã trả lời - hiển thị kết quả
-        if (answerIndex == question.CorrectAnswerIndex)
-        {
-            return "correct";
-        }
-        else if (answerIndex == question.UserAnswerIndex && question.UserAnswerIndex != question.CorrectAnswerIndex)
-        {
-            return "wrong";
+            // Đáp án đúng - màu xanh
+            if (answerIndex == question.CorrectAnswerIndex)
+            {
+                return "correct";
+            }
+            // Đáp án sai mà người dùng đã chọn - màu đỏ
+            else if (answerIndex == question.UserAnswerIndex && question.UserAnswerIndex != question.CorrectAnswerIndex)
+            {
+                return "wrong";
+            }
         }
 
         return "";
@@ -184,6 +442,47 @@
         return ((char)('A' + index)).ToString();
     }
 
+    // API Models
+    public class ApiQuestion
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("_id")]
+        public string _id { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("setQuizId")]
+        public int SetQuizId { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        public string Question { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("answers")]
+        public AnswersObject Answers { get; set; } = new AnswersObject();
+
+        [System.Text.Json.Serialization.JsonPropertyName("correctAnswers")]
+        public List<string> CorrectAnswers { get; set; } = new List<string>();
+
+        [System.Text.Json.Serialization.JsonPropertyName("updatedAt")]
+        public DateTime UpdatedAt { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("isDeleted")]
+        public bool IsDeleted { get; set; }
+    }
+
+    public class AnswersObject
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("additionalProp1")]
+        public string AdditionalProp1 { get; set; } = "";
+
+        [System.Text.Json.Serialization.JsonPropertyName("additionalProp2")]
+        public string AdditionalProp2 { get; set; } = "";
+
+        [System.Text.Json.Serialization.JsonPropertyName("additionalProp3")]
+        public string AdditionalProp3 { get; set; } = "";
+
+        [System.Text.Json.Serialization.JsonPropertyName("additionalProp4")]
+        public string AdditionalProp4 { get; set; } = "";
+    }
+
+    // UI Model
     public class QuizQuestion
     {
         public string Text { get; set; }
@@ -192,7 +491,7 @@
         public int UserAnswerIndex { get; set; } = -1;
     }
 }
-<Quiz.Shared.Footer />
+
 <style>
     @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
 
@@ -213,6 +512,170 @@
         max-width: 900px;
         margin: 0 auto;
     }
+
+    /* Loading */
+    .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #4318FF;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .loading-container p {
+        font-size: 18px;
+        color: #718096;
+        font-weight: 600;
+    }
+
+    /* Error Message */
+    .error-message {
+        text-align: center;
+        padding: 40px 20px;
+        background: #fee2e2;
+        border-radius: 12px;
+        margin: 20px 0;
+    }
+
+        .error-message p {
+            font-size: 18px;
+            color: #991b1b;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+    /* Quiz Preview */
+    .quiz-preview {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 50vh;
+        padding: 40px 20px;
+    }
+
+    .preview-card {
+        background: linear-gradient(135deg, #E9E3FF 0%, #D5CEFD 100%);
+        border-radius: 24px;
+        padding: 50px 40px;
+        text-align: center;
+        max-width: 600px;
+        box-shadow: 0 10px 40px rgba(67, 24, 255, 0.15);
+    }
+
+    .preview-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+    }
+
+    .preview-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1D059D;
+        margin-bottom: 30px;
+    }
+
+    .preview-info {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #2D3748;
+    }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .info-icon {
+        font-size: 24px;
+    }
+
+    .info-text strong {
+        color: #1D059D;
+        font-weight: 700;
+    }
+
+    .btn-start {
+        background: #1D059D;
+        color: white;
+        border: none;
+        padding: 18px 60px;
+        border-radius: 12px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+        .btn-start:hover {
+            background: #2A0CD8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(29, 5, 157, 0.4);
+        }
+
+    .btn-back {
+        background: transparent;
+        color: #1D059D;
+        border: 2px solid #1D059D;
+        padding: 12px 40px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+        width: 100%;
+    }
+
+        .btn-back:hover {
+            background: #1D059D;
+            color: white;
+        }
+
+    /* Quiz Preview Mode */
+    .question-item.preview-mode {
+        opacity: 1;
+    }
+
+    .answer-option.disabled {
+        cursor: default;
+        opacity: 0.9;
+    }
+
+        .answer-option.disabled:hover {
+            border-color: transparent;
+            transform: none;
+            box-shadow: none;
+        }
 
     /* Page Title */
     .page-title {
@@ -327,8 +790,8 @@
         font-weight: 600;
         font-size: 16px;
         margin-bottom: 20px;
-        margin-top:-24px;
-        margin-left :-24px;
+        margin-top: -24px;
+        margin-left: -24px;
     }
 
     .answers-grid {
@@ -354,6 +817,11 @@
             border-color: #4318FF;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(67, 24, 255, 0.2);
+        }
+
+        .answer-option.selected {
+            background: #E9E3FF;
+            border-color: #4318FF;
         }
 
         .answer-option.correct {
@@ -422,8 +890,12 @@
         color: #FA5252;
     }
 
-    .feedback-text {
+    .feedback-text-correct {
         color: #9F7AEA;
+    }
+
+    .feedback-text-wrong {
+        color: #E53E3E;
     }
 
     /* Action Buttons */
@@ -434,6 +906,93 @@
         gap: 15px;
         margin: 40px 0;
     }
+
+    .btn-start-quiz {
+        background: #1D059D;
+        color: white;
+        border: none;
+        padding: 16px 80px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+        .btn-start-quiz:hover {
+            background: #2A0CD8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(29, 5, 157, 0.4);
+        }
+
+    .btn-back-secondary {
+        background: transparent;
+        color: #1D059D;
+        border: 2px solid #1D059D;
+        padding: 14px 60px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+        .btn-back-secondary:hover {
+            background: #1D059D;
+            color: white;
+        }
+
+    .btn-submit {
+        background: #1D059D;
+        color: white;
+        border: none;
+        padding: 16px 80px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #2A0CD8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(29, 5, 157, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+    .btn-check {
+        background: #2D1B69;
+        color: white;
+        border: none;
+        padding: 16px 80px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+        .btn-check:hover:not(:disabled) {
+            background: #1f1347;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(45, 27, 105, 0.4);
+        }
+
+        .btn-check:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
 
     .btn-retry, .btn-continue {
         background: #2D1B69;
@@ -462,19 +1021,24 @@
 
     /* Responsive */
     @@media (max-width: 768px) {
-        .answers-grid
+        .answers-grid {
+            grid-template-columns: 1fr;
+        }
 
-    {
-        grid-template-columns: 1fr;
-    }
+        .quiz-practice-container {
+            padding: 20px 15px;
+        }
 
-    .quiz-practice-container {
-        padding: 20px 15px;
-    }
+        .page-title {
+            font-size: 24px;
+        }
 
-    .page-title {
-        font-size: 24px;
-    }
+        .preview-card {
+            padding: 30px 20px;
+        }
 
+        .preview-title {
+            font-size: 24px;
+        }
     }
 </style>

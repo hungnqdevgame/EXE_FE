@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,11 @@ namespace BLL.IService
     {
         Task<string> GetSubscriptionByNameAsync(string name);
         Task<List<string>> GetAllSubscriptionsAsync();
+        Task<Subscription> AddSubscriptionAsync(Subscription subscription);
+
+        Task<Subscription> GetSubscriptionByIdAsync(int id);
+
+        Task<Subscription> UpdateSubscriptionByIdAsync(Subscription subscription);
+
     }
 }

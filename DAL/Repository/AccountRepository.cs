@@ -42,7 +42,7 @@ namespace DAL.Repository
             new Claim(ClaimTypes.Name, user.UserName),                     // ✅ tên người dùng
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
-
+            Console.WriteLine(claims);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -71,10 +71,13 @@ namespace DAL.Repository
                 PhoneNumber = phone,
                 FullName = fullname,
                 Role = 0,
-                IsDeleted = false
+                IsDeleted = false,
+                SubscriptionId = 1
             };
 
             var result = await _userManager.CreateAsync(user, password);
+            user.SubscriptionId = 1;
+            await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
                 throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 

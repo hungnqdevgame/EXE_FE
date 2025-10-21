@@ -19,10 +19,13 @@ namespace BLL.Service
     {
         private readonly IOptions<MomoOption> _options;
         private readonly IPaymentRepository _paymentRepository;
-        public MomoService(IOptions<MomoOption> options, IPaymentRepository paymentRepository)
+        private readonly IUserService _userService;
+        public MomoService(IOptions<MomoOption> options, IPaymentRepository paymentRepository, IUserService userService)
         {
             _options = options;
             _paymentRepository = paymentRepository;
+            _userService = userService;
+            _userService = userService;
         }
 
         public async Task<MomoCreatePaymentResponse> CreatePaymentAsync(Payment payment)
@@ -89,6 +92,7 @@ namespace BLL.Service
             {
                 payment.IsSuccess = resultCode == "0"; // 0 = thành công
                 await _paymentRepository.UpdateAsync(payment);
+               
             }
             return new MomoExecuteResponse()
             {

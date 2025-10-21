@@ -17,27 +17,41 @@ namespace DAL.Repository
             _context = context;
         }
 
-        public async Task<bool> UpdateSupscriptionStatus(int userId,int supscriptionId)
+        public async Task<bool> UpdateSupscriptionStatus(int userId, int supscriptionId)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
                 return false; // User not found
             }
+
+            // Verify subscription exists before assigning
+            var subscription = await _context.Subscriptions.FindAsync(supscriptionId);
+            if (subscription == null)
+            {
+                return false; // Subscription not found
+            }
+
             user.SubscriptionId = supscriptionId;
-            _context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return true; // Update successful
+            return true;
         }
 
         public async Task<User> GetUserById(int userId)
         {
-            return await _context.Users.FindAsync(userId);
+            // Include Subscription navigation property to prevent null reference issues
+            return await _context.Users
+                .Include(u => u.Subscription)
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<List<User>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            // Include Subscription navigation property and handle potential null values
+            return await _context.Users
+                .Include(u => u.Subscription)
+                .ToListAsync();
         }
     }
 }

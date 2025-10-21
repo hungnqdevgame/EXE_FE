@@ -9,7 +9,6 @@ namespace Share
     public class PaymentRequest
     {
         public int Amount { get; set; }
-        public string? OrderInfo { get; set; }
-        public int ScriptionId { get; set; }
+       
     }
 }

@@ -1,5 +1,7 @@
 ﻿using BLL.IService;
 using DAL.Model;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -9,6 +11,7 @@ using System.Security.Claims;
 
 namespace Quiz.Server.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class PaymentController : ControllerBase
@@ -23,22 +26,23 @@ namespace Quiz.Server.Controllers
         [HttpPost("CreatePaymentUrl")]
         public async Task<IActionResult> CreatePaymentMomo(PaymentRequest dto)
         {
+            
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized(new { Error = "User not logged in" });
+            }
 
-            //var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //if (string.IsNullOrEmpty(userIdString))
-            //{
-            //    return Unauthorized(new { Error = "User not logged in" });
-            //}
-
-           // var userId = int.Parse(userIdString);
+            var userId = int.Parse(userIdString);
             var payment = new Payment
             {
-                UserId = 1,
+                UserId = userId,
                 Amount = dto.Amount,
                 IsSuccess = false,
                 CreateAt = DateTime.Now
-
+                
             };
+
             var response = await _momoService.CreatePaymentAsync(payment);
             return Ok(new { payUrl = response.PayUrl });
         }

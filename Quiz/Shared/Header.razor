@@ -1,3 +1,9 @@
+@using System.Text.Json
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JS
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject NavigationManager Navigation
 <div class="header">
     <div class="container-fluid">
         <div class="row align-items-center">
@@ -11,13 +17,23 @@
                     <a href="/revision">Thư viện</a>
                     <a href="/supscription">Mua gói</a>
                     <div style= "font-size:30px;font-weight:900;color:#1D059D;">|</div>
-                    <a href="/login">Đăng nhập</a>
-                    <a href="/register">Đăng kí</a> 
-                    @* <div class="user-profile">
-                        <div class="profile-avatar">
-                            <a class="avatar-icon" href ="/profile">👤</a>
+                   
+                    @if (isLoggedIn)
+                    {
+                        <div class="user-profile">
+                            <div class="profile-avatar">
+                                <a class="avatar-icon" href="/profile">👤 </a>
+                               
+                            </div>
+                            <button @onclick="Logout" class="btn btn-link text-danger">Đăng xuất</button>
                         </div>
-                    </div> *@
+                    }
+                    else
+                    {
+                        <a href="/login">Đăng nhập</a>
+                        <a href="/register">Đăng kí</a>
+                    }
+
                 </div> <!-- nav-links -->
             </div> <!-- col -->
         </div> <!-- row -->
@@ -106,3 +122,41 @@ body {
     font-size: 1.2rem;
 }
 </style>
+@code {
+    private bool isLoggedIn = false;
+    private string? userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+        var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userInfo");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            isLoggedIn = true;
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                try
+                {
+                    var user = JsonSerializer.Deserialize<UserModel>(userJson);
+                    userName = user?.FullName ?? "Người dùng";
+                }
+                catch { }
+            }
+        }
+    }
+
+    public class UserModel
+    {
+        public string FullName { get; set; }
+        public string Email { get; set; }
+    }
+
+    private async Task Logout()
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "userInfo");
+        isLoggedIn = false;
+        Navigation.NavigateTo("/", true);
+    }
+}

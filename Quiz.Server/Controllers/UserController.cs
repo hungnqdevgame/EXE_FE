@@ -1,6 +1,7 @@
 ﻿using BLL.IService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Quiz.DTO;
 
 namespace Quiz.Server.Controllers
 {
@@ -25,10 +26,10 @@ namespace Quiz.Server.Controllers
             return Ok(user);
         }
 
-        [HttpPut("{userId}/subscription/{subscriptionId}")]
-        public async Task<IActionResult> UpdateSubscriptionStatus(int userId, int subscriptionId)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateSubscriptionStatus(UpdateSubscriptionDTO dto)
         {
-            var result = await _userService.UpdateSupscriptionStatus(userId, subscriptionId);
+            var result = await _userService.UpdateSupscriptionStatus(dto.UserId, dto.SubscriptionId);
             if (!result)
             {
                 return NotFound(new { Message = "User not found or update failed" });

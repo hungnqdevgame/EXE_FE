@@ -33,4 +33,8 @@
     <ProjectReference Include="..\Share\Share.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\NewFolder\" />
+  </ItemGroup>
+
 </Project>

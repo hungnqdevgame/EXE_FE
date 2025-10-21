@@ -24,7 +24,41 @@ namespace DAL.Repository
 
         public async Task<List<Subscription>> GetAllSubscriptionsAsync()
         {
-            return await _context.Subscriptions.Where(s => !s.IsDeleted).ToListAsync();
+            return await _context.Subscriptions.ToListAsync();
+        }
+
+        public async Task<Subscription> GetSubscriptionByIdAsync(int id)
+        {
+            return await _context.Subscriptions.FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
+        }
+
+        public async Task<Subscription> AddSubscriptionAsync(Subscription subscription)
+        {
+            var newSupScription = new Subscription
+            {
+                Name = subscription.Name,
+                Description = subscription.Description,
+                Amount = subscription.Amount,
+                IsDeleted = false
+            };
+            await _context.Subscriptions.AddAsync(subscription);
+            await _context.SaveChangesAsync();
+            return newSupScription;
+        }
+
+        public async Task<Subscription> UpdateSubscriptionByIdAsync(Subscription subscription)
+        {
+            var existingSubscription = await _context.Subscriptions.FindAsync(subscription.Id);
+            if (existingSubscription == null || existingSubscription.IsDeleted)
+            {
+                return null; // Subscription not found
+            }
+            existingSubscription.Name = subscription.Name;
+            existingSubscription.Description = subscription.Description;
+            existingSubscription.Amount = subscription.Amount;
+            _context.Entry(existingSubscription).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return existingSubscription;
         }
     }
 }

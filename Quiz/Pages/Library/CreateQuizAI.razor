@@ -1,6 +1,8 @@
 @page "/quiz-ai"
 @using System.Collections
 @using System.Text.Json;
+
+@using System.Security.Claims;
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 @inject IHttpClientFactory HttpClientFactory
@@ -218,8 +220,8 @@
 </div>
 <Quiz.Shared.Footer />
 @code {
-      private QuizData quizData = new();
-      private JsonElement? generatedQuestions1;
+    private QuizData quizData = new();
+    private JsonElement? generatedQuestions1;
     private UploadedFile? uploadedFile;
     private bool isProcessing = false;
     private bool isDragging = false;
@@ -273,7 +275,7 @@
         inputMode = mode;
         errorMessage = "";
         successMessage = "";
-        
+
         // Clear data when switching
         if (mode == InputMode.Upload)
         {
@@ -289,7 +291,7 @@
     {
         if (string.IsNullOrWhiteSpace(textContent))
             return 0;
-        
+
         return textContent.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
     }
 
@@ -414,116 +416,115 @@
 
     private async Task CreateQuiz()
     {
-    errorMessage = "";
-    successMessage = "";
+        errorMessage = "";
+        successMessage = "";
 
-    if (string.IsNullOrWhiteSpace(quizData.Title))
-    {
-        errorMessage = "Vui lòng nhập tiêu đề";
-        return;
-    }
-
-    string knowledgeContent = inputMode == InputMode.Upload
-        ? uploadedFile?.Content ?? ""
-        : textContent ?? "";
-
-    if (string.IsNullOrWhiteSpace(knowledgeContent))
-    {
-        errorMessage = "Vui lòng nhập ";
-        return;
-    }
-
-    var wordCount = knowledgeContent.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
-    if (wordCount == 0)
-    {
-        errorMessage = "Nội dung không được để trống";
-        return;
-    }
-
-    isProcessing = true;
-
-    try
-    {
-        var generateRequest = new
+        if (string.IsNullOrWhiteSpace(quizData.Title))
         {
-            knowledge = knowledgeContent,
-            typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "flashcard",
-            level = quizData.Level.ToString(),
-            count = quizData.QuestionCount
-        };
-
-        var client = HttpClientFactory.CreateClient("FastApiClient");
-        var response = await client.PostAsJsonAsync("/data-create-question-api/generate-quiz-ai", generateRequest);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            errorMessage = "Không thể tạo câu hỏi từ AI.";
+            errorMessage = "Vui lòng nhập tiêu đề";
             return;
         }
 
-        // 🧠 Deserialize trực tiếp
-        var json = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(json);
-        var dataElement = doc.RootElement.GetProperty("data");
+        string knowledgeContent = inputMode == InputMode.Upload
+            ? uploadedFile?.Content ?? ""
+            : textContent ?? "";
 
-        questions = new List<Question>();
-
-        foreach (var item in dataElement.EnumerateArray())
+        if (string.IsNullOrWhiteSpace(knowledgeContent))
         {
-            var questionText = item.GetProperty("question").GetString() ?? "";
+            errorMessage = "Vui lòng nhập ";
+            return;
+        }
 
-            // Deserialize answers as a dictionary (e.g., { "A": "...", "B": "...", ... })
-            var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new Dictionary<string, string>();
+        var wordCount = knowledgeContent.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        if (wordCount == 0)
+        {
+            errorMessage = "Nội dung không được để trống";
+            return;
+        }
 
-            // Extract correct answer keys (e.g., ["A", "C"])
-            var correctKeys = item.GetProperty("correctAnswers")
-                                  .EnumerateArray()
-                                  .Select(x => x.GetString() ?? "")
-                                  .ToList();
+        isProcessing = true;
 
-            // Map dictionary entries to List<Answer>, preserving key order (A,B,C,...)
-            var answersList = answersDict.OrderBy(kv => kv.Key)
-                                         .Select(kv => new Answer
+        try
+        {
+            var generateRequest = new
+            {
+                knowledge = knowledgeContent,
+                typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "flashcard",
+                level = quizData.Level.ToString(),
+                count = quizData.QuestionCount
+            };
+
+            var client = HttpClientFactory.CreateClient("FastApiClient");
+            var response = await client.PostAsJsonAsync("/data-create-question-api/generate-quiz-ai", generateRequest);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = "Không thể tạo câu hỏi từ AI.";
+                return;
+            }
+
+            // 🧠 Deserialize trực tiếp
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+            var dataElement = doc.RootElement.GetProperty("data");
+
+            questions = new List<Question>();
+
+            foreach (var item in dataElement.EnumerateArray())
+            {
+                var questionText = item.GetProperty("question").GetString() ?? "";
+
+                // Deserialize answers as a dictionary (e.g., { "A": "...", "B": "...", ... })
+                var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new Dictionary<string, string>();
+
+                // Extract correct answer keys (e.g., ["A", "C"])
+                var correctKeys = item.GetProperty("correctAnswers")
+                                      .EnumerateArray()
+                                      .Select(x => x.GetString() ?? "")
+                                      .ToList();
+
+                // Map dictionary entries to List<Answer>, preserving key order (A,B,C,...)
+                var answersList = answersDict.OrderBy(kv => kv.Key)
+                                             .Select(kv => new Answer
                                          {
                                              Text = kv.Value ?? "",
                                              IsCorrect = correctKeys.Contains(kv.Key)
                                          })
-                                         .ToList();
+                                             .ToList();
 
-            var q = new Question
+                var q = new Question
             {
                 Text = questionText,
                 Answers = answersList,
                 CorrectAnswers = correctKeys
             };
-            questions.Add(q);
-            currentStep = 2;
+                questions.Add(q);
+                currentStep = 2;
+            }
+
+            successMessage = "✅ Đã tạo câu hỏi thành công! Hãy xem lại và bấm 'Lưu' nếu đồng ý.";
         }
-
-        successMessage = "✅ Đã tạo câu hỏi thành công! Hãy xem lại và bấm 'Lưu' nếu đồng ý.";
-    }
-    catch (Exception ex)
-    {
-        errorMessage = $"Lỗi: {ex.Message}";
-    }
-    finally
-    {
-        isProcessing = false;
-    }
+        catch (Exception ex)
+        {
+            errorMessage = $"Lỗi: {ex.Message}";
+        }
+        finally
+        {
+            isProcessing = false;
+        }
     }
 
-    
     public async Task SaveAndCreate()
     {
-        // Enhanced debug logging
         errorMessage = "";
         successMessage = "";
         isProcessing = true;
 
-        await JS.InvokeVoidAsync("console.log", "SaveAndCreate started", new { questionsCount = questions?.Count ?? 0, inputMode, title = quizData.Title });
-
         try
         {
+            await JS.InvokeVoidAsync("console.log", "SaveAndCreate started", new { questionsCount = questions?.Count ?? 0, inputMode, title = quizData.Title });
+
+            // 🔹 Validate questions
             if (questions == null || !questions.Any())
             {
                 errorMessage = "⚠️ Chưa có câu hỏi nào được tạo. Hãy tạo trước khi lưu!";
@@ -531,13 +532,11 @@
                 return;
             }
 
-            // Ensure knowledgeContent is set (use uploadedFile or text input)
+            // 🔹 Prepare knowledge content
             if (string.IsNullOrWhiteSpace(knowledgeContent))
             {
                 knowledgeContent = inputMode == InputMode.Upload ? uploadedFile?.Content : textContent;
             }
-
-            await JS.InvokeVoidAsync("console.log", "knowledgeContent summary", new { length = knowledgeContent?.Length ?? 0, hasUpload = uploadedFile != null });
 
             if (string.IsNullOrWhiteSpace(knowledgeContent))
             {
@@ -546,17 +545,59 @@
                 return;
             }
 
-            var backendClient = HttpClientFactory.CreateClient("FastApiClient");
+            // 🔹 Lấy token từ localStorage
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                errorMessage = "⚠️ Không tìm thấy token. Hãy đăng nhập lại!";
+                return;
+            }
 
-            // Save knowledge content
+            token = token.Trim();
+
+            // 🔹 Decode JWT để lấy userId
+            int userId = 0;
+            try
+            {
+                var parts = token.Split('.');
+                if (parts.Length == 3)
+                {
+                    var payload = parts[1];
+                    payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                    var jsonBytes = Convert.FromBase64String(payload);
+                    var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                    var doc = System.Text.Json.JsonDocument.Parse(json);
+
+                    if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
+                    {
+                        int.TryParse(userIdProp.GetString(), out userId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("console.error", "JWT parse failed", ex.Message);
+            }
+
+            if (userId == 0)
+            {
+                errorMessage = "⚠️ Không tìm thấy userId hợp lệ trong token!";
+                return;
+            }
+
+            // 🔹 Gắn token vào HttpClient (Bearer)
+            var backendClient = HttpClientFactory.CreateClient("FastApiClient");
+            backendClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            // 🔹 Save knowledge content
             var saveKnowledgePayload = new
             {
-                user_id = 1,
+                user_id = userId,
                 text = knowledgeContent
             };
 
-            var saveKnowledgePayloadJson = System.Text.Json.JsonSerializer.Serialize(saveKnowledgePayload);
-            await JS.InvokeVoidAsync("console.log", "Saving knowledge payload", saveKnowledgePayloadJson);
+            await JS.InvokeVoidAsync("console.log", "Saving knowledge payload", saveKnowledgePayload);
 
             var saveKnowledgeResponse = await backendClient.PostAsJsonAsync("/data-create-question-api/data-create-question", saveKnowledgePayload);
             var saveKnowledgeBody = await saveKnowledgeResponse.Content.ReadAsStringAsync();
@@ -568,8 +609,15 @@
                 Console.WriteLine($"SaveKnowledge failed: {saveKnowledgeBody}");
                 return;
             }
+            //Save title 
+            var setQuizPayload = new SetQuizRequest
+            {
+                Title = quizData.Title,
+                Description = quizData.Description
+            };
 
-            // Save each question
+            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
+            // 🔹 Save questions
             int idx = 0;
             foreach (var question in questions)
             {
@@ -586,14 +634,13 @@
 
                 var payload = new
                 {
-                    setQuizId = 0,
+                    setQuizId = 0, // hoặc set đúng nếu đã có SetQuiz
                     question = question.Text,
                     answers = answers,
                     correctAnswers = correctAnswers
                 };
 
-                var payloadJson = System.Text.Json.JsonSerializer.Serialize(payload);
-                await JS.InvokeVoidAsync("console.log", $"Saving question #{idx}", payloadJson);
+                await JS.InvokeVoidAsync("console.log", $"Saving question #{idx}", payload);
 
                 var saveResponse = await backendClient.PostAsJsonAsync("/question-api/questions", payload);
                 var saveRespBody = await saveResponse.Content.ReadAsStringAsync();
@@ -601,7 +648,7 @@
 
                 if (!saveResponse.IsSuccessStatusCode)
                 {
-                    errorMessage = "Lỗi khi lưu câu hỏi";
+                    errorMessage = $"Lỗi khi lưu câu hỏi #{idx}";
                     Console.WriteLine($"Save question #{idx} failed: {saveRespBody}");
                     return;
                 }
@@ -610,7 +657,6 @@
             successMessage = "✅ Đã lưu thành công nội dung và câu hỏi vào hệ thống!";
             await JS.InvokeVoidAsync("console.log", "SaveAndCreate completed successfully");
 
-            // Navigate after short delay to allow user see success (optional)
             Navigation.NavigateTo("/revision");
         }
         catch (Exception ex)
@@ -625,6 +671,9 @@
             StateHasChanged();
         }
     }
+
+
+
     public class GenerateQuestionsResponse
     {
         public List<object> Questions { get; set; } = new();
@@ -635,6 +684,12 @@
     {
         public int Id { get; set; }
         public string Message { get; set; } = "";
+    }
+
+    public class SetQuizRequest()
+    {
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
     }
 
     public class QuizQuestion
@@ -860,6 +915,51 @@
     {
         public string Text { get; set; }
         public bool IsCorrect { get; set; }
+    }
+
+  
+
+    private int GetUserIdFromToken(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            return 0;
+
+        try
+        {
+            // JWT format: header.payload.signature
+            var parts = token.Split('.');
+            if (parts.Length != 3)
+                return 0;
+
+            var payload = parts[1];
+            // Base64 decode
+            payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+            var jsonBytes = Convert.FromBase64String(payload);
+            var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+
+            // Parse JSON
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
+            {
+                if (int.TryParse(userIdProp.GetString(), out int userId))
+                    return userId;
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+
+        return 0;
+    }
+    private static byte[] ParseBase64WithoutPadding(string base64)
+    {
+        switch (base64.Length % 4)
+        {
+            case 2: base64 += "=="; break;
+            case 3: base64 += "="; break;
+        }
+        return Convert.FromBase64String(base64);
     }
 }
 

@@ -1,6 +1,6 @@
 @page "/revision"
 @inject NavigationManager Navigation
-
+@inject IJSRuntime JS
 @inject HttpClient Http
 
 @* Import Google Font *@
@@ -174,7 +174,7 @@
         {
             @foreach (var quiz in setQuizzes)
             {
-                <div class="quiz-card">
+                <div class="quiz-card" @onclick="() => OnQuizClick(quiz)">
                     <div class="quiz-date">🕓 @quiz.CreatedAt.ToString("dd/MM/yyyy")</div>
                     <div class="quiz-title">@quiz.Title</div>
                     <div class="quiz-info">
@@ -216,10 +216,36 @@
     
     protected override async Task OnInitializedAsync()
     {
-         // 🔹 tạm thời hardcode, có thể thay bằng userId lấy từ token
         try
         {
-            setQuizzes = await Http.GetFromJsonAsync<List<SetQuiz>>("api/SetQuiz/user-setQuiz");
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Console.WriteLine("❌ Token không tồn tại. Redirect sang login.");
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+            token = token.Trim();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://exe-backend-j428.onrender.com/api/SetQuiz/user-setQuiz");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                setQuizzes = await response.Content.ReadFromJsonAsync<List<SetQuiz>>();
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                Console.WriteLine("❌ 401 Unauthorized. Redirect sang login.");
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                Console.WriteLine($"❌ Lỗi tải dữ liệu: {response.StatusCode}");
+            }
         }
         catch (Exception ex)
         {
@@ -227,5 +253,9 @@
         }
     }
 
+    public void OnQuizClick(SetQuiz quiz)
+    {
+        Navigation.NavigateTo($"/practice/{quiz.Id}");
+    }
 
 }

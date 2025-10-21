@@ -382,7 +382,7 @@
         {
             var request = new QuestionCreateRequest
             {
-                SetQuizId = 0,
+                SetQuizId = 4,
                 Question = q.Text,
                 Answers = q.Answers
                     .Select((a, i) => new { Key = $"Answer{i + 1}", Value = a.Text })
@@ -402,10 +402,24 @@
                 await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi gửi sang FastAPI: {error}");
                 return;
             }
+
+            var setQuizPayload = new SetQuizRequest
+            {
+                Title = quizTitle,
+                Description = quizDescription
+            };
+
+            var setQuizResponse = await Http.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
+
         }
 
         await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã gửi thành công tới FastAPI!");
         ResetForm();
+    }
+    public class SetQuizRequest
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 
     private void ResetForm()

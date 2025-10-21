@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Quiz.DTO;
 using System.Security.Claims;
 
 namespace Quiz.Server.Controllers
 {
-   // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
    
@@ -20,7 +21,7 @@ namespace Quiz.Server.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateSetQuiz(string title, string description)
+        public async Task<IActionResult> CreateSetQuiz(SetQuizDTO dto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null) return Unauthorized();
@@ -29,7 +30,7 @@ namespace Quiz.Server.Controllers
 
            
 
-            var setQuizId = await _setQuizService.CreateSetQuiz(userId, title, description);
+            var setQuizId = await _setQuizService.CreateSetQuiz(userId, dto.Title, dto.Description);
             return Ok(new { SetQuizId = setQuizId });
         }
 
@@ -66,12 +67,19 @@ namespace Quiz.Server.Controllers
             return NoContent();
         }
 
-        [HttpGet("user-setQuiz")]
+        [HttpGet("user-setQuiz")]    
         public async Task<IActionResult> GetUserSetQuiz()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) return Unauthorized();
-            int userId = int.Parse(userIdClaim.Value);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
+                  ?? User.FindFirst("sub");
+            if (userIdClaim == null)
+                return Unauthorized();
+
+            // Parse sang int
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized();
+
             var setQuizzes = await _setQuizService.GetSetQuizzesByUserId(userId);
             return Ok(setQuizzes);
         }

@@ -138,7 +138,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy.WithOrigins(
-                "https://exe-backend-j428.onrender.com",
+                "https://exe-fe-gules.vercel.app",
                 "https://localhost:7078"
             )
             .AllowAnyHeader()
@@ -190,12 +190,12 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 //✅ CORS trước Authentication
-app.UseCors(builder =>
-{
-    builder.AllowAnyHeader()
-           .AllowAnyMethod()
-           .WithOrigins("https://exe-fe-gules.vercel.app");
-});
+// app.UseCors(builder =>
+// {
+//     builder.AllowAnyHeader()
+//            .AllowAnyMethod()
+//            .WithOrigins("https://exe-fe-gules.vercel.app");
+// });
 
 if (app.Environment.IsDevelopment())
 {

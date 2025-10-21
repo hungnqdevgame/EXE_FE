@@ -450,21 +450,17 @@
                 return;
             }
 
-            // var json = await response.Content.ReadAsStringAsync();
-            // using var doc = JsonDocument.Parse(json);
-            // var token = doc.RootElement.GetProperty("token").GetString();
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
 
-            // if (string.IsNullOrEmpty(token))
-            // {
-            //     errorMessage = "Không lấy được token từ server.";
-            //     return;
-            // }
+            var token = doc.RootElement.GetProperty("token").GetString();
+            var userJson = doc.RootElement.GetProperty("user").ToString();
 
+            // ✅ Lưu token & thông tin user vào localStorage
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "userInfo", userJson);
 
-            // await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-
-
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo("/", true);
         }
         catch (Exception ex)
         {
@@ -473,7 +469,6 @@
         finally
         {
             isLoading = false;
-            StateHasChanged();
         }
     }
 

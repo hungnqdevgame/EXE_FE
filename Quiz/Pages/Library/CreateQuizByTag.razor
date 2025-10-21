@@ -186,9 +186,53 @@
     }
     private async Task LoadTags()
     {
+        // 🔹 Lấy token từ localStorage
+        var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            errorMessage = "⚠️ Không tìm thấy token. Hãy đăng nhập lại!";
+            return;
+        }
+
+        token = token.Trim();
+
+        // 🔹 Decode JWT để lấy userId
+        int userId = 0;
         try
         {
-            var user = new UserRequest { userId = 1 };
+            var parts = token.Split('.');
+            if (parts.Length == 3)
+            {
+                var payload = parts[1];
+                payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                var jsonBytes = Convert.FromBase64String(payload);
+                var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+
+                if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
+                {
+                    int.TryParse(userIdProp.GetString(), out userId);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "JWT parse failed", ex.Message);
+        }
+
+        if (userId == 0)
+        {
+            errorMessage = "⚠️ Không tìm thấy userId hợp lệ trong token!";
+            return;
+        }
+
+        // 🔹 Gắn token vào HttpClient (Bearer)
+        var backendClient = HttpClientFactory.CreateClient("FastApiClient");
+        backendClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        try
+        {
+            var user = new UserRequest { userId = userId };
             var client = HttpClientFactory.CreateClient("FastApiClient");
             var response = await client.PostAsJsonAsync("/data-create-question-api/create-tag-knowledge", user);
 
@@ -389,7 +433,13 @@
             var saveKnowledgePayloadJson = System.Text.Json.JsonSerializer.Serialize(saveKnowledgePayload);
             await JS.InvokeVoidAsync("console.log", "Saving knowledge payload", saveKnowledgePayloadJson);
 
-           
+            var setQuizPayload = new SetQuizRequest
+            {
+                Title = quizData.Title,
+                Description = quizData.Description
+            };
+
+            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com//api/SetQuiz/create", setQuizPayload);
            
 
             // Save each question
@@ -454,6 +504,13 @@
             StateHasChanged();
         }
     }
+
+    public class SetQuizRequest
+    {
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+
     public class GenerateQuestionsResponse
     {
         public List<object> Questions { get; set; } = new();

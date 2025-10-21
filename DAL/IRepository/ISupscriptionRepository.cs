@@ -11,5 +11,9 @@ namespace DAL.IRepository
     {
         Task<Subscription> GetSubscriptionByNameAsync(string name);
         Task<List<Subscription>> GetAllSubscriptionsAsync();
+        Task<Subscription> AddSubscriptionAsync(Subscription subscription);
+
+        Task<Subscription> GetSubscriptionByIdAsync(int id);
+        Task<Subscription> UpdateSubscriptionByIdAsync(Subscription subscription);
     }
 }

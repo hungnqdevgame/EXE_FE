@@ -1,5 +1,6 @@
 ﻿@page "/price"
 @inject HttpClient Http
+@inject IJSRuntime JS
 @inject NavigationManager Navigation
 <Quiz.Shared.Header />
 
@@ -308,41 +309,126 @@
         // Hoặc hiển thị thông báo
         await Task.Delay(100); // Simulate processing
     }
+    
 
+    
+
+    public class UpdateSubscriptionRequest
+    {
+      
+        public string SubscriptionId { get; set; }
+    }
     private async Task CreatePaymentAsync()
     {
         var amount = selectedPlan switch
         {
-            0 => 59000,    // Pro Monthly
-            1 => 269000,   // Pro 6 Months
-            2 => 79000,    // Premium Monthly
-            3 => 369000,   // Premium 6 Months
+            0 => 59000,   
+            1 => 269000,  
+            2 => 79000,    
+            3 => 369000,  
             _ => 0
         };
 
         var supscriptionType = selectedPlan switch
         {
-            0 => "Pro",
-            1 => "Pro_Six",
-            2 => "Premium",
-            3 => "Premium_Six",
-            _ => "Basic"
+            0 => "2",
+            1 => "3",
+            2 => "4",
+            3 => "5",
+            _ => "1"
         };
-
+        var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            // Người dùng chưa login
+            Navigation.NavigateTo("/login");
+            return;
+        }
         var payment = new
         {
-            SupscriptionType = supscriptionType,
+          
             Amount = amount
-        };
 
-        var response = await Http.PostAsJsonAsync("https://localhost:7102/api/payment/CreatePaymentUrl", payment);
+        };
+        UpdateSubscriptionRequest updateRequest = new UpdateSubscriptionRequest
+        {
+         
+            SubscriptionId = supscriptionType
+        };
+       // var response = await Http.PostAsJsonAsync("https://localhost:7102/api/payment/CreatePaymentUrl", payment);
+
+ 
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://exe-backend-j428.onrender.com/api/payment/CreatePaymentUrl");
+        request.Content = JsonContent.Create(payment);
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        var response = await Http.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            var requestUpdate = await Http.PatchAsJsonAsync("https://exe-backend-j428.onrender.com/api/User/update", updateRequest);
             var payUrl = result["payUrl"];
             Navigation.NavigateTo(payUrl, forceLoad: true);
             
         }
     }
+//     private async Task CreatePaymentAsync()
+// {
+//     var amount = selectedPlan switch
+//     {
+//         0 => 59000,    Pro Monthly
+//         1 => 269000,   Pro 6 Months
+//         2 => 79000,    Premium Monthly
+//         3 => 369000,   Premium 6 Months
+//         _ => 0
+//     };
+
+//     var supscriptionType = selectedPlan switch
+//     {
+//         0 => "2",
+//         1 => "3",
+//         2 => "4",
+//         3 => "5",
+//         _ => "1"
+//     };
+
+//     var payment = new
+//     {
+//         SupscriptionType = supscriptionType,
+//         Amount = amount
+//     };
+
+    
+//     🔑 Lấy token từ localStorage
+//     var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+//     if (string.IsNullOrEmpty(token))
+//     {
+//         Người dùng chưa login
+//         Navigation.NavigateTo("/login");
+//         return;
+//     }
+
+//     var request = new HttpRequestMessage(HttpMethod.Post, "api/payment/CreatePaymentUrl");
+//     request.Content = JsonContent.Create(payment);
+//     request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+//     var response = await Http.SendAsync(request);
+
+//     if (response.IsSuccessStatusCode)
+//     {
+//             var updateRequest = await Http.PostAsJsonAsync("api/account/login", int.Parse(supscriptionType));
+//         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+//         var payUrl = result["payUrl"];
+         
+
+
+//         Navigation.NavigateTo(payUrl, forceLoad: true);
+//     }
+//     else
+//     {
+//         Console.WriteLine("Payment creation failed: " + response.StatusCode);
+//     }
+// }
 }

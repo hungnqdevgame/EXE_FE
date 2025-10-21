@@ -1,5 +1,6 @@
 ﻿using BLL.IService;
 using DAL.IRepository;
+using DAL.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,5 +22,14 @@ namespace BLL.Service
         public Task<List<string>> GetAllSubscriptionsAsync()
         => _subscriptions.GetAllSubscriptionsAsync()
             .ContinueWith(t => t.Result.Select(s => s.Name).ToList());
+
+        public Task<Subscription> AddSubscriptionAsync(Subscription subscription)
+       => _subscriptions.AddSubscriptionAsync(subscription);
+
+        public Task<Subscription> GetSubscriptionByIdAsync(int id)
+        => _subscriptions.GetSubscriptionByIdAsync(id);
+
+        public Task<Subscription> UpdateSubscriptionByIdAsync(Subscription subscription)
+            => _subscriptions.UpdateSubscriptionByIdAsync(subscription);
     }
 }

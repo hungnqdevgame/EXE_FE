@@ -65,8 +65,8 @@ namespace Quiz.Server.Controllers
                 Email = request.Email,
                 PhoneNumber = request.Phone,
                 FullName = request.FullName,
-                EmailConfirmed = false
-                 
+                EmailConfirmed = false,
+                SubscriptionId = 1
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);

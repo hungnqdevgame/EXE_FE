@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DAL.Model
 {
@@ -24,6 +25,7 @@ namespace DAL.Model
 
         public string? Birthday { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("SubscriptionId")]
         public virtual Subscription Subscription { get; set; }
 

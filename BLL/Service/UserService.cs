@@ -17,13 +17,42 @@ namespace BLL.Service
             _userRepository = userRepository;
         }
 
-        public Task<List<User>> GetAllUsersAsync()
-        => _userRepository.GetAllUsersAsync();
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+            // Filter out deleted users and ensure subscription data is safe to access
+            return users.Where(u => !u.IsDeleted).ToList();
+        }
 
-        public Task<User> GetUserById(int userId)
-        => _userRepository.GetUserById(userId);
+        public async Task<User> GetUserById(int userId)
+        {
+            if (userId <= 0)
+            {
+                throw new ArgumentException("Invalid user ID", nameof(userId));
+            }
 
-        public Task<bool> UpdateSupscriptionStatus(int userId, int supscriptionId)
-       => _userRepository.UpdateSupscriptionStatus(userId, supscriptionId);
+            var user = await _userRepository.GetUserById(userId);
+            if (user == null || user.IsDeleted)
+            {
+                return null;
+            }
+
+            return user;
+        }
+
+        public async Task<bool> UpdateSupscriptionStatus(int userId, int supscriptionId)
+        {
+            if (userId <= 0)
+            {
+                throw new ArgumentException("Invalid user ID", nameof(userId));
+            }
+
+            if (supscriptionId <= 0)
+            {
+                throw new ArgumentException("Invalid subscription ID", nameof(supscriptionId));
+            }
+
+            return await _userRepository.UpdateSupscriptionStatus(userId, supscriptionId);
+        }
     }
 }
