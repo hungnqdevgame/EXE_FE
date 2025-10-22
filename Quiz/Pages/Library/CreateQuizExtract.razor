@@ -243,7 +243,7 @@
         }
         return $"{len:0.##} {sizes[order]}";
     }
-private async Task CreateQuiz()
+    private async Task CreateQuiz()
     {
         errorMessage = "";
         successMessage = "";
@@ -254,11 +254,20 @@ private async Task CreateQuiz()
             return;
         }
 
+        string knowledgeContent  =  textContent ?? "";
 
-       
+        if (string.IsNullOrWhiteSpace(knowledgeContent))
+        {
+            errorMessage = "Vui lòng nhập ";
+            return;
+        }
 
-      
-      
+        var wordCount = knowledgeContent.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        if (wordCount == 0)
+        {
+            errorMessage = "Nội dung không được để trống";
+            return;
+        }
 
         isProcessing = true;
 
@@ -266,9 +275,9 @@ private async Task CreateQuiz()
         {
             var generateRequest = new
             {
-                text = this.text,
-                question_type = quizData.QuestionType == QuestionType.Quiz ? "multiple" : "flashcard"
-                
+                text = knowledgeContent,
+                question_type = quizData.QuestionType == QuestionType.Quiz ? "multiple" : "flashcard",
+               
             };
 
             var client = HttpClientFactory.CreateClient("FastApiClient");
@@ -292,23 +301,29 @@ private async Task CreateQuiz()
                 var questionText = item.GetProperty("question").GetString() ?? "";
 
                 // Deserialize answers as a dictionary (e.g., { "A": "...", "B": "...", ... })
-                var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new
-                Dictionary<string, string>();
-
-                // Extract correct answer keys (e.g., ["A", "C"])
-                var correctKeys = item.GetProperty("correctAnswers")
-                .EnumerateArray()
-                .Select(x => x.GetString() ?? "")
-                .ToList();
+                var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new Dictionary<string, string>();
+                var correctKeys = new List<string>();
+                if (item.TryGetProperty("correctAnswers", out var correctProp))
+                {
+                    correctKeys = correctProp.EnumerateArray()
+                                             .Select(x => x.GetString() ?? "")
+                                             .ToList();
+                }
+                else if (item.TryGetProperty("trueAnswers", out var trueProp))
+                {
+                    correctKeys = trueProp.EnumerateArray()
+                                          .Select(x => x.GetString() ?? "")
+                                          .ToList();
+                }
 
                 // Map dictionary entries to List<Answer>, preserving key order (A,B,C,...)
                 var answersList = answersDict.OrderBy(kv => kv.Key)
-                .Select(kv => new Answer
-                {
-                    Text = kv.Value ?? "",
-                    IsCorrect = correctKeys.Contains(kv.Key)
-                })
-                .ToList();
+                                             .Select(kv => new Answer
+                                             {
+                                                 Text = kv.Value ?? "",
+                                                 IsCorrect = correctKeys.Contains(kv.Key)
+                                             })
+                                             .ToList();
 
                 var q = new Question
                 {
@@ -319,7 +334,7 @@ private async Task CreateQuiz()
                 questions.Add(q);
                 currentStep = 2;
             }
- currentStep = 2;
+
             successMessage = "✅ Đã tạo câu hỏi thành công! Hãy xem lại và bấm 'Lưu' nếu đồng ý.";
         }
         catch (Exception ex)
@@ -331,24 +346,40 @@ private async Task CreateQuiz()
             isProcessing = false;
         }
     }
+
   
     public async Task SaveAndCreate()
     {
-        // Enhanced debug logging
         errorMessage = "";
         successMessage = "";
         isProcessing = true;
 
-        await JS.InvokeVoidAsync(identifier: "console.log", "SaveAndCreate started", new { questionsCount = questions?.Count ?? 0, inputMode, title = quizData.Title });
-
         try
         {
+            await JS.InvokeVoidAsync("console.log", "SaveAndCreate started", new { questionsCount = questions?.Count ?? 0, inputMode, title = quizData.Title });
+
+            // 🔹 Validate questions
             if (questions == null || !questions.Any())
             {
                 errorMessage = "⚠️ Chưa có câu hỏi nào được tạo. Hãy tạo trước khi lưu!";
                 await JS.InvokeVoidAsync("console.warn", "SaveAndCreate aborted - no questions");
                 return;
             }
+
+            // 🔹 Prepare knowledge content
+            if (string.IsNullOrWhiteSpace(knowledgeContent))
+            {
+                knowledgeContent = textContent;
+            }
+
+            if (string.IsNullOrWhiteSpace(knowledgeContent))
+            {
+                errorMessage = "⚠️ Không có nội dung kiến thức để lưu!";
+                await JS.InvokeVoidAsync("console.warn", "SaveAndCreate aborted - empty knowledgeContent");
+                return;
+            }
+
+            // 🔹 Lấy token từ localStorage
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -388,47 +419,38 @@ private async Task CreateQuiz()
                 return;
             }
 
-          
-
-
-            if (string.IsNullOrWhiteSpace(knowledgeContent))
-            {
-                errorMessage = "⚠️ Không có nội dung kiến thức để lưu!";
-                await JS.InvokeVoidAsync("console.warn", "SaveAndCreate aborted - empty knowledgeContent");
-                return;
-            }
-
-          var backendClient = HttpClientFactory.CreateClient("FastApiClient");
+            // 🔹 Gắn token vào HttpClient (Bearer)
+            var backendClient = HttpClientFactory.CreateClient("FastApiClient");
             backendClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            // Save knowledge content
-            var saveKnowledgePayload = new
-            {
-                user_id = userId,
-                text = knowledgeContent
-            };
+            // 🔹 Save knowledge content
+            // var saveKnowledgePayload = new
+            // {
+            //     user_id = userId,
+            //     text = knowledgeContent
+            // };
 
-            var saveKnowledgePayloadJson = System.Text.Json.JsonSerializer.Serialize(saveKnowledgePayload);
-            await JS.InvokeVoidAsync("console.log", "Saving knowledge payload", saveKnowledgePayloadJson);
+            // await JS.InvokeVoidAsync("console.log", "Saving knowledge payload", saveKnowledgePayload);
 
-            var saveKnowledgeResponse = await backendClient.PostAsJsonAsync("/data-create-question-api/data-create-question", saveKnowledgePayload);
-            var saveKnowledgeBody = await saveKnowledgeResponse.Content.ReadAsStringAsync();
-            await JS.InvokeVoidAsync("console.log", "SaveKnowledge response", new { status = (int)saveKnowledgeResponse.StatusCode, body = saveKnowledgeBody });
+            // var saveKnowledgeResponse = await backendClient.PostAsJsonAsync("/data-create-question-api/data-create-question", saveKnowledgePayload);
+            // var saveKnowledgeBody = await saveKnowledgeResponse.Content.ReadAsStringAsync();
+            // await JS.InvokeVoidAsync("console.log", "SaveKnowledge response", new { status = (int)saveKnowledgeResponse.StatusCode, body = saveKnowledgeBody });
 
-            if (!saveKnowledgeResponse.IsSuccessStatusCode)
-            {
-                errorMessage = "Lỗi khi lưu nội dung kiến thức";
-                Console.WriteLine($"SaveKnowledge failed: {saveKnowledgeBody}");
-                return;
-            }
+            // if (!saveKnowledgeResponse.IsSuccessStatusCode)
+            // {
+            //     errorMessage = "Lỗi khi lưu nội dung kiến thức";
+            //     Console.WriteLine($"SaveKnowledge failed: {saveKnowledgeBody}");
+            //     return;
+            // }
+            //Save title
             var setQuizPayload = new SetQuizRequest
             {
                 Title = quizData.Title,
                 Description = quizData.Description
             };
-            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
 
+            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
             if (!setQuizResponse.IsSuccessStatusCode)
             {
                 var error = await setQuizResponse.Content.ReadAsStringAsync();
@@ -443,25 +465,27 @@ private async Task CreateQuiz()
                 await JS.InvokeVoidAsync("alert", "❌ Không thể lấy ID của SetQuiz vừa tạo!");
                 return;
             }
-
-            // Save each question
+            // 🔹 Save questions
             int idx = 0;
             foreach (var question in questions)
             {
                 idx++;
-                var answers = question.Answers.ToDictionary(
-                    a => GetAnswerLabel(question.Answers.IndexOf(a)),
-                    a => a.Text);
+
+                // Tạo answers đúng định dạng JSON object
+                var answers = new Dictionary<string, string>();
+                for (int i = 0; i < question.Answers.Count; i++)
+                {
+                    answers.Add($"additionalProp{i + 1}", question.Answers[i].Text);
+                }
 
                 var correctAnswers = question.Answers
-                    .Select((a, i) => new { Answer = a, Index = i })
-                    .Where(x => x.Answer.IsCorrect)
-                    .Select(x => GetAnswerLabel(x.Index))
+                    .Where(a => a.IsCorrect)
+                    .Select(a => a.Text)
                     .ToList();
 
                 var payload = new
                 {
-                    setQuizId = 0,
+                    setQuizId = result.SetQuizId,
                     question = question.Text,
                     answers = answers,
                     correctAnswers = correctAnswers
@@ -472,11 +496,16 @@ private async Task CreateQuiz()
 
                 var saveResponse = await backendClient.PostAsJsonAsync("/question-api/questions", payload);
                 var saveRespBody = await saveResponse.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("console.log", new { questionIndex = idx, status = (int)saveResponse.StatusCode, body = saveRespBody });
+                await JS.InvokeVoidAsync("console.log", new
+                {
+                    questionIndex = idx,
+                    status = (int)saveResponse.StatusCode,
+                    body = saveRespBody
+                });
 
                 if (!saveResponse.IsSuccessStatusCode)
                 {
-                    errorMessage = "Lỗi khi lưu câu hỏi";
+                    errorMessage = $"❌ Lỗi khi lưu câu hỏi #{idx}";
                     Console.WriteLine($"Save question #{idx} failed: {saveRespBody}");
                     return;
                 }
@@ -485,7 +514,6 @@ private async Task CreateQuiz()
             successMessage = "✅ Đã lưu thành công nội dung và câu hỏi vào hệ thống!";
             await JS.InvokeVoidAsync("console.log", "SaveAndCreate completed successfully");
 
-            // Navigate after short delay to allow user see success (optional)
             Navigation.NavigateTo("/revision");
         }
         catch (Exception ex)

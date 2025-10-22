@@ -320,7 +320,49 @@
         }
 
 
-       
+        var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            errorMessage = "⚠️ Không tìm thấy token. Hãy đăng nhập lại!";
+            return;
+        }
+
+        token = token.Trim();
+
+        // 🔹 Decode JWT để lấy userId
+        int userId = 0;
+        try
+        {
+            var parts = token.Split('.');
+            if (parts.Length == 3)
+            {
+                var payload = parts[1];
+                payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                var jsonBytes = Convert.FromBase64String(payload);
+                var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+
+                if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
+                {
+                    int.TryParse(userIdProp.GetString(), out userId);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "JWT parse failed", ex.Message);
+        }
+
+        if (userId == 0)
+        {
+            errorMessage = "⚠️ Không tìm thấy userId hợp lệ trong token!";
+            return;
+        }
+
+        // 🔹 Gắn token vào HttpClient (Bearer)
+        var backendClient = HttpClientFactory.CreateClient("FastApiClient");
+        backendClient.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
       
       
@@ -334,7 +376,7 @@
                 
                 typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "flashcard",
                 tag = selectedTags.FirstOrDefault() ?? "",
-                userId = 1,
+                userId = userId,
                 count = quizData.QuestionCount
             };
 
@@ -497,15 +539,18 @@
             foreach (var question in questions)
             {
                 idx++;
-                var answers = question.Answers.ToDictionary(
-                a => GetAnswerLabel(question.Answers.IndexOf(a)),
-                a => a.Text);
+
+                // Tạo answers đúng định dạng JSON object
+                var answers = new Dictionary<string, string>();
+                for (int i = 0; i < question.Answers.Count; i++)
+                {
+                    answers.Add($"additionalProp{i + 1}", question.Answers[i].Text);
+                }
 
                 var correctAnswers = question.Answers
-                .Select((a, i) => new { Answer = a, Index = i })
-                .Where(x => x.Answer.IsCorrect)
-                .Select(x => GetAnswerLabel(x.Index))
-                .ToList();
+                    .Where(a => a.IsCorrect)
+                    .Select(a => a.Text)
+                    .ToList();
 
                 var payload = new
                 {
@@ -524,13 +569,12 @@
                 {
                     questionIndex = idx,
                     status = (int)saveResponse.StatusCode,
-                    body =
-                saveRespBody
+                    body = saveRespBody
                 });
 
                 if (!saveResponse.IsSuccessStatusCode)
                 {
-                    errorMessage = "Lỗi khi lưu câu hỏi";
+                    errorMessage = $"❌ Lỗi khi lưu câu hỏi #{idx}";
                     Console.WriteLine($"Save question #{idx} failed: {saveRespBody}");
                     return;
                 }

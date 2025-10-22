@@ -1,0 +1,409 @@
+﻿@page "/flashcard-create"
+@inject NavigationManager Navigation
+
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<div class="flashcard-container">
+    <div class="container">
+        <h1 class="page-title">Thư viện bài học</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab">Upload tài liệu</button>
+            <button class="tab">Tạo Quiz</button>
+            <button class="tab active">Ôn tập</button>
+        </div>
+
+        <h2 class="section-title">Ôn tập - Flashcard</h2>
+
+        <!-- Tiêu đề -->
+        <div class="form-group">
+            <label class="form-label">Tiêu đề</label>
+            <input type="text" class="form-input" @bind="title" placeholder="Nhập tiêu đề..." />
+        </div>
+
+        <!-- Mô tả -->
+        <div class="form-group">
+            <label class="form-label">Mô tả</label>
+            <textarea class="form-textarea" @bind="description" placeholder="Nhập mô tả..."></textarea>
+        </div>
+
+        <!-- Flashcards List -->
+        <div class="flashcards-list">
+            @for (int i = 0; i < flashcards.Count; i++)
+            {
+                var index = i; // Capture cho lambda
+                               <div class="flashcard-item">
+                                   <div class="flashcard-number">@(index + 1)</div>
+                                   <div class="flashcard-content">
+                                       <div class="flashcard-row">
+                                           <div class="flashcard-field">
+                                               <input type="text"
+                                                      class="flashcard-input"
+                                                      @bind="flashcards[index].Term"
+                                                      placeholder="Nhập thuật ngữ..." />
+                                               <span class="field-label">Thuật ngữ</span>
+                                           </div>
+                                           <div class="flashcard-field">
+                                               <input type="text"
+                                                      class="flashcard-input"
+                                                      @bind="flashcards[index].Definition"
+                                                      placeholder="Nhập định nghĩa..." />
+                                               <span class="field-label">Định nghĩa</span>
+                                           </div>
+                                       </div>
+                                   </div>
+                    @if (flashcards.Count > 1)
+                    {
+                        <button class="btn-remove" @onclick="() => RemoveFlashcard(index)">
+                            <span>🗑️</span>
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Add Button -->
+        <div class="add-button-container">
+            <button class="btn-add" @onclick="AddFlashcard">
+                <span class="add-icon">⊕</span>
+            </button>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-container">
+            <button class="btn-submit" @onclick="CreateFlashcardSet">
+                Tạo và xem trước
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string title = "";
+    private string description = "";
+    private List<FlashcardItem> flashcards = new List<FlashcardItem>
+    {
+        new FlashcardItem(),
+        new FlashcardItem(),
+        new FlashcardItem()
+    };
+
+    public class FlashcardItem
+    {
+        public string Term { get; set; } = "";
+        public string Definition { get; set; } = "";
+    }
+
+    private void AddFlashcard()
+    {
+        flashcards.Add(new FlashcardItem());
+    }
+
+    private void RemoveFlashcard(int index)
+    {
+        if (flashcards.Count > 1)
+        {
+            flashcards.RemoveAt(index);
+        }
+    }
+
+    private void CreateFlashcardSet()
+    {
+        // Xử lý tạo flashcard set
+        Console.WriteLine($"Title: {title}");
+        Console.WriteLine($"Description: {description}");
+        Console.WriteLine($"Total flashcards: {flashcards.Count}");
+
+        foreach (var card in flashcards)
+        {
+            Console.WriteLine($"Term: {card.Term}, Definition: {card.Definition}");
+        }
+    }
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Baloo 2', cursive;
+        background: #ffffff;
+    }
+
+    .flashcard-container {
+        min-height: 100vh;
+        padding: 40px 20px;
+        background: #ffffff;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Page Title */
+    .page-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #4318FF;
+        margin-bottom: 20px;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 5px;
+        border-bottom: 2px solid #e8e8e8;
+        margin-bottom: 30px;
+    }
+
+    .tab {
+        background: transparent;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #718096;
+        cursor: pointer;
+        position: relative;
+        font-family: 'Baloo 2', cursive;
+        transition: color 0.3s;
+    }
+
+        .tab:hover {
+            color: #4318FF;
+        }
+
+        .tab.active {
+            color: #4318FF;
+        }
+
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
+
+    /* Section Title */
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1D059D;
+        margin-bottom: 25px;
+    }
+
+    /* Form Group */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 16px;
+        font-weight: 700;
+        color: #2D3748;
+        margin-bottom: 8px;
+    }
+
+    .form-input {
+        width: 100%;
+        background: #E9E3FF;
+        border: none;
+        border-radius: 12px;
+        padding: 15px 20px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        color: #2D3748;
+        outline: none;
+        transition: background 0.3s;
+    }
+
+        .form-input:focus {
+            background: #D5CEFD;
+        }
+
+    .form-textarea {
+        width: 100%;
+        min-height: 120px;
+        background: #E9E3FF;
+        border: none;
+        border-radius: 12px;
+        padding: 15px 20px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        color: #2D3748;
+        outline: none;
+        resize: vertical;
+        transition: background 0.3s;
+    }
+
+        .form-textarea:focus {
+            background: #D5CEFD;
+        }
+
+    /* Flashcards List */
+    .flashcards-list {
+        margin-bottom: 30px;
+    }
+
+    .flashcard-item {
+        background: #E9E3FF;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .flashcard-number {
+        background: #1D059D;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .flashcard-content {
+        flex: 1;
+    }
+
+    .flashcard-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .flashcard-field {
+        position: relative;
+    }
+
+    .flashcard-input {
+        width: 100%;
+        background: white;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 15px;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        color: #2D3748;
+        outline: none;
+        transition: all 0.3s;
+    }
+
+        .flashcard-input:focus {
+            border-color: #4318FF;
+            box-shadow: 0 0 0 3px rgba(67, 24, 255, 0.1);
+        }
+
+    .field-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2D3748;
+        margin-top: 8px;
+    }
+
+    .btn-remove {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        opacity: 0.6;
+        transition: opacity 0.3s;
+        padding: 5px;
+    }
+
+        .btn-remove:hover {
+            opacity: 1;
+        }
+
+    /* Add Button */
+    .add-button-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .btn-add {
+        background: transparent;
+        border: 2px dashed #4318FF;
+        color: #4318FF;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 30px;
+        transition: all 0.3s;
+        font-family: 'Baloo 2', cursive;
+    }
+
+        .btn-add:hover {
+            background: #4318FF;
+            color: white;
+            transform: scale(1.1);
+        }
+
+    .add-icon {
+        line-height: 1;
+    }
+
+    /* Submit Button */
+    .submit-container {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .btn-submit {
+        background: #1D059D;
+        color: white;
+        border: none;
+        padding: 16px 60px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+        .btn-submit:hover {
+            background: #2A0CD8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(29, 5, 157, 0.4);
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .flashcard-row {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 24px;
+        }
+
+        .flashcard-container {
+            padding: 20px 15px;
+        }
+    }
+</style>

@@ -1,145 +1,159 @@
-﻿
+﻿@page "/flashcard-practice"
+@inject NavigationManager Navigation
 
-@page "/flashcard"
-@inject IJSRuntime JS
-<Quiz.Shared.Header />
-<div class="flashcard-container">
-    <div class="header">
-        <h1>📚 Học với Flashcard</h1>
-       
-    </div>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    @if (showAddForm)
-    {
-        <div class="add-form-overlay" @onclick="CloseAddForm">
-            <div class="add-form" @onclick:stopPropagation="true">
-                <h3>➕ Thêm Flashcard Mới</h3>
-                <div class="form-group">
-                    <label>Mặt trước (Câu hỏi/Thuật ngữ):</label>
-                    <textarea @bind="newFrontText" placeholder="Nhập câu hỏi hoặc thuật ngữ..." rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Mặt sau (Câu trả lời/Định nghĩa):</label>
-                    <textarea @bind="newBackText" placeholder="Nhập câu trả lời hoặc định nghĩa..." rows="3"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-cancel" @onclick="CloseAddForm">Hủy</button>
-                    <button class="btn-add" @onclick="AddFlashcard">Thêm thẻ</button>
-                </div>
-            </div>
+<div class="flashcard-practice-container">
+    <div class="container">
+        <h1 class="page-title">Thư viện bài học</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab">Upload tài liệu</button>
+            <button class="tab">Tạo Quiz</button>
+            <button class="tab active">Ôn tập</button>
         </div>
-    }
 
-    @if (flashcards.Count > 0)
-    {
-        <div class="flashcard-area">
-            <div class="card @(isFlipped ? "flipped" : "")" @onclick="FlipCard">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <div class="card-label">Câu hỏi</div>
-                        <div class="card-content">
-                            @flashcards[currentIndex - 1].FrontText
-                        </div>
-                        <div class="flip-hint">👆 Nhấn để xem câu trả lời</div>
+        <h2 class="section-title">Ôn tập - Flashcard</h2>
+
+        <!-- Flashcard Viewer -->
+        <div class="flashcard-viewer">
+            <div class="flashcard-card" @onclick="FlipCard">
+                <div class="flashcard-content @(isFlipped ? "flipped" : "")">
+                    <div class="flashcard-front">
+                        <div class="card-text">@GetCurrentTerm()</div>
                     </div>
-                    <div class="card-back">
-                        <div class="card-label">Câu trả lời</div>
-                        <div class="card-content">
-                            @flashcards[currentIndex - 1].BackText
-                        </div>
-                        <div class="flip-hint">👆 Nhấn để xem câu hỏi</div>
+                    <div class="flashcard-back">
+                        <div class="card-text">@GetCurrentDefinition()</div>
                     </div>
                 </div>
             </div>
 
-            <div class="controls">
-                <button class="btn-nav" @onclick="PreviousCard" disabled="@(currentIndex <= 1)" style = "margin-left:180px;">
-                     &lt; 
+            <!-- Progress Counter -->
+            <div class="flashcard-progress">
+                @(currentIndex + 1)/@flashcards.Count
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flashcard-nav">
+                <button class="btn-nav btn-prev" @onclick="PreviousCard" disabled="@(currentIndex == 0)">
+                    <span>‹</span>
                 </button>
-
-             <span class="stat-item">
-                <strong>@currentIndex / @flashcards.Count</strong> 
-            </span>
-
-                <button class="btn-nav" @onclick="NextCard" disabled="@(currentIndex >= flashcards.Count)" style = "margin-right:180px;" >
-                    &gt;
+                <button class="btn-nav btn-next" @onclick="NextCard" disabled="@(currentIndex >= flashcards.Count - 1)">
+                    <span>›</span>
                 </button>
             </div>
+        </div>
 
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: @progressPercentage%"></div>
+        <!-- Scroll Down Indicator -->
+        <div class="scroll-indicator">
+            <span>⌄</span>
+            <p>Kéo xuống để xem tất cả</p>
+        </div>
+
+        <!-- List View Section -->
+        <div class="list-view-section">
+            <div class="list-header">
+                <h3>Xem trước bài ôn tập</h3>
+                <span class="list-count">Số lượng câu hỏi ôn tập: @flashcards.Count</span>
             </div>
-        </div>
 
-        <div class="deck-actions">
-            <button class="btn-secondary" @onclick="ShuffleCards">
-                🔀 Xáo trộn
-            </button>
-            <button class="btn-secondary" @onclick="ResetProgress">
-                🔄 Học lại
-            </button>
-            <button class="btn-secondary" @onclick="ShowAddForm">
-                ➕ Thêm thẻ
-            </button>
-        </div>
-    }
-    else
-    {
-        <div class="empty-state">
-            <div class="empty-icon">📝</div>
-            <h3>Chưa có flashcard nào</h3>
-            <p>Bắt đầu tạo flashcard để học tập hiệu quả hơn!</p>
-            <button class="btn-primary" @onclick="ShowAddForm">
-                ➕ Tạo Flashcard đầu tiên
-            </button>
-        </div>
-    }
+            <div class="flashcards-list">
+                @foreach (var (card, index) in flashcards.Select((c, i) => (c, i)))
+                {
+                    <div class="flashcard-list-item">
+                        <div class="list-item-content">
+                            <div class="list-item-term">
+                                @card.Term
+                            </div>
+                            <div class="list-item-definition">
+                                <div class="definition-options">
+                                    @foreach (var option in card.Options)
+                                    {
+                                        <div class="option-item">@option</div>
+                                    }
+                                </div>
+                                <div class="correct-answer">Đáp án: @card.CorrectAnswer</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
 
-    <div class="card-list">
-        <h3>📋 Danh sách Flashcard (@flashcards.Count)</h3>
-        <div class="cards-grid">
-            @foreach (var (card, index) in flashcards.Select((c, i) => (c, i)))
-            {
-                <div class="card-item @(index == currentIndex - 1 ? "active" : "") @(card.IsLearned ? "learned" : "")">
-                    <div class="card-item-header">
-                        <span class="card-number">#@(index + 1)</span>
-                        @if (card.IsLearned)
-                        {
-                            <span class="learned-badge">✓</span>
-                        }
-                    </div>
-                    <div class="card-item-content" @onclick="() => GoToCard(index + 1)">
-                        <strong>@card.FrontText</strong>
-                    </div>
-                    <button class="btn-delete" @onclick="() => DeleteCard(index)">🗑️</button>
-                </div>
-            }
+            <!-- Practice Button -->
+            <div class="practice-button-container">
+                <button class="btn-practice" @onclick="StartPractice">
+                    Ôn tập Flashcard
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 @code {
-    private List<FlashCard> flashcards = new List<FlashCard>();
-    private int currentIndex = 1;
-    private bool isFlipped = false;
-    private bool showAddForm = false;
-    private string newFrontText = "";
-    private string newBackText = "";
+    [Parameter]
+    public int setQuizId { get; set; }
 
-    private int learnedCount => flashcards.Count(c => c.IsLearned);
-    private double progressPercentage => flashcards.Count > 0 ? (learnedCount * 100.0 / flashcards.Count) : 0;
+    private int currentIndex = 0;
+    private bool isFlipped = false;
+    private List<FlashcardItem> flashcards = new List<FlashcardItem>();
 
     protected override void OnInitialized()
     {
-        // Dữ liệu mẫu
-        flashcards = new List<FlashCard>
+        // Sample data
+        flashcards = new List<FlashcardItem>
         {
-            new FlashCard { FrontText = "HTML là gì?", BackText = "HTML (HyperText Markup Language) là ngôn ngữ đánh dấu siêu văn bản dùng để tạo cấu trúc cho trang web." },
-            new FlashCard { FrontText = "CSS là gì?", BackText = "CSS (Cascading Style Sheets) là ngôn ngữ định dạng để tạo phong cách và bố cục cho trang web." },
-            new FlashCard { FrontText = "JavaScript là gì?", BackText = "JavaScript là ngôn ngữ lập trình giúp tạo tính tương tác và động cho trang web." },
-            new FlashCard { FrontText = "Blazor là gì?", BackText = "Blazor là framework của Microsoft cho phép xây dựng ứng dụng web tương tác bằng C# thay vì JavaScript." },
-            new FlashCard { FrontText = "WebAssembly là gì?", BackText = "WebAssembly (WASM) là định dạng mã nhị phân cho phép chạy code hiệu suất cao trên trình duyệt." }
+            new FlashcardItem
+            {
+                Term = "Thuật ngữ",
+                Definition = "Định nghĩa",
+                Options = new List<string>
+                {
+                    "A. Technological",
+                    "B. Disciplinary",
+                    "C. Political",
+                    "D. All the above"
+                },
+                CorrectAnswer = "D"
+            },
+            new FlashcardItem
+            {
+                Term = "The key influences on the development of the media and communication research field then can be identified and summarised as ______?",
+                Definition = "All the above",
+                Options = new List<string>
+                {
+                    "A. Technological",
+                    "B. Disciplinary",
+                    "C. Political",
+                    "D. All the above"
+                },
+                CorrectAnswer = "D"
+            }
         };
+
+        // Repeat for demo
+        for (int i = 0; i < 10; i++)
+        {
+            flashcards.Add(flashcards[1]);
+        }
+    }
+
+    public class FlashcardItem
+    {
+        public string Term { get; set; }
+        public string Definition { get; set; }
+        public List<string> Options { get; set; } = new List<string>();
+        public string CorrectAnswer { get; set; }
+    }
+
+    private string GetCurrentTerm()
+    {
+        return currentIndex < flashcards.Count ? flashcards[currentIndex].Term : "";
+    }
+
+    private string GetCurrentDefinition()
+    {
+        return currentIndex < flashcards.Count ? flashcards[currentIndex].Definition : "";
     }
 
     private void FlipCard()
@@ -149,7 +163,7 @@
 
     private void NextCard()
     {
-        if (currentIndex < flashcards.Count)
+        if (currentIndex < flashcards.Count - 1)
         {
             currentIndex++;
             isFlipped = false;
@@ -158,529 +172,363 @@
 
     private void PreviousCard()
     {
-        if (currentIndex > 1)
+        if (currentIndex > 0)
         {
             currentIndex--;
             isFlipped = false;
         }
     }
 
-    private void GoToCard(int index)
+    private void StartPractice()
     {
-        currentIndex = index;
-        isFlipped = false;
-    }
-
-    private void MarkAsKnown()
-    {
-        if (currentIndex > 0 && currentIndex <= flashcards.Count)
-        {
-            flashcards[currentIndex - 1].IsLearned = true;
-            NextCard();
-        }
-    }
-
-    private void MarkAsUnknown()
-    {
-        if (currentIndex > 0 && currentIndex <= flashcards.Count)
-        {
-            flashcards[currentIndex - 1].IsLearned = false;
-            NextCard();
-        }
-    }
-
-    private void ShuffleCards()
-    {
-        var random = new Random();
-        flashcards = flashcards.OrderBy(x => random.Next()).ToList();
-        currentIndex = 1;
-        isFlipped = false;
-    }
-
-    private void ResetProgress()
-    {
-        foreach (var card in flashcards)
-        {
-            card.IsLearned = false;
-        }
-        currentIndex = 1;
-        isFlipped = false;
-    }
-
-    private void ShowAddForm()
-    {
-        showAddForm = true;
-        newFrontText = "";
-        newBackText = "";
-    }
-
-    private void CloseAddForm()
-    {
-        showAddForm = false;
-    }
-
-    private void AddFlashcard()
-    {
-        if (!string.IsNullOrWhiteSpace(newFrontText) && !string.IsNullOrWhiteSpace(newBackText))
-        {
-            flashcards.Add(new FlashCard
-            {
-                FrontText = newFrontText.Trim(),
-                BackText = newBackText.Trim()
-            });
-            CloseAddForm();
-            currentIndex = flashcards.Count;
-        }
-    }
-
-    private void DeleteCard(int index)
-    {
-        flashcards.RemoveAt(index);
-        if (currentIndex > flashcards.Count)
-        {
-            currentIndex = flashcards.Count;
-        }
-        if (currentIndex < 1 && flashcards.Count > 0)
-        {
-            currentIndex = 1;
-        }
-    }
-
-    public class FlashCard
-    {
-        public string FrontText { get; set; }
-        public string BackText { get; set; }
-        public bool IsLearned { get; set; }
+        // Logic to start practice mode
+        Console.WriteLine("Start practice mode");
     }
 }
-<Quiz.Shared.Footer />
+
 <style>
+    @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
     * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
     }
 
-    .flashcard-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 30px 20px;
-           font-family: 'Baloo 2', cursive;
-        
+    body {
+        font-family: 'Baloo 2', cursive;
+        background: #ffffff;
+    }
+
+    .flashcard-practice-container {
         min-height: 100vh;
+        padding: 40px 20px;
+        background: #ffffff;
     }
 
-    .header {
-        text-align: left;
-        color: black;
-        margin-bottom: 40px;
-         font-family: 'Baloo 2', cursive;
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
     }
 
-    .header h1 {
-        font-size: 42px;
-        margin-bottom: 15px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-         font-family: 'Baloo 2', cursive;
+    /* Page Title */
+    .page-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #4318FF;
+        margin-bottom: 20px;
     }
 
-    .stats {
+    /* Tabs */
+    .tabs {
         display: flex;
-        justify-content: center;
-        gap: 30px;
-        font-size: 18px;
-    }
-
-    .stat-item {
-        background: rgba(255,255,255,0.2);
-        padding: 10px 20px;
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        color :#1D059D;
-        font-size : 30px;   
-    }
-
-    .flashcard-area {
+        gap: 5px;
+        border-bottom: 2px solid #e8e8e8;
         margin-bottom: 30px;
     }
 
-    .card {
-        perspective: 1000px;
+    .tab {
+        background: transparent;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #718096;
         cursor: pointer;
+        position: relative;
+        font-family: 'Baloo 2', cursive;
+        transition: color 0.3s;
+    }
+
+    .tab:hover {
+        color: #4318FF;
+    }
+
+    .tab.active {
+        color: #4318FF;
+    }
+
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #4318FF;
+    }
+
+    /* Section Title */
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #2D3748;
         margin-bottom: 30px;
     }
 
-    .card-inner {
-        position: relative;
+    /* Flashcard Viewer */
+    .flashcard-viewer {
+        margin-bottom: 60px;
+    }
+
+    .flashcard-card {
         width: 100%;
         height: 400px;
+        perspective: 1000px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .flashcard-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
         transition: transform 0.6s;
         transform-style: preserve-3d;
     }
 
-    .card.flipped .card-inner {
-        transform: rotateX(-180deg);
+    .flashcard-content.flipped {
+        transform: rotateY(180deg);
     }
 
-    .card-front, .card-back {
+    .flashcard-front,
+    .flashcard-back {
         position: absolute;
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 20px;
+        background: linear-gradient(135deg, #E9E3FF 0%, #D5CEFD 100%);
         padding: 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
 
-    .card-front {
-        background: #D5CEFD;
-        color: #333;
+    .flashcard-back {
+        transform: rotateY(180deg);
+        background: linear-gradient(135deg, #C4B5FD 0%, #A78BFA 100%);
     }
 
-    .card-back {
-        background: #D5CEFD;
-        color: black;
-        transform: rotateX(-180deg);
-    }
-
-    .card-label {
-        position: absolute;
-        top: 20px;
-        left: 30px;
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        opacity: 0.7;
-        letter-spacing: 1px;
-        color:black;
-         font-family: 'Baloo 2', cursive;
-    }
-
-    .card-content {
-        font-size: 28px;
-        font-weight: 500;
+    .card-text {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2D1B69;
         text-align: center;
-        line-height: 1.5;
-        padding: 20px;
+        word-wrap: break-word;
     }
 
-    .flip-hint {
-        position: absolute;
-        bottom: 20px;
-        font-size: 14px;
-        opacity: 0.6;
-        color :black;
-        font-weight : 900;
-         font-family: 'Baloo 2', cursive;
+    .flashcard-back .card-text {
+        color: #1D059D;
     }
 
-    .controls {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
+    /* Progress Counter */
+    .flashcard-progress {
+        text-align: center;
+        font-size: 24px;
+        font-weight: 700;
+        color: #4318FF;
         margin-bottom: 20px;
     }
 
-    .action-buttons {
+    /* Navigation Buttons */
+    .flashcard-nav {
         display: flex;
-        gap: 15px;
-    }
-
-    .btn-nav, .btn-action, .btn-secondary, .btn-primary, .btn-add, .btn-cancel {
-        padding: 14px 28px;
-        border: none;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        justify-content: center;
+        gap: 20px;
     }
 
     .btn-nav {
-        background: #A57DBA;
+        background: #9F7AEA;
         color: white;
-        font-size : 24px;
+        border: none;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: 32px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Baloo 2', cursive;
     }
 
     .btn-nav:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        background: #805AD5;
+        transform: scale(1.1);
     }
 
     .btn-nav:disabled {
-        opacity: 0.4;
+        background: #CBD5E0;
         cursor: not-allowed;
+        opacity: 0.5;
     }
 
-    .btn-action {
-        flex: 1;
-        min-width: 140px;
+    /* Scroll Indicator */
+    .scroll-indicator {
+        text-align: center;
+        margin: 40px 0;
+        color: #718096;
     }
 
-    .btn-unknown {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-        color: white;
+    .scroll-indicator span {
+        font-size: 48px;
+        display: block;
+        animation: bounce 2s infinite;
     }
 
-    .btn-known {
-        background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
-        color: white;
+    .scroll-indicator p {
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 10px;
     }
 
-    .btn-action:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
     }
 
-    .progress-bar {
-        width: 100%;
-        height: 12px;
-        background: rgba(255,255,255,0.3);
-        border-radius: 10px;
-        overflow: hidden;
+    /* List View Section */
+    .list-view-section {
+        margin-top: 60px;
+        padding-top: 40px;
+        border-top: 3px solid #E9E3FF;
     }
 
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #51cf66 0%, #37b24d 100%);
-        transition: width 0.5s ease;
+    .list-header {
+        margin-bottom: 30px;
     }
 
-    .deck-actions {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
+    .list-header h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2D3748;
+        margin-bottom: 10px;
+    }
+
+    .list-count {
+        display: inline-block;
+        background: #E9E3FF;
+        color: #1D059D;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Flashcards List */
+    .flashcards-list {
         margin-bottom: 40px;
     }
 
-    .btn-secondary {
-        background: rgba(255,255,255,0.9);
-        color: #667eea;
-    }
-
-    .btn-secondary:hover {
-        background: white;
-        transform: translateY(-2px);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-        background: white;
-        border-radius: 20px;
-        margin-bottom: 30px;
-    }
-
-    .empty-icon {
-        font-size: 80px;
+    .flashcard-list-item {
+        background: #E9E3FF;
+        border-radius: 16px;
         margin-bottom: 20px;
+        overflow: hidden;
+        border: 3px solid #1D059D;
     }
 
-    .empty-state h3 {
-        font-size: 28px;
-        color: #333;
-        margin-bottom: 10px;
-    }
-
-    .empty-state p {
-        color: #666;
-        font-size: 18px;
-        margin-bottom: 30px;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-    }
-
-    .add-form-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.6);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .add-form {
-        background: white;
-        border-radius: 20px;
-        padding: 40px;
-        max-width: 600px;
-        width: 90%;
-        box-shadow: 0 10px 50px rgba(0,0,0,0.3);
-    }
-
-    .add-form h3 {
-        color: #333;
-        margin-bottom: 25px;
-        font-size: 24px;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        color: #666;
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-
-    .form-group textarea {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 16px;
-        font-family: inherit;
-        resize: vertical;
-        transition: border-color 0.3s;
-    }
-
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 15px;
-        justify-content: flex-end;
-        margin-top: 25px;
-    }
-
-    .btn-cancel {
-        background: #e0e0e0;
-        color: #666;
-    }
-
-    .btn-add {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .card-list {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-
-    .card-list h3 {
-        color: #333;
-        margin-bottom: 20px;
-        font-size: 22px;
-    }
-
-    .cards-grid {
+    .list-item-content {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 15px;
+        grid-template-columns: 1fr 1fr;
+        min-height: 150px;
     }
 
-    .card-item {
-        background: #f8f9fa;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 15px;
-        transition: all 0.3s;
-        position: relative;
-    }
-
-    .card-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .card-item.active {
-        border-color: #667eea;
-        background: #f0f2ff;
-    }
-
-    .card-item.learned {
-        background: #e6ffe6;
-        border-color: #51cf66;
-    }
-
-    .card-item-header {
+    .list-item-term {
+        background: #D5CEFD;
+        padding: 25px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2D3748;
+        border-right: 3px solid #1D059D;
     }
 
-    .card-number {
-        font-weight: 700;
-        color: #667eea;
+    .list-item-definition {
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .definition-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .option-item {
         font-size: 14px;
+        color: #2D3748;
+        font-weight: 500;
     }
 
-    .learned-badge {
-        background: #51cf66;
+    .correct-answer {
+        font-size: 14px;
+        color: #805AD5;
+        font-weight: 700;
+    }
+
+    /* Practice Button */
+    .practice-button-container {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .btn-practice {
+        background: linear-gradient(135deg, #E53E3E 0%, #FC8181 100%);
         color: white;
-        padding: 3px 8px;
-        border-radius: 10px;
-        font-size: 12px;
-    }
-
-    .card-item-content {
-        cursor: pointer;
-        color: #333;
-        font-size: 15px;
-        margin-bottom: 10px;
-        line-height: 1.4;
-    }
-
-    .btn-delete {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: transparent;
         border: none;
+        padding: 16px 60px;
+        border-radius: 12px;
         font-size: 18px;
+        font-weight: 700;
         cursor: pointer;
-        opacity: 0.5;
-        transition: opacity 0.2s;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
     }
 
-    .btn-delete:hover {
-        opacity: 1;
+    .btn-practice:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
     }
 
+    /* Responsive */
     @@media (max-width: 768px) {
-        .controls {
-            flex-direction: column;
+        .flashcard-card {
+            height: 300px;
         }
 
-        .action-buttons {
-            width: 100%;
-            flex-direction: column;
+        .card-text {
+            font-size: 24px;
         }
 
-        .btn-action {
-            width: 100%;
-        }
-
-        .card-content {
-            font-size: 22px;
-        }
-
-        .cards-grid {
+        .list-item-content {
             grid-template-columns: 1fr;
+        }
+
+        .list-item-term {
+            border-right: none;
+            border-bottom: 3px solid #1D059D;
+        }
+
+        .page-title {
+            font-size: 24px;
+        }
+
+        .flashcard-practice-container {
+            padding: 20px 15px;
         }
     }
 </style>
