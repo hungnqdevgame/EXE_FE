@@ -1,5 +1,7 @@
-﻿@page "/flashcard-practice"
+﻿@page "/flashcard-practice/{setQuizId:int}"
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject HttpClient Http
 
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -7,7 +9,6 @@
     <div class="container">
         <h1 class="page-title">Thư viện bài học</h1>
 
-        <!-- Tabs -->
         <div class="tabs">
             <button class="tab">Upload tài liệu</button>
             <button class="tab">Tạo Quiz</button>
@@ -16,77 +17,177 @@
 
         <h2 class="section-title">Ôn tập - Flashcard</h2>
 
-        <!-- Flashcard Viewer -->
-        <div class="flashcard-viewer">
-            <div class="flashcard-card" @onclick="FlipCard">
-                <div class="flashcard-content @(isFlipped ? "flipped" : "")">
-                    <div class="flashcard-front">
-                        <div class="card-text">@GetCurrentTerm()</div>
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Đang tải flashcards...</p>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                ❌ @errorMessage
+            </div>
+        }
+        else if (!quizStarted)
+        {
+            <!-- Preview Mode -->
+            <div class="flashcard-viewer">
+                <div class="flashcard-card" @onclick="FlipCard">
+                    <div class="flashcard-content @(isFlipped ? "flipped" : "")">
+                        <div class="flashcard-front">
+                            <div class="card-label">Thuật ngữ</div>
+                            <div class="card-text">@GetCurrentTerm()</div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div class="card-label">Định nghĩa</div>
+                            <div class="card-text">@GetCurrentDefinition()</div>
+                        </div>
                     </div>
-                    <div class="flashcard-back">
-                        <div class="card-text">@GetCurrentDefinition()</div>
-                    </div>
+                </div>
+
+                <div class="flashcard-progress">
+                    @(currentIndex + 1)/@flashcards.Count
+                </div>
+
+                <div class="flashcard-nav">
+                    <button class="btn-nav btn-prev" @onclick="PreviousCard" disabled="@(currentIndex == 0)">
+                        <span>‹</span>
+                    </button>
+                    <button class="btn-nav btn-next" @onclick="NextCard" disabled="@(currentIndex >= flashcards.Count - 1)">
+                        <span>›</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Progress Counter -->
-            <div class="flashcard-progress">
-                @(currentIndex + 1)/@flashcards.Count
+            <div class="scroll-indicator">
+                <span>⌄</span>
+                <p>Kéo xuống để xem tất cả</p>
             </div>
 
-            <!-- Navigation Buttons -->
-            <div class="flashcard-nav">
-                <button class="btn-nav btn-prev" @onclick="PreviousCard" disabled="@(currentIndex == 0)">
-                    <span>‹</span>
-                </button>
-                <button class="btn-nav btn-next" @onclick="NextCard" disabled="@(currentIndex >= flashcards.Count - 1)">
-                    <span>›</span>
-                </button>
-            </div>
-        </div>
+            <div class="list-view-section">
+                <div class="list-header">
+                    <h3>Xem trước bài ôn tập</h3>
+                    <span class="list-count">Số lượng flashcard: @flashcards.Count</span>
+                </div>
 
-        <!-- Scroll Down Indicator -->
-        <div class="scroll-indicator">
-            <span>⌄</span>
-            <p>Kéo xuống để xem tất cả</p>
-        </div>
-
-        <!-- List View Section -->
-        <div class="list-view-section">
-            <div class="list-header">
-                <h3>Xem trước bài ôn tập</h3>
-                <span class="list-count">Số lượng câu hỏi ôn tập: @flashcards.Count</span>
-            </div>
-
-            <div class="flashcards-list">
-                @foreach (var (card, index) in flashcards.Select((c, i) => (c, i)))
-                {
-                    <div class="flashcard-list-item">
-                        <div class="list-item-content">
-                            <div class="list-item-term">
-                                @card.Term
-                            </div>
-                            <div class="list-item-definition">
-                                <div class="definition-options">
-                                    @foreach (var option in card.Options)
-                                    {
-                                        <div class="option-item">@option</div>
-                                    }
+                <div class="flashcards-list">
+                    @foreach (var (card, index) in flashcards.Select((c, i) => (c, i)))
+                    {
+                        <div class="flashcard-list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-term">
+                                    <strong>Thuật ngữ:</strong> @card.Term
                                 </div>
-                                <div class="correct-answer">Đáp án: @card.CorrectAnswer</div>
+                                <div class="list-item-definition">
+                                    <strong>Định nghĩa:</strong> @card.Definition
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
-            </div>
+                    }
+                </div>
 
-            <!-- Practice Button -->
-            <div class="practice-button-container">
-                <button class="btn-practice" @onclick="StartPractice">
-                    Ôn tập Flashcard
-                </button>
+                <div class="practice-button-container">
+                    <button class="btn-practice" @onclick="StartPractice">
+                        Bắt đầu kiểm tra
+                    </button>
+                </div>
             </div>
-        </div>
+        }
+        else if (showResults)
+        {
+            <!-- Results Mode -->
+            <div class="results-container">
+                <h2 class="results-title">Kết quả kiểm tra</h2>
+                <div class="score-display">
+                    <div class="score-circle">
+                        <div class="score-number">@GetCorrectCount()/@flashcards.Count</div>
+                        <div class="score-label">Đúng</div>
+                    </div>
+                </div>
+
+                <div class="results-list">
+                    @foreach (var (card, index) in flashcards.Select((c, i) => (c, i)))
+                    {
+                        var isCorrect = card.UserAnswer == card.Definition;
+                        <div class="result-item @(isCorrect ? "correct" : "incorrect")">
+                            <div class="result-header">
+                                <span class="result-number">Câu @(index + 1)</span>
+                                <span class="result-badge @(isCorrect ? "badge-correct" : "badge-incorrect")">
+                                    @(isCorrect ? "✓ Đúng" : "✗ Sai")
+                                </span>
+                            </div>
+                            <div class="result-question">@card.Term</div>
+                            <div class="result-answer">
+                                <strong>Đáp án đúng:</strong> @card.Definition
+                            </div>
+                            @if (!isCorrect)
+                            {
+                                <div class="result-user-answer">
+                                    <strong>Bạn đã chọn:</strong> @card.UserAnswer
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="results-actions">
+                    <button class="btn-retry" @onclick="RetryQuiz">Làm lại</button>
+                    <button class="btn-back" @onclick="BackToLibrary">Quay lại thư viện</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Quiz Mode -->
+            <div class="quiz-container">
+                <div class="quiz-progress-bar">
+                    <div class="progress-fill" style="width: @GetProgressPercentage()%"></div>
+                </div>
+                <div class="quiz-progress-text">
+                    Câu @(currentQuizIndex + 1)/@flashcards.Count
+                </div>
+
+                <div class="quiz-question-card">
+                    <div class="quiz-question">
+                        <strong>Định nghĩa:</strong> @GetCurrentQuizDefinition()
+                    </div>
+
+                    <div class="quiz-options">
+                        @foreach (var (option, index) in GetCurrentQuizOptions().Select((o, i) => (o, i)))
+                        {
+                            <button class="quiz-option @GetOptionClass(option)" 
+                                    @onclick="() => SelectAnswer(option)"
+                                    disabled="@(selectedAnswer != null)">
+                                <span class="option-letter">@GetOptionLetter(index)</span>
+                                <span class="option-text">@option</span>
+                            </button>
+                        }
+                    </div>
+
+                    @if (selectedAnswer != null)
+                    {
+                        <div class="quiz-feedback @(IsAnswerCorrect() ? "feedback-correct" : "feedback-incorrect")">
+                            @if (IsAnswerCorrect())
+                            {
+                                <span>✓ Chính xác!</span>
+                            }
+                            else
+                            {
+                                <span>✗ Sai rồi. Đáp án đúng là: @flashcards[currentQuizIndex].Term</span>
+                            }
+                        </div>
+
+                        <div class="quiz-next-container">
+                            <button class="btn-next-question" @onclick="NextQuestion">
+                                @(currentQuizIndex < flashcards.Count - 1 ? "Câu tiếp theo →" : "Xem kết quả")
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
     </div>
 </div>
 
@@ -95,71 +196,124 @@
     public int setQuizId { get; set; }
 
     private int currentIndex = 0;
+    private int currentQuizIndex = 0;
     private bool isFlipped = false;
+    private bool isLoading = true;
+    private bool quizStarted = false;
+    private bool showResults = false;
+    private string errorMessage = "";
+    private string? selectedAnswer = null;
     private List<FlashcardItem> flashcards = new List<FlashcardItem>();
+    private List<string> currentQuizOptions = new List<string>();
 
-    protected override void OnInitialized()
+    public class ApiQuestion
     {
-        // Sample data
-        flashcards = new List<FlashcardItem>
-        {
-            new FlashcardItem
-            {
-                Term = "Thuật ngữ",
-                Definition = "Định nghĩa",
-                Options = new List<string>
-                {
-                    "A. Technological",
-                    "B. Disciplinary",
-                    "C. Political",
-                    "D. All the above"
-                },
-                CorrectAnswer = "D"
-            },
-            new FlashcardItem
-            {
-                Term = "The key influences on the development of the media and communication research field then can be identified and summarised as ______?",
-                Definition = "All the above",
-                Options = new List<string>
-                {
-                    "A. Technological",
-                    "B. Disciplinary",
-                    "C. Political",
-                    "D. All the above"
-                },
-                CorrectAnswer = "D"
-            }
-        };
+        [System.Text.Json.Serialization.JsonPropertyName("_id")]
+        public string _id { get; set; } = "";
 
-        // Repeat for demo
-        for (int i = 0; i < 10; i++)
-        {
-            flashcards.Add(flashcards[1]);
-        }
+        [System.Text.Json.Serialization.JsonPropertyName("setQuizId")]
+        public int SetQuizId { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("question")]
+        public string Question { get; set; } = "";
+
+        [System.Text.Json.Serialization.JsonPropertyName("answers")]
+        public Dictionary<string, string> Answers { get; set; } = new();
+
+        [System.Text.Json.Serialization.JsonPropertyName("correctAnswers")]
+        public List<string> CorrectAnswers { get; set; } = new();
     }
 
     public class FlashcardItem
     {
-        public string Term { get; set; }
-        public string Definition { get; set; }
-        public List<string> Options { get; set; } = new List<string>();
-        public string CorrectAnswer { get; set; }
+        public string Term { get; set; } = ""; // Thuật ngữ (Question)
+        public string Definition { get; set; } = ""; // Định nghĩa (Correct Answer)
+        public string? UserAnswer { get; set; } // Câu trả lời của user
     }
 
-    private string GetCurrentTerm()
+    protected override async Task OnInitializedAsync()
     {
-        return currentIndex < flashcards.Count ? flashcards[currentIndex].Term : "";
+        await LoadFlashcards();
     }
 
-    private string GetCurrentDefinition()
+    private async Task LoadFlashcards()
     {
-        return currentIndex < flashcards.Count ? flashcards[currentIndex].Definition : "";
+        isLoading = true;
+        errorMessage = "";
+
+        try
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                errorMessage = "Bạn chưa đăng nhập. Vui lòng đăng nhập lại.";
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, 
+                $"https://exe-createquiz.onrender.com/question-api/questions/{setQuizId}");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Trim());
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseText = await response.Content.ReadAsStringAsync();
+                var apiQuestions = System.Text.Json.JsonSerializer.Deserialize<List<ApiQuestion>>(responseText);
+
+                if (apiQuestions == null || !apiQuestions.Any())
+                {
+                    errorMessage = "Không tìm thấy câu hỏi nào.";
+                    return;
+                }
+
+                // Convert to flashcards
+                flashcards = apiQuestions.Select(q => new FlashcardItem
+                {
+                    Term = q.Question, // Thuật ngữ = Question
+                    Definition = GetCorrectAnswer(q), // Định nghĩa = Correct Answer
+                    UserAnswer = null
+                }).ToList();
+
+                Console.WriteLine($"✅ Loaded {flashcards.Count} flashcards");
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                errorMessage = "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.";
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                errorMessage = $"Không thể tải dữ liệu. Mã lỗi: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Lỗi: {ex.Message}";
+            Console.WriteLine($"Error: {ex}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
-    private void FlipCard()
+    private string GetCorrectAnswer(ApiQuestion q)
     {
-        isFlipped = !isFlipped;
+        if (q.CorrectAnswers == null || !q.CorrectAnswers.Any())
+            return "";
+
+        var correctKey = q.CorrectAnswers.First();
+        return q.Answers.ContainsKey(correctKey) ? q.Answers[correctKey] : "";
     }
+
+    // Preview Mode Methods
+    private string GetCurrentTerm() => currentIndex < flashcards.Count ? flashcards[currentIndex].Term : "";
+    private string GetCurrentDefinition() => currentIndex < flashcards.Count ? flashcards[currentIndex].Definition : "";
+
+    private void FlipCard() => isFlipped = !isFlipped;
 
     private void NextCard()
     {
@@ -179,10 +333,103 @@
         }
     }
 
+    // Quiz Mode Methods
     private void StartPractice()
     {
-        // Logic to start practice mode
-        Console.WriteLine("Start practice mode");
+        quizStarted = true;
+        currentQuizIndex = 0;
+        selectedAnswer = null;
+        
+        // Reset user answers
+        foreach (var card in flashcards)
+        {
+            card.UserAnswer = null;
+        }
+
+        GenerateQuizOptions();
+    }
+
+    private void GenerateQuizOptions()
+    {
+        var currentCard = flashcards[currentQuizIndex];
+        var options = new List<string> { currentCard.Term }; // Đáp án đúng
+
+        // Lấy 3 đáp án sai ngẫu nhiên từ các flashcard khác
+        var wrongOptions = flashcards
+            .Where(f => f.Term != currentCard.Term)
+            .OrderBy(x => Random.Shared.Next())
+            .Take(3)
+            .Select(f => f.Term)
+            .ToList();
+
+        options.AddRange(wrongOptions);
+
+        // Shuffle options
+        currentQuizOptions = options.OrderBy(x => Random.Shared.Next()).ToList();
+    }
+
+    private string GetCurrentQuizDefinition() => flashcards[currentQuizIndex].Definition;
+    private List<string> GetCurrentQuizOptions() => currentQuizOptions;
+
+    private void SelectAnswer(string answer)
+    {
+        selectedAnswer = answer;
+        flashcards[currentQuizIndex].UserAnswer = answer;
+    }
+
+    private bool IsAnswerCorrect() => selectedAnswer == flashcards[currentQuizIndex].Term;
+
+    private string GetOptionClass(string option)
+    {
+        if (selectedAnswer == null) return "";
+        
+        var correctAnswer = flashcards[currentQuizIndex].Term;
+        
+        if (option == correctAnswer)
+            return "option-correct";
+        
+        if (option == selectedAnswer && option != correctAnswer)
+            return "option-incorrect";
+        
+        return "option-disabled";
+    }
+
+    private string GetOptionLetter(int index) => ((char)('A' + index)).ToString();
+
+    private void NextQuestion()
+    {
+        if (currentQuizIndex < flashcards.Count - 1)
+        {
+            currentQuizIndex++;
+            selectedAnswer = null;
+            GenerateQuizOptions();
+        }
+        else
+        {
+            ShowResults();
+        }
+    }
+
+    private double GetProgressPercentage() => ((double)(currentQuizIndex + 1) / flashcards.Count) * 100;
+
+    // Results Methods
+    private void ShowResults()
+    {
+        showResults = true;
+        quizStarted = false;
+    }
+
+    private int GetCorrectCount() => flashcards.Count(f => f.UserAnswer == f.Term);
+
+    private void RetryQuiz()
+    {
+        showResults = false;
+        StartPractice();
+    }
+
+    private void BackToLibrary()
+    {
+        Navigation.NavigateTo("/revision-list");
     }
 }
 
@@ -211,7 +458,6 @@
         margin: 0 auto;
     }
 
-    /* Page Title */
     .page-title {
         font-size: 32px;
         font-weight: 800;
@@ -219,7 +465,6 @@
         margin-bottom: 20px;
     }
 
-    /* Tabs */
     .tabs {
         display: flex;
         gap: 5px;
@@ -237,11 +482,6 @@
         cursor: pointer;
         position: relative;
         font-family: 'Baloo 2', cursive;
-        transition: color 0.3s;
-    }
-
-    .tab:hover {
-        color: #4318FF;
     }
 
     .tab.active {
@@ -258,12 +498,40 @@
         background: #4318FF;
     }
 
-    /* Section Title */
     .section-title {
         font-size: 20px;
         font-weight: 700;
         color: #2D3748;
         margin-bottom: 30px;
+    }
+
+    /* Loading */
+    .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #E9E3FF;
+        border-top-color: #4318FF;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        font-weight: 600;
     }
 
     /* Flashcard Viewer */
@@ -298,11 +566,15 @@
         height: 100%;
         backface-visibility: hidden;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         border-radius: 20px;
-        background: linear-gradient(135deg, #E9E3FF 0%, #D5CEFD 100%);
         padding: 40px;
+    }
+
+    .flashcard-front {
+        background: linear-gradient(135deg, #E9E3FF 0%, #D5CEFD 100%);
     }
 
     .flashcard-back {
@@ -310,19 +582,23 @@
         background: linear-gradient(135deg, #C4B5FD 0%, #A78BFA 100%);
     }
 
+    .card-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #805AD5;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+    }
+
     .card-text {
-        font-size: 32px;
+        font-size: 24px;
         font-weight: 700;
         color: #2D1B69;
         text-align: center;
-        word-wrap: break-word;
+        line-height: 1.5;
     }
 
-    .flashcard-back .card-text {
-        color: #1D059D;
-    }
-
-    /* Progress Counter */
     .flashcard-progress {
         text-align: center;
         font-size: 24px;
@@ -331,7 +607,6 @@
         margin-bottom: 20px;
     }
 
-    /* Navigation Buttons */
     .flashcard-nav {
         display: flex;
         justify-content: center;
@@ -351,7 +626,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: 'Baloo 2', cursive;
     }
 
     .btn-nav:hover:not(:disabled) {
@@ -378,33 +652,17 @@
         animation: bounce 2s infinite;
     }
 
-    .scroll-indicator p {
-        font-size: 16px;
-        font-weight: 600;
-        margin-top: 10px;
-    }
-
     @@keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-10px);
-        }
-        60% {
-            transform: translateY(-5px);
-        }
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
     }
 
-    /* List View Section */
+    /* List View */
     .list-view-section {
         margin-top: 60px;
         padding-top: 40px;
         border-top: 3px solid #E9E3FF;
-    }
-
-    .list-header {
-        margin-bottom: 30px;
     }
 
     .list-header h3 {
@@ -424,70 +682,37 @@
         font-weight: 600;
     }
 
-    /* Flashcards List */
     .flashcards-list {
-        margin-bottom: 40px;
+        margin: 30px 0;
     }
 
     .flashcard-list-item {
         background: #E9E3FF;
-        border-radius: 16px;
-        margin-bottom: 20px;
-        overflow: hidden;
-        border: 3px solid #1D059D;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        padding: 20px;
     }
 
     .list-item-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        min-height: 150px;
-    }
-
-    .list-item-term {
-        background: #D5CEFD;
-        padding: 25px;
         display: flex;
-        align-items: center;
-        font-size: 16px;
-        font-weight: 600;
-        color: #2D3748;
-        border-right: 3px solid #1D059D;
+        flex-direction: column;
+        gap: 15px;
     }
 
+    .list-item-term,
     .list-item-definition {
-        padding: 25px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .definition-options {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 15px;
-    }
-
-    .option-item {
-        font-size: 14px;
+        font-size: 16px;
+        line-height: 1.6;
         color: #2D3748;
-        font-weight: 500;
     }
 
-    .correct-answer {
-        font-size: 14px;
-        color: #805AD5;
-        font-weight: 700;
-    }
-
-    /* Practice Button */
     .practice-button-container {
         text-align: center;
         margin-top: 40px;
     }
 
     .btn-practice {
-        background: linear-gradient(135deg, #E53E3E 0%, #FC8181 100%);
+        background: #4318FF;
         color: white;
         border: none;
         padding: 16px 60px;
@@ -500,35 +725,252 @@
     }
 
     .btn-practice:hover {
+        background: #3311CC;
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
+        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
     }
 
-    /* Responsive */
-    @@media (max-width: 768px) {
-        .flashcard-card {
-            height: 300px;
-        }
-
-        .card-text {
-            font-size: 24px;
-        }
-
-        .list-item-content {
-            grid-template-columns: 1fr;
-        }
-
-        .list-item-term {
-            border-right: none;
-            border-bottom: 3px solid #1D059D;
-        }
-
-        .page-title {
-            font-size: 24px;
-        }
-
-        .flashcard-practice-container {
-            padding: 20px 15px;
-        }
+    /* Quiz Mode */
+    .quiz-container {
+        max-width: 700px;
+        margin: 0 auto;
     }
-</style>
+
+    .quiz-progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #E9E3FF;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4318FF, #9F7AEA);
+        transition: width 0.3s;
+    }
+
+    .quiz-progress-text {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: #718096;
+        margin-bottom: 30px;
+    }
+
+    .quiz-question-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .quiz-question {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2D3748;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .quiz-option {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 20px;
+        background: #F7FAFC;
+        border: 2px solid #E2E8F0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Baloo 2', cursive;
+        font-size: 16px;
+        text-align: left;
+    }
+
+    .quiz-option:hover:not(:disabled) {
+        border-color: #4318FF;
+        background: #EBF4FF;
+    }
+
+    .quiz-option:disabled {
+        cursor: not-allowed;
+    }
+
+    .option-letter {
+        width: 32px;
+        height: 32px;
+        background: #4318FF;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .option-text {
+        flex: 1;
+        color: #2D3748;
+        font-weight: 600;
+    }
+
+    .option-correct {
+        background: #d1fae5;
+        border-color: #059669;
+    }
+
+    .option-correct .option-letter {
+        background: #059669;
+    }
+
+    .option-incorrect {
+        background: #fee2e2;
+        border-color: #dc2626;
+    }
+
+    .option-incorrect .option-letter {
+        background: #dc2626;
+    }
+
+    .option-disabled {
+        opacity: 0.5;
+    }
+
+    .quiz-feedback {
+        padding: 15px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .feedback-correct {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .feedback-incorrect {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .quiz-next-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-next-question {
+        background: #4318FF;
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Baloo 2', cursive;
+        transition: all 0.3s;
+    }
+
+    .btn-next-question:hover {
+        background: #3311CC;
+    }
+
+    /* Results */
+    .results-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .results-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2D3748;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .score-display {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .score-circle {
+        display: inline-block;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #E9E3FF, #C4B5FD);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .score-number {
+        font-size: 36px;
+        font-weight: 800;
+        color: #4318FF;
+    }
+
+    .score-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #718096;
+    }
+
+    .results-list {
+        margin-bottom: 30px;
+    }
+
+    .result-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border: 2px solid #E2E8F0;
+    }
+
+    .result-item.correct {
+        border-color: #059669;
+        background: #f0fdf4;
+    }
+
+    .result-item.incorrect {
+        border-color: #dc2626;
+        background: #fef2f2;
+    }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .result-number {
+        font-weight: 700;
+        color: #4318FF;
+    }
+
+    .result-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .badge-correct {
+        background: #d1f
+    }
+ </style>

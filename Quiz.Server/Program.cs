@@ -11,11 +11,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Net.payOS;
+using Npgsql.EntityFrameworkCore.PostgreSQL; // enable UseNpgsql extension
 using Quiz.Server;
 using Quiz.Server.TokenHandler;
 using Share;
 using System.Text;
-using Npgsql.EntityFrameworkCore.PostgreSQL; // enable UseNpgsql extension
+
+IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+PayOS payOS = new PayOS(configuration["Environment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find environment"),
+                    configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
+                    configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment"));
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +31,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
 builder.Logging.AddConsole();
+builder.Services.AddSingleton(payOS);
 
 // 🔹 Database - switched to PostgreSQL (Npgsql)
 builder.Services.AddDbContext<QuizDBContext>(options =>

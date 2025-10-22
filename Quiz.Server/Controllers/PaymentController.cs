@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Net.payOS;
+using Net.payOS.Types;
+using NetCoreDemo.Types;
 using Share;
 using System.Security.Claims;
 
@@ -17,10 +20,12 @@ namespace Quiz.Server.Controllers
     public class PaymentController : ControllerBase
     {
         private IMomoService _momoService;
+        private readonly PayOS _payOS;
       //  private readonly IVnPayService _vnPayService;
-        public PaymentController(IMomoService momoService)
+        public PaymentController(IMomoService momoService,PayOS payOS)
         {
             _momoService = momoService;
+            _payOS = payOS;
 
         }
         [HttpPost("CreatePaymentUrl")]
@@ -61,6 +66,27 @@ namespace Quiz.Server.Controllers
             var response = _momoService.PaymentExcuteAsync(Request.Query);
             // TODO: xử lý cập nhật DB
             return Ok(response);
+        }
+
+        [HttpPost("payos_transfer_handler")]
+        public IActionResult payOSTransferHandler(WebhookType body)
+        {
+            try
+            {
+                WebhookData data = _payOS.verifyPaymentWebhookData(body);
+
+                if (data.description == "Ma giao dich thu nghiem" || data.description == "VQRIO123")
+                {
+                    return Ok(new Response(0, "Ok", null));
+                }
+                return Ok(new Response(0, "Ok", null));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Ok(new Response(-1, "fail", null));
+            }
+
         }
     }
 }

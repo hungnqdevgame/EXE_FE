@@ -199,14 +199,14 @@
 @code {
     [Parameter]
     public int setQuizId { get; set; }
-
+   
     private List<QuizQuestion> questions = new List<QuizQuestion>();
     private bool isLoading = true;
     private string errorMessage = "";
     private bool showResults = false;
     private bool quizStarted = false; // Đang làm bài
     private bool showPreview = true; // Xem trước câu hỏi
-
+  
     public void GoBack()
     {
         Navigation.NavigateTo("/revision");
