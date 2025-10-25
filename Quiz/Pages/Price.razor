@@ -320,59 +320,77 @@
     }
     private async Task CreatePaymentAsync()
     {
-        var amount = selectedPlan switch
+        try
         {
-            0 => 59000,   
-            1 => 269000,  
-            2 => 79000,    
-            3 => 369000,  
-            _ => 0
-        };
+            // Xác định số tiền theo gói
+            var amount = selectedPlan switch
+            {
+                0 => 59000,   // Pro Monthly
+                1 => 269000,  // Pro 6 Months
+                2 => 79000,   // Premium Monthly
+                3 => 369000,  // Premium 6 Months
+                _ => 0
+            };
 
-        var supscriptionType = selectedPlan switch
-        {
-            0 => "2",
-            1 => "3",
-            2 => "4",
-            3 => "5",
-            _ => "1"
-        };
-        var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-        if (string.IsNullOrEmpty(token))
-        {
-            // Người dùng chưa login
-            Navigation.NavigateTo("/login");
-            return;
+            // Xác định loại gói đăng ký (nếu cần gửi về server)
+            var subscriptionType = selectedPlan switch
+            {
+                0 => "2",
+                1 => "3",
+                2 => "4",
+                3 => "5",
+                _ => "1"
+            };
+
+            // Lấy token từ localStorage
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+            // Tạo request body
+            var payment = new { Amount = amount };
+
+            // Gửi request đến API thanh toán
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:7102/create-payment-link");
+            request.Content = JsonContent.Create(payment);
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.SendAsync(request);
+
+            // Đọc kết quả trả về
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("📦 Response content: " + content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse JSON về Dictionary
+                var result = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+
+                if (result != null && result.ContainsKey("checkoutUrl"))
+                {
+                    var checkoutUrl = result["checkoutUrl"];
+                    Console.WriteLine("✅ Redirecting to checkout URL: " + checkoutUrl);
+                    Navigation.NavigateTo(checkoutUrl, forceLoad: true);
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ Không tìm thấy key 'checkoutUrl' trong phản hồi API.");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"❌ API trả về lỗi: {response.StatusCode}");
+            }
         }
-        var payment = new
+        catch (Exception ex)
         {
-          
-            Amount = amount
-
-        };
-        UpdateSubscriptionRequest updateRequest = new UpdateSubscriptionRequest
-        {
-         
-            SubscriptionId = supscriptionType
-        };
-       // var response = await Http.PostAsJsonAsync("https://localhost:7102/api/payment/CreatePaymentUrl", payment);
-
- 
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://exe-backend-j428.onrender.com/api/payment/CreatePaymentUrl");
-        request.Content = JsonContent.Create(payment);
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-        var response = await Http.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-            var requestUpdate = await Http.PatchAsJsonAsync("https://exe-backend-j428.onrender.com/api/User/update", updateRequest);
-            var payUrl = result["payUrl"];
-            Navigation.NavigateTo(payUrl, forceLoad: true);
-            
+            Console.WriteLine("💥 Lỗi khi tạo thanh toán: " + ex.Message);
         }
     }
+
 //     private async Task CreatePaymentAsync()
 // {
 //     var amount = selectedPlan switch

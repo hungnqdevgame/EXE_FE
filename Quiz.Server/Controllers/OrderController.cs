@@ -23,10 +23,10 @@ namespace Quiz.Server.Controllers
             try
             {
                 int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
-                ItemData item = new ItemData(body.productName, 1, body.price);
+                ItemData item = new ItemData(body.supscriptionName, 1, body.amount);
                 List<ItemData> items = new List<ItemData>();
                 items.Add(item);
-                PaymentData paymentData = new PaymentData(orderCode, body.price, body.description, items, body.cancelUrl, body.returnUrl);
+                PaymentData paymentData = new PaymentData(orderCode, body.amount, body.description, items, body.cancelUrl, body.returnUrl);
 
                 CreatePaymentResult createPayment = await _payOS.createPaymentLink(paymentData);
 

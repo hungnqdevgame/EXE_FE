@@ -2,9 +2,9 @@
 namespace DAL.Model.Momo
 {
     public record CreatePaymentLinkRequest(
-    string productName,
+    string supscriptionName,
     string description,
-    int price,
+    int amount,
     string returnUrl,
     string cancelUrl
 );

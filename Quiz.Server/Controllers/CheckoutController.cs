@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Net.payOS;
 using Net.payOS.Types;
+using Quiz.DTO;
 
 
 namespace Quiz.Server.Controllers
@@ -39,12 +40,12 @@ namespace Quiz.Server.Controllers
             return Redirect("success");
         }
         [HttpPost("/create-payment-link")]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout(CheckoutDTO dto)
         {
             try
             {
                 int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
-                ItemData item = new ItemData("Mì tôm hảo hảo ly", 1, 1000);
+                ItemData item = new ItemData("Mì tôm hảo hảo ly",1, dto.Amount);
                 List<ItemData> items = new List<ItemData> { item };
 
                 // Get the current request's base URL
@@ -53,7 +54,7 @@ namespace Quiz.Server.Controllers
 
                 PaymentData paymentData = new PaymentData(
                     orderCode,
-                    2000,
+                    dto.Amount,
                     "Thanh toan don hang",
                     items,
                     $"{baseUrl}/cancel",
