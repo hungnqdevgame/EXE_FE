@@ -106,56 +106,100 @@
             }
             else if (currentStep == 2)
             {
-                <!-- Step 3: Review All Questions -->
-                <div class="step-container fade-in">
-                    <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
+                if(quizData.QuestionType == QuestionType.Quiz)
+                {
+                    <div class="step-container fade-in">
+                        <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
 
-                    <div class="review-section">
-                        <div class="quiz-info-review">
-                            <p><strong>Tiêu đề:</strong> @quizTitle</p>
-                            <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
-                            <p><strong>Loại:</strong> @(answerType == "single" ? "Chọn một đáp án" : "Chọn nhiều đáp án")
-                            </p>
-                        </div>
+                        <div class="review-section">
+                            <div class="quiz-info-review">
+                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
+                                <p>
+                                    <strong>Loại:</strong> @(answerType == "single" ? "Chọn một đáp án" : "Chọn nhiều đáp án")
+                                </p>
+                            </div>
 
-                        <div class="questions-list">
-                            @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
-                            {
-                                <div class="question-review-item">
-                                    <div class="question-review-header">
-                                        <span class="question-review-number">Câu @(index + 1)</span>
-                                        <div class="question-review-actions">
-                                            <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
-                                            <button class="btn-delete-review"
-                                                @onclick="() => DeleteQuestionFromReview(index)">Xóa</button>
+                            <div class="questions-list">
+                                @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+                                {
+                                    <div class="question-review-item">
+                                        <div class="question-review-header">
+                                            <span class="question-review-number">Câu @(index + 1)</span>
+                                            <div class="question-review-actions">
+                                                <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
+                                                <button class="btn-delete-review"
+                                                        @onclick="() => DeleteQuestionFromReview(index)">
+                                                    Xóa
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="question-review-content">
+                                            <p><strong>Câu hỏi:</strong> @question.Text</p>
+                                            <div class="answers-review">
+                                                @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                                {
+                                                    <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
+                                                        <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                                        <span class="answer-text">@answer.Text</span>
+                                                        @if (answer.IsCorrect)
+                                                        {
+                                                            <span class="correct-badge">Đúng</span>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="question-review-content">
-                                        <p><strong>Câu hỏi:</strong> @question.Text</p>
-                                        <div class="answers-review">
-                                            @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
-                                            {
-                                                <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
-                                                    <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
-                                                    <span class="answer-text">@answer.Text</span>
-                                                    @if (answer.IsCorrect)
-                                                    {
-                                                        <span class="correct-badge">Đúng</span>
-                                                    }
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                                }
+                            </div>
 
-                        <div class="button-group">
-                            <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
-                            <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Quiz</button>
+                            <div class="button-group">
+                                <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
+                                <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Quiz</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+                else if (quizData.QuestionType == QuestionType.Flashcard)
+                {
+                    <div class="step-container fade-in">
+                        <h2 class="step-title">Xem lại tất cả thẻ học</h2>
+
+                        <div class="review-section">
+                            <div class="quiz-info-review">
+                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tổng số thẻ:</strong> @flashcards.Count thẻ</p>
+                            </div>
+
+                            <div class="flashcards-list">
+                                @foreach (var (card, index) in flashcards.Select((f, i) => (f, i)))
+                                {
+                                    <div class="flashcard-review-item">
+                                        <div class="flashcard-review-header">
+                                            <span class="flashcard-number">Thẻ @(index + 1)</span>
+                                            <div class="flashcard-review-actions">
+                                                <button class="btn-edit" @onclick="() => EditCard(index)">Sửa</button>
+                                                <button class="btn-delete-review" @onclick="() => DeleteCard(index)">Xóa</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="flashcard-review-content">
+                                            <p><strong>Thuật ngữ:</strong> @card.Terminology</p>
+                                            <p><strong>Định nghĩa:</strong> @card.Definition</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="button-group">
+                                <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
+                                <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Flashcard</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+               
             }
         </div>
     </div>
@@ -165,7 +209,39 @@
     private QuizData quizData = new();
     private List<string>? tags;
     private HashSet<string> selectedTags = new HashSet<string>();
+    private List<FlashcardItem> flashcards = new();
+    private string message = "";
+    private bool isLoading = false;
+    private void EditCard(int index)
+    {
+        currentStep = 2;
+        //   currentCardIndex = index;
+    }
+    public class FlashcardItem
+    {
+        public string Terminology { get; set; }
+        public string Definition { get; set; }
+    }
+    private void DeleteCard(int index)
+    {
+        if (flashcards.Count > 1)
+        {
+            flashcards.RemoveAt(index);
+            successMessage = "Đã xóa thẻ thành công!";
+            StateHasChanged();
 
+            // Clear message after 3 seconds
+            Task.Delay(3000).ContinueWith(_ =>
+            {
+                successMessage = "";
+                InvokeAsync(StateHasChanged);
+            });
+        }
+        else
+        {
+            errorMessage = "Phải có ít nhất 1 thẻ!";
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         try
@@ -262,11 +338,11 @@
         }
     }
 
-   private void ToggleTag(ChangeEventArgs e, string tag)
-{
-    selectedTags.Clear();
-    selectedTags.Add(tag);
-}
+    private void ToggleTag(ChangeEventArgs e, string tag)
+    {
+        selectedTags.Clear();
+        selectedTags.Add(tag);
+    }
     public class ApiResponse
     {
         public bool success { get; set; }
@@ -286,7 +362,7 @@
     private JsonElement.ArrayEnumerator? generatedQuestions;
     private string? knowledgeContent;
 
-    
+
 
 
     public enum QuestionType
@@ -313,23 +389,23 @@
         errorMessage = "";
         successMessage = "";
 
+        // 🔹 Kiểm tra tiêu đề
         if (string.IsNullOrWhiteSpace(quizData.Title))
         {
-            errorMessage = "Vui lòng nhập tiêu đề";
+            errorMessage = "Vui lòng nhập tiêu đề!";
             return;
         }
 
-
+        // 🔹 Lấy token từ localStorage
         var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
         if (string.IsNullOrWhiteSpace(token))
         {
             errorMessage = "⚠️ Không tìm thấy token. Hãy đăng nhập lại!";
             return;
         }
-
         token = token.Trim();
 
-        // 🔹 Decode JWT để lấy userId
+        // 🔹 Giải mã JWT lấy userId
         int userId = 0;
         try
         {
@@ -340,7 +416,7 @@
                 payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
                 var jsonBytes = Convert.FromBase64String(payload);
                 var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
-                var doc = System.Text.Json.JsonDocument.Parse(json);
+                var doc = JsonDocument.Parse(json);
 
                 if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
                 {
@@ -359,13 +435,10 @@
             return;
         }
 
-        // 🔹 Gắn token vào HttpClient (Bearer)
-        var backendClient = HttpClientFactory.CreateClient("FastApiClient");
-        backendClient.DefaultRequestHeaders.Authorization =
+        // 🔹 Tạo HttpClient kèm Bearer token
+        var client = HttpClientFactory.CreateClient("FastApiClient");
+        client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-      
-      
 
         isProcessing = true;
 
@@ -373,14 +446,12 @@
         {
             var generateRequest = new
             {
-                
                 typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "flashcard",
                 tag = selectedTags.FirstOrDefault() ?? "",
                 userId = userId,
                 count = quizData.QuestionCount
             };
 
-            var client = HttpClientFactory.CreateClient("FastApiClient");
             var response = await client.PostAsJsonAsync("/data-create-question-api/create-quiz-with-tag", generateRequest);
 
             if (!response.IsSuccessStatusCode)
@@ -389,75 +460,136 @@
                 return;
             }
 
-            // 🧠 Deserialize trực tiếp
             var json = await response.Content.ReadAsStringAsync();
+            await JS.InvokeVoidAsync("console.log", "API Response:", json);
+
             using var doc = JsonDocument.Parse(json);
             var dataElement = doc.RootElement.GetProperty("data");
 
-            questions = new List<Question>();
-
-            foreach (var item in dataElement.EnumerateArray())
+            // 🧩 Phân biệt Quiz và Flashcard
+            if (quizData.QuestionType == QuestionType.Quiz)
             {
-                var questionText = item.GetProperty("question").GetString() ?? "";
+                questions = new List<Question>();
 
-                // Deserialize answers as a dictionary (e.g., { "A": "...", "B": "...", ... })
-                var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new
-                Dictionary<string, string>();
-
-                // Extract correct answer keys (e.g., ["A", "C"])
-                var correctKeys = item.GetProperty("correctAnswers")
-                .EnumerateArray()
-                .Select(x => x.GetString() ?? "")
-                .ToList();
-
-                // Map dictionary entries to List<Answer>, preserving key order (A,B,C,...)
-                var answersList = answersDict.OrderBy(kv => kv.Key)
-                .Select(kv => new Answer
+                foreach (var item in dataElement.EnumerateArray())
                 {
-                    Text = kv.Value ?? "",
-                    IsCorrect = correctKeys.Contains(kv.Key)
-                })
-                .ToList();
+                    string questionText = "";
+                    if (item.TryGetProperty("question", out var qProp))
+                        questionText = qProp.GetString() ?? "";
 
-                var q = new Question
+                    // Deserialize answers
+                    Dictionary<string, string>? answersDict = null;
+                    if (item.TryGetProperty("answers", out var aProp))
+                    {
+                        try
+                        {
+                            answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(aProp.ToString());
+                        }
+                        catch
+                        {
+                            answersDict = new Dictionary<string, string>();
+                        }
+                    }
+
+                    var correctKeys = new List<string>();
+                    if (item.TryGetProperty("correctAnswers", out var cProp))
+                    {
+                        correctKeys = cProp.EnumerateArray()
+                                          .Select(x => x.GetString() ?? "")
+                                          .ToList();
+                    }
+
+                    var answersList = answersDict?.OrderBy(kv => kv.Key)
+                                                  .Select(kv => new Answer
+                                                  {
+                                                      Text = kv.Value ?? "",
+                                                      IsCorrect = correctKeys.Contains(kv.Key)
+                                                  })
+                                                  .ToList() ?? new List<Answer>();
+
+                    questions.Add(new Question
+                    {
+                        Text = questionText,
+                        Answers = answersList,
+                        CorrectAnswers = correctKeys
+                    });
+                }
+
+                successMessage = "✅ Đã tạo câu hỏi trắc nghiệm thành công!";
+            }
+            else // 🔹 Flashcard mode
+            {
+                flashcards = new List<FlashcardItem>();
+
+                foreach (var item in dataElement.EnumerateArray())
                 {
-                    Text = questionText,
-                    Answers = answersList,
-                    CorrectAnswers = correctKeys
-                };
-                questions.Add(q);
-                currentStep = 2;
+                    string term = "";
+                    string def = "";
+
+                    // Tìm key hợp lệ cho thuật ngữ
+                    if (item.TryGetProperty("terminology", out var t))
+                        term = t.GetString() ?? "";
+                    else if (item.TryGetProperty("term", out var t2))
+                        term = t2.GetString() ?? "";
+                    else if (item.TryGetProperty("question", out var t3))
+                        term = t3.GetString() ?? "";
+
+                    // Tìm key hợp lệ cho định nghĩa
+                    if (item.TryGetProperty("definition", out var d))
+                        def = d.GetString() ?? "";
+                    else if (item.TryGetProperty("answer", out var d2))
+                        def = d2.GetString() ?? "";
+
+                    if (!string.IsNullOrEmpty(term) || !string.IsNullOrEmpty(def))
+                    {
+                        flashcards.Add(new FlashcardItem
+                        {
+                            Terminology = term,
+                            Definition = def
+                        });
+                    }
+                }
+
+                successMessage = $"✅ Đã tạo {flashcards.Count} Flashcard thành công!";
             }
 
-            successMessage = "✅ Đã tạo câu hỏi thành công! Hãy xem lại và bấm 'Lưu' nếu đồng ý.";
+            currentStep = 2;
         }
         catch (Exception ex)
         {
-            errorMessage = $"Lỗi: {ex.Message}";
+            errorMessage = $"❌ Lỗi: {ex.Message}";
         }
         finally
         {
             isProcessing = false;
         }
     }
-  
+
+
     public async Task SaveAndCreate()
     {
-        // Enhanced debug logging
         errorMessage = "";
         successMessage = "";
         isProcessing = true;
 
-        await JS.InvokeVoidAsync("console.log", "SaveAndCreate started", new { questionsCount = questions?.Count ?? 0 });
-
         try
         {
-            if (questions == null || !questions.Any())
+            await JS.InvokeVoidAsync("console.log", "SaveAndCreate started", new { quizType = quizData.QuestionType.ToString() });
+
+            // ✅ Kiểm tra dữ liệu
+            if (quizData.QuestionType == QuestionType.Quiz && (questions == null || !questions.Any()))
             {
-                errorMessage = "⚠️ Chưa có câu hỏi nào được tạo. Hãy tạo trước khi lưu!";
-                await JS.InvokeVoidAsync("console.warn", "SaveAndCreate aborted - no questions");
+                errorMessage = "⚠️ Chưa có câu hỏi nào được tạo.";
                 return;
             }
+
+            if (quizData.QuestionType == QuestionType.Flashcard && (flashcards == null || !flashcards.Any()))
+            {
+                errorMessage = "⚠️ Chưa có thẻ học nào được tạo.";
+                return;
+            }
+
+            // ✅ Lấy token từ localStorage
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -465,9 +597,7 @@
                 return;
             }
 
-            token = token.Trim();
-
-            // 🔹 Decode JWT để lấy userId
+            // ✅ Giải mã token để lấy userId
             int userId = 0;
             try
             {
@@ -478,7 +608,7 @@
                     payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
                     var jsonBytes = Convert.FromBase64String(payload);
                     var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
-                    var doc = System.Text.Json.JsonDocument.Parse(json);
+                    var doc = JsonDocument.Parse(json);
 
                     if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
                     {
@@ -497,100 +627,120 @@
                 return;
             }
 
-            // 🔹 Gắn token vào HttpClient (Bearer)
+            // ✅ Khởi tạo HttpClient
             var backendClient = HttpClientFactory.CreateClient("FastApiClient");
             backendClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            // Save knowledge content
-            var saveKnowledgePayload = new
-            {
-                user_id = userId,
-                text = knowledgeContent
-            };
 
-            var saveKnowledgePayloadJson = System.Text.Json.JsonSerializer.Serialize(saveKnowledgePayload);
-            await JS.InvokeVoidAsync("console.log", "Saving knowledge payload", saveKnowledgePayloadJson);
-
-            var setQuizPayload = new SetQuizRequest
+            // ✅ Gửi yêu cầu tạo SetQuiz (tập câu hỏi / thẻ học)
+            var setQuizPayload = new
             {
                 Title = quizData.Title,
-                Description = quizData.Description
+                Description = quizData.Description,
+                Type = quizData.QuestionType.ToString()
             };
 
-            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
-       
+            var setQuizResponse = await backendClient.PostAsJsonAsync("https://localhost:7102/api/SetQuiz/create", setQuizPayload);
             if (!setQuizResponse.IsSuccessStatusCode)
             {
                 var error = await setQuizResponse.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi tạo SetQuiz trên backend: {error}");
+                errorMessage = $"❌ Lỗi khi tạo SetQuiz: {error}";
                 return;
             }
 
-            // 🔹 Đọc SetQuizId trả về từ backend
-            var result = await setQuizResponse.Content.ReadFromJsonAsync<SetQuizResponse>();
-            if (result == null || result.SetQuizId <= 0)
+            var setQuizResult = await setQuizResponse.Content.ReadFromJsonAsync<SetQuizResponse>();
+            if (setQuizResult == null || setQuizResult.SetQuizId <= 0)
             {
-                await JS.InvokeVoidAsync("alert", "❌ Không thể lấy ID của SetQuiz vừa tạo!");
+                errorMessage = "❌ Không thể lấy ID của SetQuiz vừa tạo!";
                 return;
             }
 
-            // Save each question
-            int idx = 0;
-            foreach (var question in questions)
+            int setQuizId = setQuizResult.SetQuizId;
+            await JS.InvokeVoidAsync("console.log", "SetQuiz created", new { setQuizId });
+
+            // ✅ Nếu là QUIZ
+            if (quizData.QuestionType == QuestionType.Quiz)
             {
-                idx++;
-
-                // Tạo answers đúng định dạng JSON object
-                var answers = new Dictionary<string, string>();
-                for (int i = 0; i < question.Answers.Count; i++)
+                int idx = 0;
+                foreach (var question in questions)
                 {
-                    answers.Add($"additionalProp{i + 1}", question.Answers[i].Text);
+                    idx++;
+
+                    // Chuyển danh sách đáp án thành object
+                    var answers = new Dictionary<string, string>();
+                    for (int i = 0; i < question.Answers.Count; i++)
+                    {
+                        answers.Add($"additionalProp1{i + 1}", question.Answers[i].Text);
+                    }
+
+                    var correctAnswers = question.Answers
+                        .Where(a => a.IsCorrect)
+                        .Select(a => a.Text)
+                        .ToList();
+
+                    var payload = new
+                    {
+                        setQuizId = setQuizId,
+                        question = question.Text,
+                        answers = answers,
+                        correctAnswers = correctAnswers
+                    };
+
+                    var saveResponse = await backendClient.PostAsJsonAsync("/question-api/questions", payload);
+                    if (!saveResponse.IsSuccessStatusCode)
+                    {
+                        var respBody = await saveResponse.Content.ReadAsStringAsync();
+                        errorMessage = $"❌ Lỗi khi lưu câu hỏi #{idx}: {respBody}";
+                        return;
+                    }
                 }
 
-                var correctAnswers = question.Answers
-                    .Where(a => a.IsCorrect)
-                    .Select(a => a.Text)
-                    .ToList();
-
-                var payload = new
-                {
-                    setQuizId = result.SetQuizId,
-                    question = question.Text,
-                    answers = answers,
-                    correctAnswers = correctAnswers
-                };
-
-                var payloadJson = System.Text.Json.JsonSerializer.Serialize(payload);
-                await JS.InvokeVoidAsync("console.log", $"Saving question #{idx}", payloadJson);
-
-                var saveResponse = await backendClient.PostAsJsonAsync("/question-api/questions", payload);
-                var saveRespBody = await saveResponse.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("console.log", new
-                {
-                    questionIndex = idx,
-                    status = (int)saveResponse.StatusCode,
-                    body = saveRespBody
-                });
-
-                if (!saveResponse.IsSuccessStatusCode)
-                {
-                    errorMessage = $"❌ Lỗi khi lưu câu hỏi #{idx}";
-                    Console.WriteLine($"Save question #{idx} failed: {saveRespBody}");
-                    return;
-                }
+                successMessage = "✅ Đã lưu thành công toàn bộ câu hỏi Quiz!";
             }
 
-            successMessage = "✅ Đã lưu thành công nội dung và câu hỏi vào hệ thống!";
-            await JS.InvokeVoidAsync("console.log", "SaveAndCreate completed successfully");
+            // ✅ Nếu là FLASHCARD
+            else if (quizData.QuestionType == QuestionType.Flashcard)
+            {
+                int idx = 0;
+                foreach (var card in flashcards)
+                {
+                    idx++;
 
-            // Navigate after short delay to allow user see success (optional)
+                    var answers = new Dictionary<string, string>
+        {
+            { "additionalProp1", card.Terminology }
+        };
+
+                    var correctAnswers = new List<string> { card.Terminology };
+
+                    var payload = new
+                    {
+                        setQuizId = setQuizId,
+                        question = card.Definition,
+                        answers = answers,
+                        correctAnswers = correctAnswers
+                    };
+
+                    var saveResponse = await backendClient.PostAsJsonAsync("/question-api/questions", payload);
+                    if (!saveResponse.IsSuccessStatusCode)
+                    {
+                        var respBody = await saveResponse.Content.ReadAsStringAsync();
+                        errorMessage = $"❌ Lỗi khi lưu flashcard #{idx}: {respBody}";
+                        return;
+                    }
+                }
+
+                successMessage = "✅ Đã lưu thành công toàn bộ thẻ học!";
+            }
+
+            // ✅ Thành công -> chuyển trang
+            await JS.InvokeVoidAsync("console.log", "SaveAndCreate success");
             Navigation.NavigateTo("/revision");
         }
         catch (Exception ex)
         {
-            errorMessage = $"Lỗi khi lưu: {ex.Message}";
+            errorMessage = $"⚠️ Lỗi khi lưu: {ex.Message}";
             Console.WriteLine($"SaveAndCreate exception: {ex}");
-            await JS.InvokeVoidAsync("console.error", "SaveAndCreate exception", ex.Message);
         }
         finally
         {
@@ -607,6 +757,7 @@
     {
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
+        public string Type { get; set; } = "";  
     }
 
     public class GenerateQuestionsResponse

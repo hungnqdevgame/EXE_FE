@@ -20,6 +20,7 @@ namespace DAL.Model
 
         public bool IsDeleted { get; set; } = false;
         public bool IsPublic { get; set; } = false;
+        public string Type { get; set; }
 
         [Required, StringLength(255)]
         public string Title { get; set; }

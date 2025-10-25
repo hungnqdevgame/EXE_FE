@@ -9,7 +9,7 @@ namespace DAL.IRepository
 {
     public interface ISetQuizRepository
     {
-        public Task<int> CreateSetQuiz(int userId, string title, string description);
+        public Task<int> CreateSetQuiz(int userId, string title, string description, string type);
 
         Task<bool> DeleteSetQuiz(int setQuizId);
         Task<SetQuiz?> GetSetQuizById(int setQuizId);

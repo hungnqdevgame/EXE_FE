@@ -16,8 +16,8 @@ namespace BLL.Service
         {
             _setQuizRepository = setQuizService;
         }
-        public Task<int> CreateSetQuiz(int userId, string title, string description)
-       => _setQuizRepository.CreateSetQuiz(userId, title, description);
+        public Task<int> CreateSetQuiz(int userId, string title, string description, string type)
+       => _setQuizRepository.CreateSetQuiz(userId, title, description,type);
 
         public Task<bool> DeleteSetQuiz(int setQuizId)
       => _setQuizRepository.DeleteSetQuiz(setQuizId);

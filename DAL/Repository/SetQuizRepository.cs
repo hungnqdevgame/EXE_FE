@@ -16,7 +16,7 @@ namespace DAL.Repository
         {
             _context = context;
         }
-        public async Task<int> CreateSetQuiz(int userId, string title, string description)
+        public async Task<int> CreateSetQuiz(int userId, string title, string description, string type)
         {
             
             var newSetQuiz = new SetQuiz
@@ -25,6 +25,7 @@ namespace DAL.Repository
                 Title = title,
                 Description = description,
                 CreatedAt = DateTime.UtcNow,
+                Type = type,
                 IsDeleted = false,
                 IsPublic = false
             };

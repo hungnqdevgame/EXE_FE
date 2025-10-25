@@ -157,63 +157,107 @@
     }
 
     <button class="btn-submit" @onclick="CreateQuiz" disabled="@isProcessing">
+
+
         @if (isProcessing)
         {
             <span class="loading"></span>
         }
         Tạo và ôn tập
-    </button>
+                </button>
             }
             else if (currentStep == 2)
             {
-                <!-- Step 3: Review All Questions -->
-                <div class="step-container fade-in">
-                    <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
+                if (quizData.QuestionType == QuestionType.Quiz)
+                {
+                    <div class="step-container fade-in">
+                        <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
 
-                    <div class="review-section">
-                        <div class="quiz-info-review">
-                            <p><strong>Tiêu đề:</strong> @quizTitle</p>
-                            <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
-                          
-                        </div>
+                        <div class="review-section">
+                            <div class="quiz-info-review">
+                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
 
-                        <div class="questions-list">
-                            @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
-                            {
-                                <div class="question-review-item">
-                                    <div class="question-review-header">
-                                        <span class="question-review-number">Câu @(index + 1)</span>
-                                        <div class="question-review-actions">
-                                            <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
-                                            <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)">Xóa</button>
+                            </div>
+
+                            <div class="questions-list">
+                                @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+                                {
+                                    <div class="question-review-item">
+                                        <div class="question-review-header">
+                                            <span class="question-review-number">Câu @(index + 1)</span>
+                                            <div class="question-review-actions">
+                                                <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
+                                                <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)">Xóa</button>
+                                            </div>
+                                        </div>
+                                        <div class="question-review-content">
+                                            <p><strong>Câu hỏi:</strong> @question.Text</p>
+                                            <div class="answers-review">
+                                                @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                                {
+                                                    <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
+                                                        <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                                        <span class="answer-text">@answer.Text</span>
+                                                        @if (answer.IsCorrect)
+                                                        {
+                                                            <span class="correct-badge">Đúng</span>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="question-review-content">
-                                        <p><strong>Câu hỏi:</strong> @question.Text</p>
-                                        <div class="answers-review">
-                                            @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
-                                            {
-                                                <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
-                                                    <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
-                                                    <span class="answer-text">@answer.Text</span>
-                                                    @if (answer.IsCorrect)
-                                                    {
-                                                        <span class="correct-badge">Đúng</span>
-                                                    }
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                                }
+                            </div>
 
-                        <div class="button-group">
-                            <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
-                           <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Quiz</button>
+                            <div class="button-group">
+                                <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
+                                <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Quiz</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+                else if(quizData.QuestionType == QuestionType.Flashcard)
+                {
+                    <div class="step-container fade-in">
+                        <h2 class="step-title">Xem lại tất cả thẻ học</h2>
+
+                        <div class="review-section">
+                            <div class="quiz-info-review">
+                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tổng số thẻ:</strong> @flashcards.Count thẻ</p>
+                            </div>
+
+                            <div class="flashcards-list">
+                                @foreach (var (card, index) in flashcards.Select((f, i) => (f, i)))
+                                {
+                                    <div class="flashcard-review-item">
+                                        <div class="flashcard-review-header">
+                                            <span class="flashcard-number">Thẻ @(index + 1)</span>
+                                            <div class="flashcard-review-actions">
+                                                <button class="btn-edit" @onclick="() => EditCard(index)">Sửa</button>
+                                                <button class="btn-delete-review" @onclick="() => DeleteCard(index)">Xóa</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="flashcard-review-content">
+                                            <p><strong>Thuật ngữ:</strong> @card.Terminology</p>
+                                            <p><strong>Định nghĩa:</strong> @card.Definition</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="button-group">
+                                <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
+                                <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Flashcard</button> 
+                            </div>
+                        </div>
+                    </div>
+                }
+            
+            
             }
         </div>
     </div>
@@ -232,7 +276,41 @@
     private const long MaxFileSize = 10 * 1024 * 1024; // 10MB
     private JsonElement.ArrayEnumerator? generatedQuestions; 
     private string? knowledgeContent; 
+    private List<FlashcardItem> flashcards = new();
+    private string message = "";
+    private bool isLoading = false;
+    private void EditCard(int index)
+    {
+        currentStep = 2;
+        //   currentCardIndex = index;
+    }
 
+    private void DeleteCard(int index)
+    {
+        if (flashcards.Count > 1)
+        {
+            flashcards.RemoveAt(index);
+            successMessage = "Đã xóa thẻ thành công!";
+            StateHasChanged();
+
+            // Clear message after 3 seconds
+            Task.Delay(3000).ContinueWith(_ =>
+            {
+                successMessage = "";
+                InvokeAsync(StateHasChanged);
+            });
+        }
+        else
+        {
+            errorMessage = "Phải có ít nhất 1 thẻ!";
+        }
+    }
+
+    public class FlashcardItem
+    {
+        public string Terminology { get; set; }
+        public string Definition { get; set; }
+    }
     public enum InputMode
     {
         Upload,
@@ -252,7 +330,48 @@
         Application,
         HighApplication
     }
+    public class FlashcardRequest
+    {
+        public string Knowledge { get; set; }
+        public string TypeQuestion { get; set; }
+        public string Level { get; set; }
+        public int Count { get; set; }
+    }
+    // private async Task GenerateFlashcards()
+    // {
+    //     isLoading = true;
+    //     message = "";
 
+    //     try
+    //     {
+    //         Gửi request đến API (ví dụ)
+    //         var response = await Http.PostAsJsonAsync("https:your-api-url/flashcards/generate",);
+
+    //         if (response.IsSuccessStatusCode)
+    //         {
+    //             var result = await response.Content.ReadFromJsonAsync<FlashcardResponse>();
+    //             if (result != null && result.Success)
+    //             {
+    //                 flashcards = result.Data;
+    //                 message = result.Message;
+    //             }
+    //             else
+    //             {
+    //                 message = "❌ Không thể tạo flashcards.";
+    //             }
+    //         }
+    //         else
+    //         {
+    //             message = "❌ Lỗi phản hồi từ server.";
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         message = $"⚠️ Lỗi: {ex.Message}";
+    //     }
+
+    //     isLoading = false;
+    // }
     public class QuizData
     {
         public string Title { get; set; } = "";
@@ -260,6 +379,15 @@
         public string Description { get; set; } = "";
         public QuestionType QuestionType { get; set; } = QuestionType.Quiz;
         public QuestionLevel Level { get; set; } = QuestionLevel.Recognition;
+    }
+    public class FlashcardResponse
+    {
+        public bool Success { get; set; }
+        public List<FlashcardItem> Data { get; set; }
+        public int Count { get; set; }
+        public string Message { get; set; }
+        public string Type { get; set; }
+        public string Level { get; set; }
     }
 
     public class UploadedFile
@@ -431,7 +559,7 @@
 
         if (string.IsNullOrWhiteSpace(knowledgeContent))
         {
-            errorMessage = "Vui lòng nhập ";
+            errorMessage = "Vui lòng nhập nội dung kiến thức.";
             return;
         }
 
@@ -459,58 +587,88 @@
 
             if (!response.IsSuccessStatusCode)
             {
-                errorMessage = "Không thể tạo câu hỏi từ AI.";
+                errorMessage = "Không thể tạo dữ liệu từ AI.";
                 return;
             }
 
-            // 🧠 Deserialize trực tiếp
             var json = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
-            var dataElement = doc.RootElement.GetProperty("data");
+            var root = doc.RootElement;
 
-            questions = new List<Question>();
-
-            foreach (var item in dataElement.EnumerateArray())
+            // 🔹 Nếu là QUIZ thì giữ nguyên logic cũ
+            if (quizData.QuestionType == QuestionType.Quiz)
             {
-                var questionText = item.GetProperty("question").GetString() ?? "";
+                var dataElement = root.GetProperty("data");
+                questions = new List<Question>();
 
-                // Deserialize answers as a dictionary (e.g., { "A": "...", "B": "...", ... })
-                var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new Dictionary<string, string>();
+                foreach (var item in dataElement.EnumerateArray())
+                {
+                    var questionText = item.GetProperty("question").GetString() ?? "";
 
-                // Extract correct answer keys (e.g., ["A", "C"])
-                var correctKeys = item.GetProperty("correctAnswers")
-                                      .EnumerateArray()
-                                      .Select(x => x.GetString() ?? "")
-                                      .ToList();
+                    var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new Dictionary<string, string>();
+                    var correctKeys = item.GetProperty("correctAnswers").EnumerateArray().Select(x => x.GetString() ?? "").ToList();
 
-                // Map dictionary entries to List<Answer>, preserving key order (A,B,C,...)
-                var answersList = answersDict.OrderBy(kv => kv.Key)
-                                             .Select(kv => new Answer
-                                         {
-                                             Text = kv.Value ?? "",
-                                             IsCorrect = correctKeys.Contains(kv.Key)
-                                         })
-                                             .ToList();
+                    var answersList = answersDict.OrderBy(kv => kv.Key)
+                                                 .Select(kv => new Answer
+                                                 {
+                                                     Text = kv.Value ?? "",
+                                                     IsCorrect = correctKeys.Contains(kv.Key)
+                                                 })
+                                                 .ToList();
 
-                var q = new Question
-            {
-                Text = questionText,
-                Answers = answersList,
-                CorrectAnswers = correctKeys
-            };
-                questions.Add(q);
+                    var q = new Question
+                    {
+                        Text = questionText,
+                        Answers = answersList,
+                        CorrectAnswers = correctKeys
+                    };
+
+                    questions.Add(q);
+                }
+
                 currentStep = 2;
+                successMessage = "✅ Đã tạo câu hỏi Quiz thành công!";
             }
+            // 🔹 Nếu là FLASHCARD thì xử lý khác
+            else if (quizData.QuestionType == QuestionType.Flashcard)
+            {
+                var dataElement = root.GetProperty("data");
+                flashcards = new List<FlashcardItem>();
 
-            successMessage = "✅ Đã tạo câu hỏi thành công! Hãy xem lại và bấm 'Lưu' nếu đồng ý.";
+                foreach (var item in dataElement.EnumerateArray())
+                {
+                    var terminology = item.GetProperty("terminology").GetString() ?? "";
+                    var definition = item.GetProperty("definition").GetString() ?? "";
+
+                    flashcards.Add(new FlashcardItem
+                    {
+                        Terminology = terminology,
+                        Definition = definition
+                    });
+                    var q = new Question
+                    {
+                        Text = terminology,
+                        Answers = new List<Answer>
+                        {
+                            new Answer { Text = definition, IsCorrect = true }
+                        },
+                        CorrectAnswers = new List<string> { definition }
+                    };
+                    questions.Add(q);
+                }
+
+                currentStep = 2;
+                successMessage = "✅ Đã tạo Flashcards thành công!";
+            }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Lỗi: {ex.Message}";
+            errorMessage = $"⚠️ Lỗi: {ex.Message}";
         }
         finally
         {
             isProcessing = false;
+            StateHasChanged();
         }
     }
 
@@ -613,10 +771,11 @@
             var setQuizPayload = new SetQuizRequest
             {
                 Title = quizData.Title,
-                Description = quizData.Description
+                Description = quizData.Description,
+                Type = quizData.QuestionType.ToString()
             };
 
-            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
+            var setQuizResponse = await backendClient.PostAsJsonAsync("https://localhost:7102/api/SetQuiz/create", setQuizPayload);
             if (!setQuizResponse.IsSuccessStatusCode)
             {
                 var error = await setQuizResponse.Content.ReadAsStringAsync();
@@ -716,6 +875,7 @@
     {
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
+        public string Type { get; set; } = "";
     }
 
     public class QuizQuestion

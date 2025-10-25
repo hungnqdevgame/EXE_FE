@@ -30,7 +30,7 @@ namespace Quiz.Server.Controllers
 
            
 
-            var setQuizId = await _setQuizService.CreateSetQuiz(userId, dto.Title, dto.Description);
+            var setQuizId = await _setQuizService.CreateSetQuiz(userId, dto.Title, dto.Description,dto.Type);
             return Ok(new { SetQuizId = setQuizId });
         }
 

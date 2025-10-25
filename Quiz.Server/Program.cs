@@ -147,7 +147,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://exe-fe-gules.vercel.app",
-                "https://localhost:7078"
+                "https://localhost:7078",
+                "http://localhost:5128"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

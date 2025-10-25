@@ -13,8 +13,6 @@
         <div class="tabs">
              <button class="tab" @onclick="() => NavigateToTab(2)">Ôn tập</button>
             <button class="tab active" @onclick="() => NavigateToTab(1)">Tạo Quiz</button>
-           
-    
         </div>
 
         <!-- Main Content Area -->
@@ -46,17 +44,44 @@
                             <h3>Tạo quiz tự động</h3>
                             <p>Tạo quiz theo mẫu</p>
                         </button>
-                        
-                        
                     </div>
                     <button class="btn-next" @onclick="NextStep" disabled="@(string.IsNullOrEmpty(creationMethod))">
                         Tiếp theo →
                     </button>
-                </div>
+                </div>  
             }
             else if (currentStep == 2)
             {
-                <!-- Step 2: Manual Quiz Creation Form -->
+                <!-- Step 2: Choose Manual Type (Quiz or Flashcard) -->
+                <div class="step-container fade-in">
+                    <h2 class="step-title">Chọn loại bài học</h2>
+                    <div class="type-selection">
+                        <button class="type-button @(manualType == "quiz" ? "selected" : "")"
+                                @onclick='() => manualType = "quiz"'>
+                            <div class="type-icon">📝</div>
+                            <h3>Trắc nghiệm</h3>
+                            <p>Tạo câu hỏi trắc nghiệm với nhiều đáp án</p>
+                        </button>
+
+                        <button class="type-button @(manualType == "flashcard" ? "selected" : "")"
+                                @onclick='() => manualType = "flashcard"'>
+                            <div class="type-icon">🗂️</div>
+                            <h3>Flashcard</h3>
+                            <p>Tạo thẻ học thuật ngữ và định nghĩa</p>
+                        </button>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
+                        <button class="btn-next" @onclick="ConfirmManualType" disabled="@(string.IsNullOrEmpty(manualType))">
+                            Tiếp theo →
+                        </button>
+                    </div>
+                </div>
+            }
+            else if (currentStep == 3)
+            {
+                <!-- Step 3: Manual Quiz Creation Form -->
                 <div class="step-container fade-in">
                     <h2 class="step-title">Tạo Quiz</h2>
 
@@ -70,9 +95,7 @@
                                 <textarea @bind="quizDescription" class="form-textarea" rows="4" placeholder="Nhập mô tả bài quiz..."></textarea>
                             </div>
                             <div class="form-group half">
-                              
-                                <div class="counter-display" style ="margin-top:45px;">Tổng cộng: <strong>@questions.Count</strong> câu</div>
-                               
+                                <div class="counter-display" style="margin-top:45px;">Tổng cộng: <strong>@questions.Count</strong> câu</div>
                             </div>
                         </div>
 
@@ -97,7 +120,6 @@
                                     </div>
 
                                     <div class="form-group">
-                                     
                                         <textarea @bind="questions[currentQuestionIndex].Text" class="form-textarea" rows="3" placeholder="Nhập câu hỏi..."></textarea>
                                     </div>
 
@@ -105,9 +127,7 @@
                                     {
                                         <div class="answer-item">
                                             <input type="text" @bind="answer.Text" class="form-input" placeholder="Đáp án @(GetAnswerLabel(ansIndex))" />
-                                          
-                                                <input type="checkbox" @bind="answer.IsCorrect" />
-                                        
+                                            <input type="checkbox" @bind="answer.IsCorrect" />
                                         </div>
                                     }
                                 </div>
@@ -126,18 +146,16 @@
                     <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
                 </div>
             }
-            else if (currentStep == 3)
+            else if (currentStep == 4)
             {
-                <!-- Step 3: Review All Questions -->
+                <!-- Step 4: Review All Questions -->
                 <div class="step-container fade-in">
                     <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
 
                     <div class="review-section">
                         <div class="quiz-info-review">
                             <p><strong>Tiêu đề:</strong> @quizTitle</p>
-                            
                             <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
-                            
                         </div>
 
                         <div class="questions-list">
@@ -185,6 +203,7 @@
 @code {
     private int currentStep = 1;
     private string creationMethod = "";
+    private string manualType = ""; // "quiz" hoặc "flashcard"
     private string answerType = "single";
     private int currentQuestionIndex = 0;
 
@@ -202,7 +221,6 @@
         public Dictionary<string, string> Answers { get; set; } = new();
         public List<string> CorrectAnswers { get; set; } = new();
     }
-
 
     protected override void OnInitialized()
     {
@@ -224,13 +242,11 @@
                 Navigation.NavigateTo("/");
                 break;
         }
-
     }
 
     private void SelectCreationMethod(string method)
     {
         creationMethod = method;
-
     }
 
     private void NextStep()
@@ -252,16 +268,32 @@
                 Navigation.NavigateTo("/quiz-extract");
                 return;
             }
-            else
+            else if(creationMethod == "manual")
             {
+                // Chuyển sang bước chọn loại (Quiz hoặc Flashcard)
                 currentStep = 2;
-                // Tạo 1 câu hỏi đầu tiên
+            }
+        }
+    }
+
+    private void ConfirmManualType()
+    {
+        if (!string.IsNullOrEmpty(manualType))
+        {
+            if (manualType == "flashcard")
+            {
+                // Chuyển sang trang flashcard-create
+                Navigation.NavigateTo("/flashcard-create");
+            }
+            else if (manualType == "quiz")
+            {
+                // Tiếp tục tạo quiz trắc nghiệm
+                currentStep = 3;
                 if (questions.Count == 0)
                 {
                     AddNewQuestion();
                 }
             }
-
         }
     }
 
@@ -302,7 +334,6 @@
                 new Answer { Text = "", IsCorrect = false }
             }
         });
-        // Di chuyển tới câu hỏi mới vừa tạo
         currentQuestionIndex = questions.Count - 1;
     }
 
@@ -311,7 +342,6 @@
         if (questions.Count > 1)
         {
             questions.RemoveAt(index);
-            // Điều chỉnh index nếu cần
             if (currentQuestionIndex >= questions.Count)
             {
                 currentQuestionIndex = questions.Count - 1;
@@ -361,21 +391,19 @@
             return;
         }
 
-        // Chuyển sang bước 3 (Review)
-        currentStep = 3;
+        currentStep = 4;
     }
 
     private void EditQuestion(int index)
     {
-        // Quay lại bước 2 để sửa câu hỏi
-        currentStep = 2;
+        currentStep = 3;
         currentQuestionIndex = index;
     }
+    
     private async Task ConfirmAndCreateQuiz()
     {
         try
         {
-            // 🔹 Lấy token từ localStorage
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
             if (string.IsNullOrEmpty(token))
             {
@@ -384,18 +412,15 @@
                 return;
             }
 
-            // 🔹 Gắn token vào header Authorization
             Http.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            // 🔹 Kiểm tra danh sách câu hỏi
             if (questions == null || questions.Count == 0)
             {
                 await JS.InvokeVoidAsync("alert", "⚠️ Bạn chưa thêm câu hỏi nào!");
                 return;
             }
 
-            // 🔹 1️⃣ Tạo SetQuiz trước trên ASP.NET backend
             var setQuizPayload = new SetQuizRequest
             {
                 Title = quizTitle,
@@ -413,7 +438,6 @@
                 return;
             }
 
-            // 🔹 Đọc SetQuizId trả về từ backend
             var result = await setQuizResponse.Content.ReadFromJsonAsync<SetQuizResponse>();
             if (result == null || result.SetQuizId <= 0)
             {
@@ -423,7 +447,6 @@
 
             int setQuizId = result.SetQuizId;
 
-            // 🔹 2️⃣ Gửi từng câu hỏi sang FastAPI
             var fastApiClient = HttpClientFactory.CreateClient("FastApiClient");
 
             foreach (var q in questions)
@@ -451,17 +474,17 @@
                 }
             }
 
-            // 🔹 3️⃣ Thành công
             await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã được tạo thành công!");
 
             ResetForm();
-            Navigation.NavigateTo($"/pratice/{setQuizId}");
+            Navigation.NavigateTo($"/practice/{setQuizId}");
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("alert", $"⚠️ Lỗi khi tạo quiz: {ex.Message}");
         }
     }
+    
     public class SetQuizRequest
     {
         public string Title { get; set; } = string.Empty;
@@ -477,6 +500,7 @@
     {
         currentStep = 1;
         creationMethod = "";
+        manualType = "";
         quizTitle = "";
         quizDescription = "";
         questions.Clear();
@@ -625,6 +649,54 @@
         font-size: 16px;
     }
 
+    /* Type Selection (Quiz vs Flashcard) */
+    .type-selection {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .type-button {
+        background: white;
+        border: 3px solid #E9E3FF;
+        padding: 40px 30px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+        font-family: 'Baloo 2', cursive;
+    }
+
+    .type-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.15);
+        border-color: #4318FF;
+    }
+
+    .type-button.selected {
+        border-color: #1D059D;
+        background: #E9E3FF;
+        box-shadow: 0 8px 25px rgba(29, 5, 157, 0.3);
+    }
+
+    .type-icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+    }
+
+    .type-button h3 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1D059D;
+        margin-bottom: 10px;
+    }
+
+    .type-button p {
+        font-size: 15px;
+        color: #718096;
+    }
+
     /* Quiz Form */
     .quiz-form {
         border-radius: 20px;
@@ -682,29 +754,6 @@
 
     .form-textarea {
         resize: vertical;
-    }
-
-    /* Radio Group */
-    .radio-group {
-        display: flex;
-        gap: 30px;
-    }
-
-    .radio-label {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 600;
-        color: #4318FF;
-        cursor: pointer;
-        font-size: 16px;
-        margin: 0;
-    }
-
-    .radio-label input[type="radio"] {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
     }
 
     .questions-section {
@@ -1015,7 +1064,8 @@
         gap: 12px;
         transition: all 0.3s;
     }
-  .answer-review.correct {
+
+    .answer-review.correct {
         background: #E6FFE6;
         border-color: #70E539;
     }
@@ -1066,7 +1116,7 @@
     .btn-confirm-quiz:hover {
         background: #70E539;
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px ;
+        box-shadow: 0 8px 25px rgba(112, 229, 57, 0.4);
     }
 
     /* Animation */
@@ -1091,6 +1141,10 @@
             grid-template-columns: 1fr;
         }
 
+        .type-selection {
+            grid-template-columns: 1fr;
+        }
+
         .form-row {
             grid-template-columns: 1fr;
         }
@@ -1110,6 +1164,14 @@
         }
 
         .btn-edit, .btn-delete-review {
+            width: 100%;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .button-group button {
             width: 100%;
         }
     }
