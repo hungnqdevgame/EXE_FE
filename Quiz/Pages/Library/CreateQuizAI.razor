@@ -577,7 +577,7 @@
             var generateRequest = new
             {
                 knowledge = knowledgeContent,
-                typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "flashcard",
+                typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "Flashcard",
                 level = quizData.Level.ToString(),
                 count = quizData.QuestionCount
             };
@@ -772,7 +772,7 @@
             {
                 Title = quizData.Title,
                 Description = quizData.Description,
-                Type = quizData.QuestionType.ToString()
+                Type = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "Flashcard"
             };
 
             var setQuizResponse = await backendClient.PostAsJsonAsync("https://localhost:7102/api/SetQuiz/create", setQuizPayload);

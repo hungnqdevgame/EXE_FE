@@ -56,8 +56,8 @@
                 <div class="step-container fade-in">
                     <h2 class="step-title">Chọn loại bài học</h2>
                     <div class="type-selection">
-                        <button class="type-button @(manualType == "quiz" ? "selected" : "")"
-                                @onclick='() => manualType = "quiz"'>
+                        <button class="type-button @(manualType == "multiple" ? "selected" : "")"
+                                @onclick='() => manualType = "multiple"'>
                             <div class="type-icon">📝</div>
                             <h3>Trắc nghiệm</h3>
                             <p>Tạo câu hỏi trắc nghiệm với nhiều đáp án</p>
@@ -285,7 +285,7 @@
                 // Chuyển sang trang flashcard-create
                 Navigation.NavigateTo("/flashcard-create");
             }
-            else if (manualType == "quiz")
+            else if (manualType == "multiple")
             {
                 // Tiếp tục tạo quiz trắc nghiệm
                 currentStep = 3;
@@ -424,7 +424,8 @@
             var setQuizPayload = new SetQuizRequest
             {
                 Title = quizTitle,
-                Description = quizDescription
+                Description = quizDescription,
+                Type = manualType == "multiple" ? "1 answer" : "Flashcard"
             };
 
             var setQuizResponse = await Http.PostAsJsonAsync(
@@ -489,6 +490,7 @@
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 
     public class SetQuizResponse

@@ -302,11 +302,14 @@
 
     private string GetCorrectAnswer(ApiQuestion q)
     {
-        if (q.CorrectAnswers == null || !q.CorrectAnswers.Any())
-            return "";
+        if (q.CorrectAnswers != null && q.CorrectAnswers.Any())
+            return q.CorrectAnswers.First(); // Lấy trực tiếp nội dung
 
-        var correctKey = q.CorrectAnswers.First();
-        return q.Answers.ContainsKey(correctKey) ? q.Answers[correctKey] : "";
+        // fallback: nếu không có correctAnswers thì lấy value đầu tiên trong answers
+        if (q.Answers != null && q.Answers.Any())
+            return q.Answers.Values.First();
+
+        return "";
     }
 
     // Preview Mode Methods

@@ -145,12 +145,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
-        policy.WithOrigins("*")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
+
 
 builder.Services.AddScoped(sp => new HttpClient
 {

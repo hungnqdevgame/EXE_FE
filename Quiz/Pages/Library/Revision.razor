@@ -256,11 +256,11 @@
 
     public void OnQuizClick(SetQuiz quiz)
     {
-        if(quiz.Type == "1 anwser" || quiz.Type == "multiple")
+        if (quiz.Type == "1 answer" || quiz.Type == "multiple")
         {
             Navigation.NavigateTo($"/practice/{quiz.Id}");
         }
-        else if (quiz.Type == "flashcard")
+        else if (quiz.Type == "Flashcard" || quiz.Type == "flashcard")
         {
             Navigation.NavigateTo($"/flashcard-practice/{quiz.Id}");
         }
