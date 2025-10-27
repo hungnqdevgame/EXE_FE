@@ -194,26 +194,27 @@
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string Type { get; set; }
     }
     private void NavigateToTab(int tab)
     {
         switch(tab)
         {
             case 0:
-            Navigation.NavigateTo("/library");
-            break;
-        
-        case 1:
-            Navigation.NavigateTo("/create-quiz");
-            break;
-        default:
-            Navigation.NavigateTo("/");
-            break;
+                Navigation.NavigateTo("/library");
+                break;
+
+            case 1:
+                Navigation.NavigateTo("/create-quiz");
+                break;
+            default:
+                Navigation.NavigateTo("/");
+                break;
         }
-        
+
     }
 
-    
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -255,7 +256,15 @@
 
     public void OnQuizClick(SetQuiz quiz)
     {
-        Navigation.NavigateTo($"/practice/{quiz.Id}");
+        if(quiz.Type == "1 anwser" || quiz.Type == "multiple")
+        {
+            Navigation.NavigateTo($"/practice/{quiz.Id}");
+        }
+        else if (quiz.Type == "flashcard")
+        {
+            Navigation.NavigateTo($"/flashcard-practice/{quiz.Id}");
+        }
+
     }
 
 }

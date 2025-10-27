@@ -1,4 +1,5 @@
 ﻿using BLL.IService;
+using DAL.IRepository;
 using DAL.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -20,12 +21,14 @@ namespace Quiz.Server.Controllers
     public class PaymentController : ControllerBase
     {
         private IMomoService _momoService;
+        private IPaymentRepository _paymentRepository;
         private readonly PayOS _payOS;
       //  private readonly IVnPayService _vnPayService;
-        public PaymentController(IMomoService momoService,PayOS payOS)
+        public PaymentController(IMomoService momoService,PayOS payOS,IPaymentRepository paymentRepository)
         {
             _momoService = momoService;
             _payOS = payOS;
+            _paymentRepository = paymentRepository;
 
         }
         [HttpPost("CreatePaymentUrl")]
@@ -87,6 +90,13 @@ namespace Quiz.Server.Controllers
                 return Ok(new Response(-1, "fail", null));
             }
 
+        }
+
+        [HttpGet("GetAllPayments")]
+        public async Task<IActionResult> GetAllPayments()
+        {
+            var payments = await _paymentRepository.GetAllAsync();
+            return Ok(payments);
         }
     }
 }

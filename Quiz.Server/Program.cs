@@ -145,14 +145,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
-        policy.WithOrigins(
-                "https://exe-fe-gules.vercel.app",
-                "https://localhost:7078",
-                "http://localhost:5128"
-            )
+        policy.WithOrigins("*")
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
+    
     });
 });
 

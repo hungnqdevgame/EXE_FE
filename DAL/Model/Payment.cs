@@ -11,7 +11,9 @@ namespace DAL.Model
     public class Payment
     {
         [Key]
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public int SubscriptionId { get; set; }
+        public long OrderCode { get; set; }
 
         public int UserId { get; set; }
         public int Amount { get; set; }

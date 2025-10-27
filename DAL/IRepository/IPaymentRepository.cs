@@ -12,5 +12,6 @@ namespace DAL.IRepository
         Task AddAsync(Payment payment);
         Task<Payment> GetByIdAsync(string id);
         Task UpdateAsync(Payment payment);
+        Task<List<Payment>> GetAllAsync();
     }
 }

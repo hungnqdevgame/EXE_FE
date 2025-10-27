@@ -1,5 +1,6 @@
 ﻿using DAL.IRepository;
 using DAL.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,5 +33,10 @@ namespace DAL.Repository
             _context.Payments.Update(payment);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Payment>> GetAllAsync()
+        {
+            return await _context.Payments.ToListAsync();
+        }   
     }
 }

@@ -65,6 +65,12 @@ namespace DAL.Migrations
                     b.Property<bool>("IsSuccess")
                         .HasColumnType("boolean");
 
+                    b.Property<long>("OrderCode")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 

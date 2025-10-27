@@ -309,7 +309,7 @@
         // Hoặc hiển thị thông báo
         await Task.Delay(100); // Simulate processing
     }
-    
+    public string errorMessage = string.Empty;
 
     
 
@@ -322,58 +322,100 @@
     {
         try
         {
-            // Xác định số tiền theo gói
             var amount = selectedPlan switch
             {
-                0 => 59000,   // Pro Monthly
-                1 => 269000,  // Pro 6 Months
-                2 => 79000,   // Premium Monthly
-                3 => 369000,  // Premium 6 Months
+                0 => 59000,
+                1 => 269000,
+                2 => 79000,
+                3 => 369000,
                 _ => 0
             };
 
-            // Xác định loại gói đăng ký (nếu cần gửi về server)
-            var subscriptionType = selectedPlan switch
+            var subscriptionId = selectedPlan switch
             {
-                0 => "2",
-                1 => "3",
-                2 => "4",
-                3 => "5",
+                0 => 2,
+                1 => 3,
+                2 => 4,
+                3 => 5,
+                _ => 1
+            };
+
+            var subscriptionName = selectedPlan switch
+            {
+                0 => "Gói Pro 1 tháng",
+                1 => "Gói Pro 6 tháng",
+                2 => "Gói Premium 1 tháng",
+                3 => "Gói Premium 6 tháng",
                 _ => "1"
             };
 
-            // Lấy token từ localStorage
+            // 🔹 Lấy token từ localStorage
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(token))
             {
-                Navigation.NavigateTo("/login");
+                errorMessage = "⚠️ Không tìm thấy token. Hãy đăng nhập lại!";
                 return;
             }
 
-            // Tạo request body
-            var payment = new { Amount = amount };
+            token = token.Trim();
 
-            // Gửi request đến API thanh toán
+            // 🔹 Decode JWT để lấy userId
+            int userId = 0;
+            try
+            {
+                var parts = token.Split('.');
+                if (parts.Length == 3)
+                {
+                    var payload = parts[1];
+                    payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                    var jsonBytes = Convert.FromBase64String(payload);
+                    var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                    var doc = System.Text.Json.JsonDocument.Parse(json);
+
+                    if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
+                    {
+                        int.TryParse(userIdProp.GetString(), out userId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("console.error", "JWT parse failed", ex.Message);
+            }
+
+            if (userId == 0)
+            {
+                errorMessage = "⚠️ Không tìm thấy userId hợp lệ trong token!";
+                return;
+            }
+
+       
+            // ✅ Body gửi về API
+            var payment = new
+            {
+                UserId = userId,
+                SubscriptionId = subscriptionId,
+                SupscriptionName = subscriptionName,
+                Amount = amount
+            };
+
             var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:7102/create-payment-link");
             request.Content = JsonContent.Create(payment);
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             var response = await Http.SendAsync(request);
-
-            // Đọc kết quả trả về
             var content = await response.Content.ReadAsStringAsync();
+
             Console.WriteLine("📦 Response content: " + content);
 
             if (response.IsSuccessStatusCode)
             {
-                // Parse JSON về Dictionary
-                var result = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(content);
-
-                if (result != null && result.ContainsKey("checkoutUrl"))
+                // Parse checkoutUrl
+                using var doc = System.Text.Json.JsonDocument.Parse(content);
+                if (doc.RootElement.TryGetProperty("checkoutUrl", out var urlElement))
                 {
-                    var checkoutUrl = result["checkoutUrl"];
-                    Console.WriteLine("✅ Redirecting to checkout URL: " + checkoutUrl);
-                    Navigation.NavigateTo(checkoutUrl, forceLoad: true);
+                    var checkoutUrl = urlElement.GetString();
+                    Navigation.NavigateTo(checkoutUrl!, forceLoad: true);
                 }
                 else
                 {
