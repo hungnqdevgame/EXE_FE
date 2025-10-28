@@ -1,4 +1,4 @@
-﻿@page "/pricing"
+﻿@page "/price"
 @inject HttpClient Http
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
@@ -399,7 +399,7 @@
                 Amount = amount
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:7102/create-payment-link");
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://exe-backend-j428.onrender.com/create-payment-link");
             request.Content = JsonContent.Create(payment);
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
