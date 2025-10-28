@@ -325,13 +325,11 @@
 
         if (string.IsNullOrWhiteSpace(quizData.Title))
         {
-            errorMessage = "Vui lòng nhập tiêu đề";
+            errorMessage = "Vui lòng nhập tiêu đề.";
             return;
         }
 
-        string knowledgeContent = 
-            
-             textContent;
+        string knowledgeContent = textContent;
 
         if (string.IsNullOrWhiteSpace(knowledgeContent))
         {
@@ -342,7 +340,7 @@
         var wordCount = knowledgeContent.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
         if (wordCount == 0)
         {
-            errorMessage = "Nội dung không được để trống";
+            errorMessage = "Nội dung không được để trống.";
             return;
         }
 
@@ -350,16 +348,15 @@
 
         try
         {
+            // 🔹 Gửi request đến API FastAPI
             var generateRequest = new
             {
-                knowledge = knowledgeContent,
-                typeQuestion = quizData.QuestionType == QuestionType.Quiz ? "1 answer" : "flashcard",
-                level = quizData.Level.ToString(),
-                count = quizData.QuestionCount
+                text = textContent, // nội dung người dùng nhập
+                question_type = quizData.QuestionType == QuestionType.Quiz ? "multiple" : "flashcard",
             };
 
             var client = HttpClientFactory.CreateClient("FastApiClient");
-            var response = await client.PostAsJsonAsync("/data-create-question-api/generate-quiz-ai", generateRequest);
+            var response = await client.PostAsJsonAsync("/data-create-question-api/extract", generateRequest);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -371,66 +368,88 @@
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            // 🔹 Nếu là QUIZ thì giữ nguyên logic cũ
+            // Kiểm tra nếu JSON trả về có field "data"
+            if (!root.TryGetProperty("data", out var dataElement))
+            {
+                errorMessage = "Phản hồi không hợp lệ từ API.";
+                return;
+            }
+
+            // ================================================
+            // 🔹 Xử lý Quiz
+            // ================================================
             if (quizData.QuestionType == QuestionType.Quiz)
             {
-                var dataElement = root.GetProperty("data");
                 questions = new List<Question>();
 
                 foreach (var item in dataElement.EnumerateArray())
                 {
-                    var questionText = item.GetProperty("question").GetString() ?? "";
+                    string questionText = item.TryGetProperty("question", out var qProp)
+                        ? qProp.GetString() ?? ""
+                        : "";
 
-                    var answersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(item.GetProperty("answers").ToString()) ?? new Dictionary<string, string>();
-                    var correctKeys = item.GetProperty("correctAnswers").EnumerateArray().Select(x => x.GetString() ?? "").ToList();
+                    // Parse answers
+                    var answersDict = item.TryGetProperty("answers", out var ansProp)
+                        ? JsonSerializer.Deserialize<Dictionary<string, string>>(ansProp.ToString()) ?? new()
+                        : new();
 
-                    var answersList = answersDict.OrderBy(kv => kv.Key)
-                                                 .Select(kv => new Answer
-                                                 {
-                                                     Text = kv.Value ?? "",
-                                                     IsCorrect = correctKeys.Contains(kv.Key)
-                                                 })
-                                                 .ToList();
+                    // Parse correct answers
+                    var correctAnswers = item.TryGetProperty("correctAnswers", out var correctProp)
+                        ? correctProp.EnumerateArray().Select(x => x.GetString() ?? "").ToList()
+                        : new List<string>();
 
-                    var q = new Question
+                    // 🔹 Sửa ở đây — so sánh theo VALUE, không theo KEY
+                    var answersList = answersDict.Select(kv => new Answer
+                    {
+                        Text = kv.Value ?? "",
+                        IsCorrect = correctAnswers.Contains(kv.Value)
+                    }).ToList();
+
+                    questions.Add(new Question
                     {
                         Text = questionText,
                         Answers = answersList,
-                        CorrectAnswers = correctKeys
-                    };
-
-                    questions.Add(q);
+                        CorrectAnswers = correctAnswers
+                    });
                 }
 
                 currentStep = 2;
                 successMessage = "✅ Đã tạo câu hỏi Quiz thành công!";
             }
-            // 🔹 Nếu là FLASHCARD thì xử lý khác
+
+            // ================================================
+            // 🔹 Xử lý Flashcard
+            // ================================================
             else if (quizData.QuestionType == QuestionType.Flashcard)
             {
-                var dataElement = root.GetProperty("data");
                 flashcards = new List<FlashcardItem>();
+                questions = new List<Question>();
 
                 foreach (var item in dataElement.EnumerateArray())
                 {
-                    var terminology = item.GetProperty("terminology").GetString() ?? "";
-                    var definition = item.GetProperty("definition").GetString() ?? "";
+                    string terminology = item.TryGetProperty("terminology", out var termProp)
+                        ? termProp.GetString() ?? ""
+                        : "";
+                    string definition = item.TryGetProperty("definition", out var defProp)
+                        ? defProp.GetString() ?? ""
+                        : "";
 
                     flashcards.Add(new FlashcardItem
                     {
                         Terminology = terminology,
                         Definition = definition
                     });
-                    var q = new Question
+
+                    // Tạo question tương ứng (nếu cần lưu về DB)
+                    questions.Add(new Question
                     {
                         Text = terminology,
                         Answers = new List<Answer>
-                        {
-                            new Answer { Text = definition, IsCorrect = true }
-                        },
+                    {
+                        new Answer { Text = definition, IsCorrect = true }
+                    },
                         CorrectAnswers = new List<string> { definition }
-                    };
-                    questions.Add(q);
+                    });
                 }
 
                 currentStep = 2;
@@ -447,7 +466,6 @@
             StateHasChanged();
         }
     }
-
   
     public async Task SaveAndCreate()
     {
@@ -548,7 +566,8 @@
             var setQuizPayload = new SetQuizRequest
             {
                 Title = quizData.Title,
-                Description = quizData.Description
+                Description = quizData.Description,
+                Type = quizData.QuestionType == QuestionType.Quiz ? "multiple" : "flashcard"
             };
 
             var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
@@ -771,6 +790,7 @@
     {
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
+        public string Type { get; set; } = "";  
     }
     public class SetQuizResponse
     {

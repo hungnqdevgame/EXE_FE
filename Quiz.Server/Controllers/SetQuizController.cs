@@ -21,7 +21,7 @@ namespace Quiz.Server.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateSetQuiz(SetQuizDTO dto)
+        public async Task<IActionResult> CreateSetQuiz([FromBody] SetQuizDTO dto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null) return Unauthorized();

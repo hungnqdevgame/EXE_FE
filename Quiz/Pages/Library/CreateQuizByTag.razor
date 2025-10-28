@@ -637,7 +637,7 @@
             {
                 Title = quizData.Title,
                 Description = quizData.Description,
-                Type = quizData.QuestionType.ToString()
+                Type = quizData.QuestionType == QuestionType.Quiz ? "multiple" : "flashcard"
             };
 
             var setQuizResponse = await backendClient.PostAsJsonAsync("https://localhost:7102/api/SetQuiz/create", setQuizPayload);
