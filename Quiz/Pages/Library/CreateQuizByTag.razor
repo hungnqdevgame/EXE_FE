@@ -670,7 +670,7 @@
                     var answers = new Dictionary<string, string>();
                     for (int i = 0; i < question.Answers.Count; i++)
                     {
-                        answers.Add($"additionalProp1{i + 1}", question.Answers[i].Text);
+                        answers.Add($"additionalProp{i + 1}", question.Answers[i].Text);
                     }
 
                     var correctAnswers = question.Answers
