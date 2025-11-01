@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Quiz",
   "resources": {
-    "hash": "sha256-6xMEh9cTct/PfjJLa7dJEZG+482fuMtBUOgsAaQnn+E=",
+    "hash": "sha256-HxlwhEKp69jx3VnW5enC2u/fbcUgB8Xtkf7kWRz5d/8=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Authorization.50odlujk1g.wasm": "Microsoft.AspNetCore.Authorization.wasm",
       "Microsoft.AspNetCore.Components.Authorization.9360opbhdf.wasm": "Microsoft.AspNetCore.Components.Authorization.wasm",
@@ -41,8 +41,8 @@
       "mscorlib.xd6mv31d55.wasm": "mscorlib.wasm",
       "NetcodeHub.Packages.Extensions.LocalStorage.1bkocjkxyl.wasm": "NetcodeHub.Packages.Extensions.LocalStorage.wasm",
       "netstandard.kaml52uspo.wasm": "netstandard.wasm",
-      "Quiz.dklxjckgn7.wasm": "Quiz.wasm",
-      "Share.ukkwnsv54t.wasm": "Share.wasm",
+      "Quiz.6yfd8anhy9.wasm": "Quiz.wasm",
+      "Share.rz17yssrms.wasm": "Share.wasm",
       "System.AppContext.s2mli7k045.wasm": "System.AppContext.wasm",
       "System.Buffers.d8ayacj23s.wasm": "System.Buffers.wasm",
       "System.Collections.Concurrent.feo024siyp.wasm": "System.Collections.Concurrent.wasm",
@@ -270,8 +270,8 @@
       "mscorlib.xd6mv31d55.wasm": "sha256-1YSLR2eZt3ceALFV//vZUF2AloxVil3VlrW1zZYPSEI=",
       "NetcodeHub.Packages.Extensions.LocalStorage.1bkocjkxyl.wasm": "sha256-M0vX/rDWhYWHuNQ2EkOSRs9IwDE+HEzJ9Bvw1os9Uoc=",
       "netstandard.kaml52uspo.wasm": "sha256-HLEwBpLfzKw2/zGSVzHzFJxznCkt/WIjahrziiMrOpA=",
-      "Quiz.dklxjckgn7.wasm": "sha256-kzGdC9BsUu+pKuny5aMc5t4HT3lMgL49z/yGrkfgUUI=",
-      "Share.ukkwnsv54t.wasm": "sha256-LsfASP4mW6JNNHlxk0ndBChIVqnjF3EZIwGEFwlGnTI=",
+      "Quiz.6yfd8anhy9.wasm": "sha256-Ak4cPyB1+YW+bDz7Pgu80AX57ZY/Orvcm5KSd+Plpcs=",
+      "Share.rz17yssrms.wasm": "sha256-19cympi83pBMfTB/BuDTM1jQr551CgiY9vBYmhpP+ok=",
       "System.AppContext.s2mli7k045.wasm": "sha256-/I6jhbBWOR/lWglc7Rxpwv34dmUTZap2GRZ8U5MUw+4=",
       "System.Buffers.d8ayacj23s.wasm": "sha256-TRLW74tFyYdejiCs6uJIuxPhS/Rh0NTqVByoAZ5fZTQ=",
       "System.Collections.Concurrent.feo024siyp.wasm": "sha256-eXJFjPOfQTz1QrzxB0jB5+oztcrSuo+W7zIl7oEUM6I=",
