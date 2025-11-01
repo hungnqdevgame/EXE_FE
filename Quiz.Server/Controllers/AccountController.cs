@@ -75,14 +75,14 @@ namespace Quiz.Server.Controllers
                 return BadRequest(result.Errors);
 
             // Tạo token xác nhận
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmLink = Url.Action("ConfirmEmail", "Account",
-                new { userId = user.Id, token = token }, Request.Scheme);
+            //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var confirmLink = Url.Action("ConfirmEmail", "Account",
+            //    new { userId = user.Id, token = token }, Request.Scheme);
 
-            var subject = "Verify your email";
-            var body = $"Click <a href='{confirmLink}'>here</a> to verify your email.";
+            //var subject = "Verify your email";
+            //var body = $"Click <a href='{confirmLink}'>here</a> to verify your email.";
 
-            await _emailService.SendEmailAsync(user.Email, subject, body);
+            //await _emailService.SendEmailAsync(user.Email, subject, body);
 
             return Ok(new { Message = "Registration successful. Please verify your email." });
         }
