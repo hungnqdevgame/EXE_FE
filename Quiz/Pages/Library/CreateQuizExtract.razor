@@ -8,65 +8,69 @@
 <Quiz.Shared.Header />
 <div class="quiz-creator-container">
     <div class="container">
-        <!-- Main Content Area -->
+        <!-- Main Content Area -->    <div class="tabs">
+            <button class="tab" @onclick="NavigateToPage">Ôn tập</button>
+            <button class="tab active">Tạo Quiz</button>
+
+        </div>
         <div class="content-wrapper">
             <div class="main-section">
                 @if (currentStep == 1)
                 {
                     <div class="quiz-layout">
-    <!-- CỘT TRÁI: Form tạo quiz -->
-    <div class="quiz-left">
-        <div class="form-grid">
-            <div class="form-group">
-                <label class="form-label">Tiêu đề</label>
-                <input type="text" class="form-input" @bind="quizData.Title" placeholder="Nhập tiêu đề..." />
-            </div>
-        </div>
+                        <!-- CỘT TRÁI: Form tạo quiz -->
+                        <div class="quiz-left">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Tiêu đề</label>
+                                    <input type="text" class="form-input" @bind="quizData.Title" placeholder="Nhập tiêu đề..." />
+                                </div>
+                            </div>
 
-        <div class="form-group">
-            <label class="form-label">Mô tả</label>
-            <textarea class="form-input form-textarea" @bind="quizData.Description" placeholder="Nhập mô tả..."></textarea>
-        </div>
+                            <div class="form-group">
+                                <label class="form-label">Mô tả</label>
+                                <textarea class="form-input form-textarea" @bind="quizData.Description" placeholder="Nhập mô tả..."></textarea>
+                            </div>
 
-        <div class="question-type">
-            <label class="form-label">Dạng câu hỏi</label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" id="quiz" name="questionType" value="quiz"
-                           @onchange="() => quizData.QuestionType = QuestionType.Quiz"
-                           checked="@(quizData.QuestionType == QuestionType.Quiz)" />
-                    <label for="quiz">Trắc nghiệm</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="flashcard" name="questionType" value="flashcard"
-                           @onchange="() => quizData.QuestionType = QuestionType.Flashcard"
-                           checked="@(quizData.QuestionType == QuestionType.Flashcard)" />
-                    <label for="flashcard">Flashcard</label>
-                </div>
-            </div>
-        </div>
+                            <div class="question-type">
+                                <label class="form-label">Dạng câu hỏi</label>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="quiz" name="questionType" value="quiz"
+                                               @onchange="() => quizData.QuestionType = QuestionType.Quiz"
+                                               checked="@(quizData.QuestionType == QuestionType.Quiz)" />
+                                        <label for="quiz">Trắc nghiệm</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="flashcard" name="questionType" value="flashcard"
+                                               @onchange="() => quizData.QuestionType = QuestionType.Flashcard"
+                                               checked="@(quizData.QuestionType == QuestionType.Flashcard)" />
+                                        <label for="flashcard">Flashcard</label>
+                                    </div>
+                                </div>
+                            </div>
 
-        <div class="text-input-section">
-           <label class="form-label">Nội dung</label>
-            <textarea class="text-input-area"
-                      @bind="textContent"
-                      @bind:event="oninput"
-                      placeholder="Nhập nội dung ở đây..."></textarea>
-        </div>
-    </div>
+                            <div class="text-input-section">
+                                <label class="form-label">Nội dung</label>
+                                <textarea class="text-input-area"
+                                          @bind="textContent"
+                                          @bind:event="oninput"
+                                          placeholder="Nhập nội dung ở đây..."></textarea>
+                            </div>
+                        </div>
 
-    <!-- CỘT PHẢI: Popup hướng dẫn -->
-    <div class="sidebar-popup">
-        <h3>Quy tắc soạn câu hỏi</h3>
-        <p>- Mỗi câu hỏi cách nhau 1 dòng hoặc nhiều dòng</p>
-        <p>- Đáp án đúng là đáp án có dấu * đằng trước</p>
-        <p>- Nếu muốn xuống dòng trong câu hỏi hoặc đáp án thì bạn cần bổ sung thêm ký tự &lt;br /&gt;</p>
-        <p>- Nếu câu hỏi sai cấu trúc trên, hệ thống sẽ báo lỗi và câu hỏi không được hiển thị</p>
-        <p><strong>Ví dụ:</strong></p>
-        <p>Semantic : connected with the meanings of words</p>
-    </div>
-</div>
-                   
+                        <!-- CỘT PHẢI: Popup hướng dẫn -->
+                        <div class="sidebar-popup">
+                            <h3>Quy tắc soạn câu hỏi</h3>
+                            <p>- Mỗi câu hỏi cách nhau 1 dòng hoặc nhiều dòng</p>
+                            <p>- Đáp án đúng là đáp án có dấu * đằng trước</p>
+                            <p>- Nếu muốn xuống dòng trong câu hỏi hoặc đáp án thì bạn cần bổ sung thêm ký tự &lt;br /&gt;</p>
+                            <p>- Nếu câu hỏi sai cấu trúc trên, hệ thống sẽ báo lỗi và câu hỏi không được hiển thị</p>
+                            <p><strong>Ví dụ:</strong></p>
+                            <p>Semantic : connected with the meanings of words</p>
+                        </div>
+                    </div>
+
 
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -88,7 +92,7 @@
                 }
                 else if (currentStep == 2)
                 {
-                    if(quizData.QuestionType == QuestionType.Quiz)
+                    if (quizData.QuestionType == QuestionType.Quiz)
                     {
                         <div class="step-container fade-in">
                             <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
@@ -97,7 +101,7 @@
                                 <div class="quiz-info-review">
                                     <p><strong>Tiêu đề:</strong> @quizTitle</p>
                                     <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
-                                  
+
                                 </div>
 
                                 <div class="questions-list">
@@ -141,7 +145,7 @@
                             </div>
                         </div>
                     }
-                    else if(quizData.QuestionType == QuestionType.Flashcard)
+                    else if (quizData.QuestionType == QuestionType.Flashcard)
                     {
                         <div class="step-container fade-in">
                             <h2 class="step-title">Xem lại tất cả thẻ học</h2>
@@ -196,10 +200,14 @@
     private string textContent = "";
     private InputMode inputMode = InputMode.Upload;
     private const long MaxFileSize = 10 * 1024 * 1024; // 10MB
-    private JsonElement.ArrayEnumerator? generatedQuestions; 
-    private string? knowledgeContent; 
+    private JsonElement.ArrayEnumerator? generatedQuestions;
+    private string? knowledgeContent;
     private List<FlashcardItem> flashcards = new();
     private string text = "";
+    private void NavigateToPage()
+    {
+        Navigation.NavigateTo("/revision"); // đổi "/trang-dich" thành route bạn muốn
+    }
     public enum InputMode
     {
         Upload,
@@ -466,7 +474,7 @@
             StateHasChanged();
         }
     }
-  
+
     public async Task SaveAndCreate()
     {
         errorMessage = "";
@@ -661,19 +669,19 @@
     }
 
     public class QuizQuestion
-{
-    public string Question { get; set; } = "";
-    public Dictionary<string, string> Answers { get; set; } = new();
-    public List<string> CorrectAnswers { get; set; } = new();
-    public string? SelectedAnswer { get; set; } // để lưu lựa chọn người dùng
-}
+    {
+        public string Question { get; set; } = "";
+        public Dictionary<string, string> Answers { get; set; } = new();
+        public List<string> CorrectAnswers { get; set; } = new();
+        public string? SelectedAnswer { get; set; } // để lưu lựa chọn người dùng
+    }
     public class CreateQuizResponse
     {
         public int Id { get; set; }
         public string Message { get; set; } = "";
     }
 
-   //private List<Question> questions = new List<Question>();
+    //private List<Question> questions = new List<Question>();
 
     public class QuestionCreateRequest
     {
@@ -682,16 +690,16 @@
         public Dictionary<string, string> Answers { get; set; } = new();
         public List<string> CorrectAnswers { get; set; } = new();
     }
-   
+
 
 
     private async Task OpenFileDialog()
     {
-       await JS.InvokeVoidAsync("fileHelper.openFileDialog", "fileInput");
+        await JS.InvokeVoidAsync("fileHelper.openFileDialog", "fileInput");
     }
 
-    
-   
+
+
     private int currentStep = 1;
     private string creationMethod = "";
     private string answerType = "single";
@@ -704,7 +712,7 @@
 
     private List<Question> questions = new List<Question>();
 
-   
+
     protected override void OnInitialized()
     {
         // Initialize empty - user will add questions manually
@@ -727,7 +735,7 @@
         }
 
     }
-    
+
     private void SelectCreationMethod(string method)
     {
         creationMethod = method;
@@ -735,7 +743,7 @@
 
     private void NextStep()
     {
-        if (currentStep == 1 )
+        if (currentStep == 1)
         {
             currentStep = 2;
             // Tạo 1 câu hỏi đầu tiên
@@ -790,13 +798,13 @@
     {
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
-        public string Type { get; set; } = "";  
+        public string Type { get; set; } = "";
     }
     public class SetQuizResponse
     {
         public int SetQuizId { get; set; }
     }
-    
+
     private void RemoveQuestion(int index)
     {
         if (questions.Count > 1)
@@ -863,7 +871,7 @@
         currentQuestionIndex = index;
     }
 
-   
+
     private void ResetForm()
     {
         currentStep = 1;
@@ -877,11 +885,12 @@
     }
 
     public class Question
-    { public string Text { get; set; }
+    {
+        public string Text { get; set; }
         public string Quesion { get; set; }
         public List<Answer> Answers { get; set; }
-        public List<string> CorrectAnswers { get; set; }    
-}
+        public List<string> CorrectAnswers { get; set; }
+    }
     public class Answer
     {
         public string Text { get; set; }
@@ -890,39 +899,40 @@
 }
 
 <style>
-.quiz-layout {
-    display: flex;
-    align-items: flex-start;
-    gap: 32px; /* khoảng cách giữa 2 cột */
-    margin-top: 20px;
-}
+    .quiz-layout {
+        display: flex;
+        align-items: flex-start;
+        gap: 32px; /* khoảng cách giữa 2 cột */
+        margin-top: 20px;
+    }
 
-.quiz-left {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
+    .quiz-left {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-.sidebar-popup {
-    width: 35%;
-    background-color: #f8f7ff;
-    border: 1px solid #cfc5ff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(67, 24, 255, 0.1);
-    font-size: 14px;
-    color: #333;
-    line-height: 1.6;
-    position: sticky;  /* để luôn thấy khi cuộn */
-    top: 100px;        /* cách mép trên một chút */
-}
+    .sidebar-popup {
+        width: 35%;
+        background-color: #f8f7ff;
+        border: 1px solid #cfc5ff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(67, 24, 255, 0.1);
+        font-size: 14px;
+        color: #333;
+        line-height: 1.6;
+        position: sticky; /* để luôn thấy khi cuộn */
+        top: 100px; /* cách mép trên một chút */
+    }
 
-.sidebar-popup h3 {
-    color: #4318FF;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
+        .sidebar-popup h3 {
+            color: #4318FF;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
     @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
 
     * {
@@ -930,29 +940,31 @@
         padding: 0;
         box-sizing: border-box;
     }
-   .content-wrapper {
-    display: flex;
-    gap: 30px; /* khoảng cách giữa form và popup */
-    position: relative;
-}
 
-.main-section {
-    flex: 1; /* chiếm hết phần còn lại */
-}
+    .content-wrapper {
+        display: flex;
+        gap: 30px; /* khoảng cách giữa form và popup */
+        position: relative;
+    }
 
-.sidebar-popup {
-    width: 300px;
-    background: #f3f4f6;
-    border: 2px solid #c4b5fd;
-    border-radius: 12px;
-    padding: 20px;
-    position: sticky; /* dính khi scroll */
-    top: 20px;
-    align-self: flex-start;
-    font-size: 14px;
-    color: #1f2937;
-    line-height: 1.5;
-}
+    .main-section {
+        flex: 1; /* chiếm hết phần còn lại */
+    }
+
+    .sidebar-popup {
+        width: 300px;
+        background: #f3f4f6;
+        border: 2px solid #c4b5fd;
+        border-radius: 12px;
+        padding: 20px;
+        position: sticky; /* dính khi scroll */
+        top: 20px;
+        align-self: flex-start;
+        font-size: 14px;
+        color: #1f2937;
+        line-height: 1.5;
+    }
+
     .quiz-creator-container {
         font-family: 'Baloo 2', cursive;
         min-height: 100vh;
@@ -1561,7 +1573,8 @@
             width: 100%;
         }
     }
-     .form-grid {
+
+    .form-grid {
         display: grid;
         grid-template-columns: 1fr 200px;
         gap: 30px;
@@ -1591,9 +1604,9 @@
         outline: none;
     }
 
-    .form-input:focus {
-        background: #c4b5fd;
-    }
+        .form-input:focus {
+            background: #c4b5fd;
+        }
 
     .form-textarea {
         min-height: 120px;
@@ -1618,19 +1631,19 @@
         cursor: pointer;
     }
 
-    .radio-option input[type="radio"] {
-        width: 24px;
-        height: 24px;
-        accent-color: #5b21b6;
-        cursor: pointer;
-    }
+        .radio-option input[type="radio"] {
+            width: 24px;
+            height: 24px;
+            accent-color: #5b21b6;
+            cursor: pointer;
+        }
 
-    .radio-option label {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-        cursor: pointer;
-    }
+        .radio-option label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            cursor: pointer;
+        }
 
     .upload-section {
         background: #ddd6fe;
@@ -1642,16 +1655,16 @@
         transition: all 0.3s;
     }
 
-    .upload-section.dragover {
-        background: #c4b5fd;
-        border: 2px dashed #5b21b6;
-    }
+        .upload-section.dragover {
+            background: #c4b5fd;
+            border: 2px dashed #5b21b6;
+        }
 
-    .upload-section.disabled {
-        background: #e5e7eb;
-        opacity: 0.6;
-        pointer-events: none;
-    }
+        .upload-section.disabled {
+            background: #e5e7eb;
+            opacity: 0.6;
+            pointer-events: none;
+        }
 
     .input-mode-selector {
         display: flex;
@@ -1676,14 +1689,14 @@
         color: #6b7280;
     }
 
-    .input-mode-btn.active {
-        background: #5b21b6;
-        color: white;
-    }
+        .input-mode-btn.active {
+            background: #5b21b6;
+            color: white;
+        }
 
-    .input-mode-btn:hover:not(.active) {
-        background: #e5e7eb;
-    }
+        .input-mode-btn:hover:not(.active) {
+            background: #e5e7eb;
+        }
 
     .text-input-section {
         margin-top: 30px;
@@ -1703,10 +1716,10 @@
         resize: vertical;
     }
 
-    .text-input-area:focus {
-        background: #c4b5fd;
-        border-color: #5b21b6;
-    }
+        .text-input-area:focus {
+            background: #c4b5fd;
+            border-color: #5b21b6;
+        }
 
     .word-count {
         text-align: right;
@@ -1716,13 +1729,13 @@
         font-weight: 600;
     }
 
-    .word-count.warning {
-        color: #dc2626;
-    }
+        .word-count.warning {
+            color: #dc2626;
+        }
 
-    .word-count.valid {
-        color: #059669;
-    }
+        .word-count.valid {
+            color: #059669;
+        }
 
     .upload-icon {
         width: 80px;
@@ -1730,10 +1743,10 @@
         margin: 0 auto 20px;
     }
 
-    .upload-icon svg {
-        width: 100%;
-        height: 100%;
-    }
+        .upload-icon svg {
+            width: 100%;
+            height: 100%;
+        }
 
     .upload-title {
         font-size: 22px;
@@ -1761,9 +1774,9 @@
         transition: background 0.3s;
     }
 
-    .btn-upload:hover {
-        background: #4c1d95;
-    }
+        .btn-upload:hover {
+            background: #4c1d95;
+        }
 
     .file-input {
         display: none;
@@ -1814,9 +1827,9 @@
         font-weight: 600;
     }
 
-    .remove-file:hover {
-        background: #dc2626;
-    }
+        .remove-file:hover {
+            background: #dc2626;
+        }
 
     .btn-submit {
         background: #5b21b6;
@@ -1832,14 +1845,14 @@
         transition: background 0.3s;
     }
 
-    .btn-submit:hover {
-        background: #4c1d95;
-    }
+        .btn-submit:hover {
+            background: #4c1d95;
+        }
 
-    .btn-submit:disabled {
-        background: #9ca3af;
-        cursor: not-allowed;
-    }
+        .btn-submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
 
     .loading {
         display: inline-block;
@@ -1853,7 +1866,9 @@
     }
 
     @@keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .error-message {

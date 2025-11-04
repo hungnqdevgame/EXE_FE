@@ -9,161 +9,161 @@
 <Quiz.Shared.Header />
 <div class="quiz-creator-container">
     <div class="container">
-        
 
-       
+
+
         <!-- Main Content Area -->
         <div class="content-wrapper">
-            
-             @if (currentStep == 1)
+
+            @if (currentStep == 1)
             {
-                  <h1 class="page-title">Thư viện bài học</h1>
-    
-    <div class="tabs">
-           <button class="tab " @onclick="() => NavigateToTab(2)">Ôn tập</button>
-        <button class="tab active">Tạo Quiz</button>
-    
-    </div>
+                <h1 class="page-title">Thư viện bài học</h1>
 
-    <div class="form-grid">
-        <div class="form-group">
-            <label class="form-label">Tiêu đề</label>
-            <input type="text" class="form-input" @bind="quizData.Title" placeholder="Nhập tiêu đề...">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Số câu</label>
-            <input type="number" class="form-input" @bind="quizData.QuestionCount" placeholder="10" min="1" max="100">
-        </div>
-    </div>
+                <div class="tabs">
+                    <button class="tab " @onclick="() => NavigateToTab(2)">Ôn tập</button>
+                    <button class="tab active">Tạo Quiz</button>
 
-    <div class="form-group">
-        <label class="form-label">Mô tả</label>
-        <textarea class="form-input form-textarea" @bind="quizData.Description" placeholder="Nhập mô tả..."></textarea>
-    </div>
+                </div>
 
-    <div class="question-type">
-        <label class="form-label">Dạng câu hỏi</label>
-        <div class="radio-group">
-            <div class="radio-option">
-                <input type="radio" id="quiz" name="questionType" value="quiz" @onchange="() => quizData.QuestionType = QuestionType.Quiz" checked="@(quizData.QuestionType == QuestionType.Quiz)">
-                <label for="quiz">Trắc nghiệm</label>
-            </div>
-            <div class="radio-option">
-                <input type="radio" id="flashcard" name="questionType" value="flashcard" @onchange="() => quizData.QuestionType = QuestionType.Flashcard" checked="@(quizData.QuestionType == QuestionType.Flashcard)">
-                <label for="flashcard">Flashcard</label>
-            </div>
-        </div>
-    </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Tiêu đề</label>
+                        <input type="text" class="form-input" @bind="quizData.Title" placeholder="Nhập tiêu đề...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số câu</label>
+                        <input type="number" class="form-input" @bind="quizData.QuestionCount" placeholder="10" min="1" max="100">
+                    </div>
+                </div>
 
-    <div class="question-type">
-        <label class="form-label">Mức độ câu hỏi</label>
-        <div class="radio-group">
-            <div class="radio-option">
-                <input type="radio" id="recognition" name="level" value="Recognition" @onchange="() => quizData.Level = QuestionLevel.Recognition" checked="@(quizData.Level == QuestionLevel.Recognition)">
-                <label for="recognition">Recognition - Nhận biết</label>
-            </div>
-            <div class="radio-option">
-                <input type="radio" id="comprehension" name="level" value="Comprehension" @onchange="() => quizData.Level = QuestionLevel.Comprehension" checked="@(quizData.Level == QuestionLevel.Comprehension)">
-                <label for="comprehension">Comprehension - Thông hiểu</label>
-            </div>
-            <div class="radio-option">
-                <input type="radio" id="application" name="level" value="Application" @onchange="() => quizData.Level = QuestionLevel.Application" checked="@(quizData.Level == QuestionLevel.Application)">
-                <label for="application">Application - Vận dụng</label>
-            </div>
-            <div class="radio-option">
-                <input type="radio" id="highapp" name="level" value="High Application" @onchange="() => quizData.Level = QuestionLevel.HighApplication" checked="@(quizData.Level == QuestionLevel.HighApplication)">
-                <label for="highapp">High Application - Vận dụng cao</label>
-            </div>
-        </div>
-    </div>
+                <div class="form-group">
+                    <label class="form-label">Mô tả</label>
+                    <textarea class="form-input form-textarea" @bind="quizData.Description" placeholder="Nhập mô tả..."></textarea>
+                </div>
 
-    <div class="input-mode-selector">
-        <button class="input-mode-btn @(inputMode == InputMode.Upload ? "active" : "")" 
-                @onclick="() => SwitchInputMode(InputMode.Upload)">
-            📁 Upload tài liệu
-        </button>
-        <button class="input-mode-btn @(inputMode == InputMode.Text ? "active" : "")" 
-                @onclick="() => SwitchInputMode(InputMode.Text)">
-            ✍️ Nhập văn bản
-        </button>
-    </div>
-
-    @if (inputMode == InputMode.Upload)
-    {
-        <div class="upload-section @(isDragging ? "dragover" : "")" 
-             @ondrop="HandleDrop" 
-             @ondrop:preventDefault 
-             @ondragover:preventDefault 
-             @ondragenter="HandleDragEnter" 
-             @ondragenter:preventDefault
-             @ondragleave="HandleDragLeave">
-            
-            <InputFile id="fileInput" 
-                       class="file-input" 
-                       accept=".pdf,.docx,.txt" 
-                       OnChange="HandleFileSelected" />
-            
-            <div class="upload-icon">
-                <svg viewBox="0 0 100 100" fill="none">
-                    <circle cx="50" cy="35" r="20" fill="#5b89e5"/>
-                    <circle cx="40" cy="35" r="20" fill="#4a7fd4"/>
-                    <circle cx="60" cy="35" r="20" fill="#6ba3f7"/>
-                    <rect x="45" y="45" width="10" height="15" fill="#5b89e5"/>
-                    <path d="M50 60 L50 75 M40 70 L60 70" stroke="#5b89e5" stroke-width="3" stroke-linecap="round"/>
-                    <path d="M45 65 L50 60 L55 65" stroke="#5b89e5" stroke-width="3" stroke-linecap="round" fill="none"/>
-                </svg>
-            </div>
-            <div class="upload-title">Chọn tài liệu</div>
-            <div class="upload-subtitle">PDF, DOCX, TXT (Kéo thả hoặc click để chọn)</div>
-            <label for="fileInput" class="btn-upload" style="cursor: pointer; display: inline-block;">Chọn</label>
-
-            @if (uploadedFile != null)
-            {
-                <div class="uploaded-file">
-                    <div class="file-info">
-                        <span class="file-icon">@GetFileIcon(uploadedFile.Name)</span>
-                        <div class="file-details">
-                            <div class="file-name">@uploadedFile.Name</div>
-                            <div class="file-size">@FormatFileSize(uploadedFile.Size)</div>
+                <div class="question-type">
+                    <label class="form-label">Dạng câu hỏi</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="quiz" name="questionType" value="quiz" @onchange="() => quizData.QuestionType = QuestionType.Quiz" checked="@(quizData.QuestionType == QuestionType.Quiz)">
+                            <label for="quiz">Trắc nghiệm</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="flashcard" name="questionType" value="flashcard" @onchange="() => quizData.QuestionType = QuestionType.Flashcard" checked="@(quizData.QuestionType == QuestionType.Flashcard)">
+                            <label for="flashcard">Flashcard</label>
                         </div>
                     </div>
-                    <button class="remove-file" @onclick="RemoveFile">Xóa</button>
                 </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="text-input-section">
-            <textarea class="text-input-area" 
-                      @bind="textContent" 
-                      @bind:event="oninput"
-                      placeholder="Nhập nội dung kiến thức ở đây... (Ít nhất 50 từ)">
-            </textarea>
-            <div class="word-count @(GetWordCountClass())">
-                @GetWordCount() từ @(GetWordCount() != 0 ? "" : "(Không được để trống nội dung)")
-            </div>
-        </div>
-    }
 
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="error-message">❌ @errorMessage</div>
-    }
+                <div class="question-type">
+                    <label class="form-label">Mức độ câu hỏi</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="recognition" name="level" value="Recognition" @onchange="() => quizData.Level = QuestionLevel.Recognition" checked="@(quizData.Level == QuestionLevel.Recognition)">
+                            <label for="recognition">Recognition - Nhận biết</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="comprehension" name="level" value="Comprehension" @onchange="() => quizData.Level = QuestionLevel.Comprehension" checked="@(quizData.Level == QuestionLevel.Comprehension)">
+                            <label for="comprehension">Comprehension - Thông hiểu</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="application" name="level" value="Application" @onchange="() => quizData.Level = QuestionLevel.Application" checked="@(quizData.Level == QuestionLevel.Application)">
+                            <label for="application">Application - Vận dụng</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="highapp" name="level" value="High Application" @onchange="() => quizData.Level = QuestionLevel.HighApplication" checked="@(quizData.Level == QuestionLevel.HighApplication)">
+                            <label for="highapp">High Application - Vận dụng cao</label>
+                        </div>
+                    </div>
+                </div>
 
-    @if (!string.IsNullOrEmpty(successMessage))
-    {
-        <div class="success-message">✓ @successMessage</div>
-    }
+                <div class="input-mode-selector">
+                    <button class="input-mode-btn @(inputMode == InputMode.Upload ? "active" : "")"
+                            @onclick="() => SwitchInputMode(InputMode.Upload)">
+                        📁 Upload tài liệu
+                    </button>
+                    <button class="input-mode-btn @(inputMode == InputMode.Text ? "active" : "")"
+                            @onclick="() => SwitchInputMode(InputMode.Text)">
+                        ✍️ Nhập văn bản
+                    </button>
+                </div>
 
-    <button class="btn-submit" @onclick="CreateQuiz" disabled="@isProcessing">
+                @if (inputMode == InputMode.Upload)
+                {
+                    <div class="upload-section @(isDragging ? "dragover" : "")"
+                         @ondrop="HandleDrop"
+                         @ondrop:preventDefault
+                         @ondragover:preventDefault
+                         @ondragenter="HandleDragEnter"
+                         @ondragenter:preventDefault
+                         @ondragleave="HandleDragLeave">
+
+                        <InputFile id="fileInput"
+                                   class="file-input"
+                                   accept=".pdf,.docx,.txt"
+                                   OnChange="HandleFileSelected" />
+
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 100 100" fill="none">
+                                <circle cx="50" cy="35" r="20" fill="#5b89e5" />
+                                <circle cx="40" cy="35" r="20" fill="#4a7fd4" />
+                                <circle cx="60" cy="35" r="20" fill="#6ba3f7" />
+                                <rect x="45" y="45" width="10" height="15" fill="#5b89e5" />
+                                <path d="M50 60 L50 75 M40 70 L60 70" stroke="#5b89e5" stroke-width="3" stroke-linecap="round" />
+                                <path d="M45 65 L50 60 L55 65" stroke="#5b89e5" stroke-width="3" stroke-linecap="round" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="upload-title">Chọn tài liệu</div>
+                        <div class="upload-subtitle">PDF, DOCX, TXT (Kéo thả hoặc click để chọn)</div>
+                        <label for="fileInput" class="btn-upload" style="cursor: pointer; display: inline-block;">Chọn</label>
+
+                        @if (uploadedFile != null)
+                        {
+                            <div class="uploaded-file">
+                                <div class="file-info">
+                                    <span class="file-icon">@GetFileIcon(uploadedFile.Name)</span>
+                                    <div class="file-details">
+                                        <div class="file-name">@uploadedFile.Name</div>
+                                        <div class="file-size">@FormatFileSize(uploadedFile.Size)</div>
+                                    </div>
+                                </div>
+                                <button class="remove-file" @onclick="RemoveFile">Xóa</button>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-input-section">
+                        <textarea class="text-input-area"
+                                  @bind="textContent"
+                                  @bind:event="oninput"
+                                  placeholder="Nhập nội dung kiến thức ở đây... (Ít nhất 50 từ)">
+                        </textarea>
+                        <div class="word-count @(GetWordCountClass())">
+                            @GetWordCount() từ @(GetWordCount() != 0 ? "" : "(Không được để trống nội dung)")
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="error-message">❌ @errorMessage</div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="success-message">@successMessage</div>
+                }
+
+                <button class="btn-submit" @onclick="CreateQuiz" disabled="@isProcessing">
 
 
-        @if (isProcessing)
-        {
-            <span class="loading"></span>
-        }
-        Tạo và ôn tập
+                    @if (isProcessing)
+                    {
+                        <span class="loading"></span>
+                    }
+                    Tạo và ôn tập
                 </button>
             }
             else if (currentStep == 2)
@@ -175,7 +175,7 @@
 
                         <div class="review-section">
                             <div class="quiz-info-review">
-                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tiêu đề:</strong> @quizData.Title</p>
                                 <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
 
                             </div>
@@ -187,30 +187,81 @@
                                         <div class="question-review-header">
                                             <span class="question-review-number">Câu @(index + 1)</span>
                                             <div class="question-review-actions">
-                                                <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
-                                                <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)">Xóa</button>
-                                            </div>
-                                        </div>
-                                        <div class="question-review-content">
-                                            <p><strong>Câu hỏi:</strong> @question.Text</p>
-                                            <div class="answers-review">
-                                                @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                                @if (editingQuestionIndex == index)
                                                 {
-                                                    <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
-                                                        <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
-                                                        <span class="answer-text">@answer.Text</span>
-                                                        @if (answer.IsCorrect)
-                                                        {
-                                                            <span class="correct-badge">Đúng</span>
-                                                        }
-                                                    </div>
+                                                    <button class="btn-save" @onclick="() => SaveQuestion(index)"> Lưu</button>
+                                                    <button class="btn-cancel" @onclick="CancelEdit">❌ Hủy</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn-edit" @onclick="() => EditQuestion(index)"> Sửa</button>
+                                                    <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)"> Xóa</button>
                                                 }
                                             </div>
+                                        </div>
+
+                                        <div class="question-review-content">
+                                            @if (editingQuestionIndex == index)
+                                            {
+                                                <!-- Chế độ chỉnh sửa -->
+                                                <div class="edit-mode">
+                                                    <div class="form-group">
+                                                        <label class="form-label"><strong>Câu hỏi:</strong></label>
+                                                        <textarea class="form-input form-textarea-edit"
+                                                                  @bind="tempQuestion.Text"
+                                                                  placeholder="Nhập câu hỏi..."></textarea>
+                                                    </div>
+
+                                                    <div class="answers-edit-section">
+                                                        <label class="form-label"><strong>Các đáp án:</strong></label>
+                                                        @foreach (var (answer, ansIndex) in tempQuestion.Answers.Select((a, i) => (a, i)))
+                                                        {
+                                                            <div class="answer-edit-item">
+                                                                <span class="answer-label-edit">@GetAnswerLabel(ansIndex)</span>
+
+                                                                <input type="text"
+                                                                       class="answer-input-edit"
+                                                                       @bind="tempQuestion.Answers[ansIndex].Text"
+                                                                       placeholder="Nhập đáp án..." style="width: 75%;flex: 1;" />
+
+                                                                <label class="correct-checkbox" style="margin-left :40px;">
+                                                                    <input type="checkbox"
+                                                                           checked="@answer.IsCorrect"
+                                                                           @onchange="@((e) => SetCorrectAnswerInEdit(ansIndex, (bool)e.Value))" />
+                                                                    <span>Đúng</span>
+                                                                </label>
+
+                                                                @* <button class="btn-delete-answer"
+                                                @onclick="@(() => DeleteAnswer(ansIndex))" style ="margin-left:30px;">Xóa</button>*@
+                                                            </div>
+                                                        }
+
+                                                        @* <button class="btn-add-answer" @onclick="AddAnswer">➕ Thêm đáp án</button>*@
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <!-- Chế độ xem -->
+                                                <p><strong>Câu hỏi:</strong> @question.Text</p>
+                                                <div class="answers-review">
+                                                    @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                                    {
+                                                        <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
+                                                            <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                                            <span class="answer-text">@answer.Text</span>
+                                                            @if (answer.IsCorrect)
+                                                            {
+                                                                <span class="correct-badge"> Đúng</span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 }
                             </div>
-
                             <div class="button-group">
                                 <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
                                 <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Quiz</button>
@@ -218,14 +269,14 @@
                         </div>
                     </div>
                 }
-                else if(quizData.QuestionType == QuestionType.Flashcard)
+                else if (quizData.QuestionType == QuestionType.Flashcard)
                 {
                     <div class="step-container fade-in">
                         <h2 class="step-title">Xem lại tất cả thẻ học</h2>
 
                         <div class="review-section">
                             <div class="quiz-info-review">
-                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tiêu đề:</strong> @quizData.Title</p>
                                 <p><strong>Tổng số thẻ:</strong> @flashcards.Count thẻ</p>
                             </div>
 
@@ -233,17 +284,49 @@
                                 @foreach (var (card, index) in flashcards.Select((f, i) => (f, i)))
                                 {
                                     <div class="flashcard-review-item">
-                                        <div class="flashcard-review-header">
-                                            <span class="flashcard-number">Thẻ @(index + 1)</span>
+                                        <div class="flashcard-review-header" style="display: flex; align-items: center; justify-content: space-between;">
+                                            <span class="flashcard-number" style="font-size :24px;">Thẻ @(index + 1)</span>
                                             <div class="flashcard-review-actions">
-                                                <button class="btn-edit" @onclick="() => EditCard(index)">Sửa</button>
-                                                <button class="btn-delete-review" @onclick="() => DeleteCard(index)">Xóa</button>
+                                                @if (editingCardIndex == index)
+                                                {
+                                                    <button class="btn-save" @onclick="() => SaveCard(index)">Lưu</button>
+                                                    <button class="btn-cancel" @onclick="CancelCardEdit">Hủy</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn-edit" @onclick="() => EditCard(index)"> Sửa</button>
+                                                    <button class="btn-delete-review" @onclick="() => DeleteCard(index)"> Xóa</button>
+                                                }
                                             </div>
                                         </div>
 
                                         <div class="flashcard-review-content">
-                                            <p><strong>Thuật ngữ:</strong> @card.Terminology</p>
-                                            <p><strong>Định nghĩa:</strong> @card.Definition</p>
+                                            @if (editingCardIndex == index)
+                                            {
+                                                <!-- Chế độ chỉnh sửa Flashcard -->
+                                                <div class="edit-mode">
+                                                    <div class="form-group">
+                                                        <label class="form-label"><strong>Thuật ngữ:</strong></label>
+                                                        <input type="text"
+                                                               class="form-input form-input-edit"
+                                                               @bind="tempCard.Terminology"
+                                                               placeholder="Nhập thuật ngữ..." />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label"><strong>Định nghĩa:</strong></label>
+                                                        <textarea class="form-input form-textarea-edit"
+                                                                  @bind="tempCard.Definition"
+                                                                  placeholder="Nhập định nghĩa..."></textarea>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <!-- Chế độ xem -->
+                                                <p><strong>Thuật ngữ:</strong> @card.Terminology</p>
+                                                <p><strong>Định nghĩa:</strong> @card.Definition</p>
+                                            }
                                         </div>
                                     </div>
                                 }
@@ -251,13 +334,13 @@
 
                             <div class="button-group">
                                 <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
-                                <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Flashcard</button> 
+                                <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Flashcard</button>
                             </div>
                         </div>
                     </div>
                 }
-            
-            
+
+
             }
         </div>
     </div>
@@ -265,7 +348,6 @@
 <Quiz.Shared.Footer />
 @code {
     private QuizData quizData = new();
-    private JsonElement? generatedQuestions1;
     private UploadedFile? uploadedFile;
     private bool isProcessing = false;
     private bool isDragging = false;
@@ -273,17 +355,13 @@
     private string successMessage = "";
     private string textContent = "";
     private InputMode inputMode = InputMode.Upload;
-    private const long MaxFileSize = 10 * 1024 * 1024; // 10MB
-    private JsonElement.ArrayEnumerator? generatedQuestions; 
-    private string? knowledgeContent; 
+    private const long MaxFileSize = 1000 * 1024 * 1024; // 10MB
+
+    private string? knowledgeContent;
     private List<FlashcardItem> flashcards = new();
     private string message = "";
-    private bool isLoading = false;
-    private void EditCard(int index)
-    {
-        currentStep = 2;
-        //   currentCardIndex = index;
-    }
+
+
 
     private void DeleteCard(int index)
     {
@@ -337,41 +415,7 @@
         public string Level { get; set; }
         public int Count { get; set; }
     }
-    // private async Task GenerateFlashcards()
-    // {
-    //     isLoading = true;
-    //     message = "";
 
-    //     try
-    //     {
-    //         Gửi request đến API (ví dụ)
-    //         var response = await Http.PostAsJsonAsync("https:your-api-url/flashcards/generate",);
-
-    //         if (response.IsSuccessStatusCode)
-    //         {
-    //             var result = await response.Content.ReadFromJsonAsync<FlashcardResponse>();
-    //             if (result != null && result.Success)
-    //             {
-    //                 flashcards = result.Data;
-    //                 message = result.Message;
-    //             }
-    //             else
-    //             {
-    //                 message = "❌ Không thể tạo flashcards.";
-    //             }
-    //         }
-    //         else
-    //         {
-    //             message = "❌ Lỗi phản hồi từ server.";
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         message = $"⚠️ Lỗi: {ex.Message}";
-    //     }
-
-    //     isLoading = false;
-    // }
     public class QuizData
     {
         public string Title { get; set; } = "";
@@ -484,7 +528,7 @@
                 FileType = file.ContentType
             };
 
-            successMessage = $"✓ Đã tải lên: {file.Name}";
+            successMessage = $" Đã tải lên: {file.Name}";
         }
         catch (Exception ex)
         {
@@ -627,7 +671,7 @@
                 }
 
                 currentStep = 2;
-                successMessage = "✅ Đã tạo câu hỏi Quiz thành công!";
+                successMessage = "Đã tạo câu hỏi Quiz thành công!";
             }
             // 🔹 Nếu là FLASHCARD thì xử lý khác
             else if (quizData.QuestionType == QuestionType.Flashcard)
@@ -649,9 +693,9 @@
                     {
                         Text = terminology,
                         Answers = new List<Answer>
-                        {
-                            new Answer { Text = definition, IsCorrect = true }
-                        },
+                            {
+                                new Answer { Text = definition, IsCorrect = true }
+                            },
                         CorrectAnswers = new List<string> { definition }
                     };
                     questions.Add(q);
@@ -680,30 +724,14 @@
 
         try
         {
-            await JS.InvokeVoidAsync("console.log", "SaveAndCreate started", new { questionsCount = questions?.Count ?? 0, inputMode, title = quizData.Title });
-
-            // 🔹 Validate questions
-            if (questions == null || !questions.Any())
+            if (quizData.QuestionType == QuestionType.Quiz || quizData.QuestionType == QuestionType.Flashcard &&
+                (questions == null || !questions.Any()))
             {
                 errorMessage = "⚠️ Chưa có câu hỏi nào được tạo. Hãy tạo trước khi lưu!";
-                await JS.InvokeVoidAsync("console.warn", "SaveAndCreate aborted - no questions");
                 return;
             }
 
-            // 🔹 Prepare knowledge content
-            if (string.IsNullOrWhiteSpace(knowledgeContent))
-            {
-                knowledgeContent = inputMode == InputMode.Upload ? uploadedFile?.Content : textContent;
-            }
-
-            if (string.IsNullOrWhiteSpace(knowledgeContent))
-            {
-                errorMessage = "⚠️ Không có nội dung kiến thức để lưu!";
-                await JS.InvokeVoidAsync("console.warn", "SaveAndCreate aborted - empty knowledgeContent");
-                return;
-            }
-
-            // 🔹 Lấy token từ localStorage
+            // Get token from localStorage
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -711,63 +739,11 @@
                 return;
             }
 
-            token = token.Trim();
-
-            // 🔹 Decode JWT để lấy userId
-            int userId = 0;
-            try
-            {
-                var parts = token.Split('.');
-                if (parts.Length == 3)
-                {
-                    var payload = parts[1];
-                    payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
-                    var jsonBytes = Convert.FromBase64String(payload);
-                    var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
-                    var doc = System.Text.Json.JsonDocument.Parse(json);
-
-                    if (doc.RootElement.TryGetProperty("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out var userIdProp))
-                    {
-                        int.TryParse(userIdProp.GetString(), out userId);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await JS.InvokeVoidAsync("console.error", "JWT parse failed", ex.Message);
-            }
-
-            if (userId == 0)
-            {
-                errorMessage = "⚠️ Không tìm thấy userId hợp lệ trong token!";
-                return;
-            }
-
-            // 🔹 Gắn token vào HttpClient (Bearer)
             var backendClient = HttpClientFactory.CreateClient("FastApiClient");
             backendClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            // 🔹 Save knowledge content
-            var saveKnowledgePayload = new
-            {
-                user_id = userId,
-                text = knowledgeContent
-            };
-
-            await JS.InvokeVoidAsync("console.log", "Saving knowledge payload", saveKnowledgePayload);
-
-            var saveKnowledgeResponse = await backendClient.PostAsJsonAsync("/data-create-question-api/data-create-question", saveKnowledgePayload);
-            var saveKnowledgeBody = await saveKnowledgeResponse.Content.ReadAsStringAsync();
-            await JS.InvokeVoidAsync("console.log", "SaveKnowledge response", new { status = (int)saveKnowledgeResponse.StatusCode, body = saveKnowledgeBody });
-
-            if (!saveKnowledgeResponse.IsSuccessStatusCode)
-            {
-                errorMessage = "Lỗi khi lưu nội dung kiến thức";
-                Console.WriteLine($"SaveKnowledge failed: {saveKnowledgeBody}");
-                return;
-            }
-            //Save title 
+            // Save quiz metadata first
             var setQuizPayload = new
             {
                 Title = quizData.Title,
@@ -775,41 +751,54 @@
                 Type = quizData.QuestionType == QuestionType.Quiz ? "multiple" : "flashcard"
             };
 
+            var setQuizResponse = await backendClient.PostAsJsonAsync(
+                "https://exe-backend-j428.onrender.com/api/SetQuiz/create",
+                setQuizPayload
+            );
 
-            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
             if (!setQuizResponse.IsSuccessStatusCode)
             {
                 var error = await setQuizResponse.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("alert", $"❌ Lỗi khi tạo SetQuiz trên backend: {error}");
+                errorMessage = $"❌ Lỗi khi tạo SetQuiz: {error}";
                 return;
             }
-
-            // 🔹 Đọc SetQuizId trả về từ backend
+            if (quizData.QuestionType == QuestionType.Flashcard)
+            {
+                questions = flashcards.Select(f => new Question
+                {
+                    Text = f.Terminology,
+                    Answers = new List<Answer>
+        {
+            new Answer { Text = f.Definition, IsCorrect = true }
+        },
+                    CorrectAnswers = new List<string> { f.Definition }
+                }).ToList();
+            }
+            // Get SetQuizId from response
             var result = await setQuizResponse.Content.ReadFromJsonAsync<SetQuizResponse>();
             if (result == null || result.SetQuizId <= 0)
             {
-                await JS.InvokeVoidAsync("alert", "❌ Không thể lấy ID của SetQuiz vừa tạo!");
+                errorMessage = "Không thể lấy ID của SetQuiz vừa tạo!";
                 return;
             }
-            // 🔹 Save questions
-            int idx = 0;
+
+            // Save each question
             foreach (var question in questions)
             {
-                idx++;
-
-                // Tạo answers đúng định dạng JSON object
+                // Format answers into required dictionary format
                 var answers = new Dictionary<string, string>();
                 for (int i = 0; i < question.Answers.Count; i++)
                 {
                     answers.Add($"additionalProp{i + 1}", question.Answers[i].Text);
                 }
 
+                // Get correct answers
                 var correctAnswers = question.Answers
                     .Where(a => a.IsCorrect)
                     .Select(a => a.Text)
                     .ToList();
 
-                var payload = new
+                var questionPayload = new
                 {
                     setQuizId = result.SetQuizId,
                     question = question.Text,
@@ -817,36 +806,27 @@
                     correctAnswers = correctAnswers
                 };
 
-                var payloadJson = System.Text.Json.JsonSerializer.Serialize(payload);
-                await JS.InvokeVoidAsync("console.log", $"Saving question #{idx}", payloadJson);
+                var saveQuestionResponse = await backendClient.PostAsJsonAsync(
+                    "/question-api/questions",
+                    questionPayload
+                );
 
-                var saveResponse = await backendClient.PostAsJsonAsync("/question-api/questions", payload);
-                var saveRespBody = await saveResponse.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("console.log", new
+                if (!saveQuestionResponse.IsSuccessStatusCode)
                 {
-                    questionIndex = idx,
-                    status = (int)saveResponse.StatusCode,
-                    body = saveRespBody
-                });
-
-                if (!saveResponse.IsSuccessStatusCode)
-                {
-                    errorMessage = $"❌ Lỗi khi lưu câu hỏi #{idx}";
-                    Console.WriteLine($"Save question #{idx} failed: {saveRespBody}");
+                    var error = await saveQuestionResponse.Content.ReadAsStringAsync();
+                    errorMessage = $"❌ Lỗi khi lưu câu hỏi: {error}";
                     return;
                 }
             }
 
-            successMessage = "✅ Đã lưu thành công nội dung và câu hỏi vào hệ thống!";
-            await JS.InvokeVoidAsync("console.log", "SaveAndCreate completed successfully");
-
-            Navigation.NavigateTo("/revision");
+            successMessage = " Đã lưu thành công quiz vào hệ thống!";
+            await Task.Delay(1500); // Show success message briefly
+            Navigation.NavigateTo("/revision"); // Navigate to revision page
         }
         catch (Exception ex)
         {
-            errorMessage = $"Lỗi khi lưu: {ex.Message}";
-            Console.WriteLine($"SaveAndCreate exception: {ex}");
-            await JS.InvokeVoidAsync("console.error", "SaveAndCreate exception", ex.Message);
+            errorMessage = $"Lỗi: {ex.Message}";
+            await JS.InvokeVoidAsync("console.error", "SaveAndCreate error:", ex);
         }
         finally
         {
@@ -879,38 +859,17 @@
         public string Type { get; set; } = "";
     }
 
-    public class QuizQuestion
-{
-    public string Question { get; set; } = "";
-    public Dictionary<string, string> Answers { get; set; } = new();
-    public List<string> CorrectAnswers { get; set; } = new();
-    public string? SelectedAnswer { get; set; } // để lưu lựa chọn người dùng
-}
-    public class CreateQuizResponse
-    {
-        public int Id { get; set; }
-        public string Message { get; set; } = "";
-    }
 
-   //private List<Question> questions = new List<Question>();
 
-    public class QuestionCreateRequest
-    {
-        public int SetQuizId { get; set; }
-        public string Question { get; set; } = string.Empty;
-        public Dictionary<string, string> Answers { get; set; } = new();
-        public List<string> CorrectAnswers { get; set; } = new();
-    }
-   
 
 
     private async Task OpenFileDialog()
     {
-       await JS.InvokeVoidAsync("fileHelper.openFileDialog", "fileInput");
+        await JS.InvokeVoidAsync("fileHelper.openFileDialog", "fileInput");
     }
 
-    
-   
+
+
     private int currentStep = 1;
     private string creationMethod = "";
     private string answerType = "single";
@@ -923,7 +882,7 @@
 
     private List<Question> questions = new List<Question>();
 
-   
+
     protected override void OnInitialized()
     {
         // Initialize empty - user will add questions manually
@@ -947,11 +906,11 @@
 
     }
     public class QuestionModel
-{
-    public string Question { get; set; } = string.Empty;
-    public Dictionary<string, string> Answers { get; set; } = new();
-    public List<string> CorrectAnswers { get; set; } = new();
-}
+    {
+        public string Question { get; set; } = string.Empty;
+        public Dictionary<string, string> Answers { get; set; } = new();
+        public List<string> CorrectAnswers { get; set; } = new();
+    }
     private void SelectCreationMethod(string method)
     {
         creationMethod = method;
@@ -959,7 +918,7 @@
 
     private void NextStep()
     {
-        if (currentStep == 1 )
+        if (currentStep == 1)
         {
             currentStep = 2;
             // Tạo 1 câu hỏi đầu tiên
@@ -1000,28 +959,15 @@
         {
             Text = "",
             Answers = new List<Answer>
-            {
-                new Answer { Text = "", IsCorrect = true },
-                new Answer { Text = "", IsCorrect = false },
-                new Answer { Text = "", IsCorrect = false },
-                new Answer { Text = "", IsCorrect = false }
-            }
+                {
+                    new Answer { Text = "", IsCorrect = true },
+                    new Answer { Text = "", IsCorrect = false },
+                    new Answer { Text = "", IsCorrect = false },
+                    new Answer { Text = "", IsCorrect = false }
+                }
         });
         // Di chuyển tới câu hỏi mới vừa tạo
         currentQuestionIndex = questions.Count - 1;
-    }
-
-    private void RemoveQuestion(int index)
-    {
-        if (questions.Count > 1)
-        {
-            questions.RemoveAt(index);
-            // Điều chỉnh index nếu cần
-            if (currentQuestionIndex >= questions.Count)
-            {
-                currentQuestionIndex = questions.Count - 1;
-            }
-        }
     }
 
     private void DeleteQuestionFromReview(int index)
@@ -1070,14 +1016,87 @@
         currentStep = 3;
     }
 
+    private int editingQuestionIndex = -1;
+    private Question tempQuestion = new();
+
     private void EditQuestion(int index)
     {
-        // Quay lại bước 2 để sửa câu hỏi
-        currentStep = 2;
-        currentQuestionIndex = index;
+        editingQuestionIndex = index;
+        var original = questions[index];
+        tempQuestion = new Question
+        {
+            Text = original.Text,
+            Answers = original.Answers.Select(a => new Answer
+            {
+                Text = a.Text,
+                IsCorrect = a.IsCorrect
+            }).ToList(),
+            CorrectAnswers = new List<string>(original.CorrectAnswers)
+        };
     }
 
-   
+    private void SaveQuestion(int index)
+    {
+        if (string.IsNullOrWhiteSpace(tempQuestion.Text))
+        {
+            errorMessage = "⚠️ Câu hỏi không được để trống!";
+            return;
+        }
+
+        if (tempQuestion.Answers.Any(a => string.IsNullOrWhiteSpace(a.Text)))
+        {
+            errorMessage = "⚠️ Các đáp án không được để trống!";
+            return;
+        }
+
+        if (!tempQuestion.Answers.Any(a => a.IsCorrect))
+        {
+            errorMessage = "⚠️ Phải có ít nhất 1 đáp án đúng!";
+            return;
+        }
+
+        questions[index] = new Question
+        {
+            Text = tempQuestion.Text,
+            Answers = tempQuestion.Answers.Select(a => new Answer
+            {
+                Text = a.Text,
+                IsCorrect = a.IsCorrect
+            }).ToList(),
+            CorrectAnswers = tempQuestion.Answers
+                .Where(a => a.IsCorrect)
+                .Select(a => a.Text)
+                .ToList()
+        };
+
+        editingQuestionIndex = -1;
+    }
+
+    private void CancelEdit()
+    {
+        editingQuestionIndex = -1;
+        tempQuestion = new Question();
+    }
+
+    private void SetCorrectAnswerInEdit(int answerIndex, bool isCorrect)
+    {
+        tempQuestion.Answers[answerIndex].IsCorrect = isCorrect;
+    }
+
+    private void AddAnswer()
+    {
+        tempQuestion.Answers.Add(new Answer { Text = "", IsCorrect = false });
+    }
+
+    private void DeleteAnswer(int index)
+    {
+        if (tempQuestion.Answers.Count > 1)
+        {
+            tempQuestion.Answers.RemoveAt(index);
+        }
+    }
+
+
     private void ResetForm()
     {
         currentStep = 1;
@@ -1095,7 +1114,7 @@
         public string Text { get; set; }
         public string Quesion { get; set; }
         public List<Answer> Answers { get; set; }
-        public List<string> CorrectAnswers { get; set; }    
+        public List<string> CorrectAnswers { get; set; }
     }
 
     public class Answer
@@ -1104,7 +1123,7 @@
         public bool IsCorrect { get; set; }
     }
 
-  
+
 
     private int GetUserIdFromToken(string token)
     {
@@ -1148,10 +1167,136 @@
         }
         return Convert.FromBase64String(base64);
     }
+
+    private int editingCardIndex = -1;
+    private FlashcardItem tempCard = new();
+
+    private void EditCard(int index)
+    {
+        editingCardIndex = index;
+        var original = flashcards[index];
+        tempCard = new FlashcardItem
+        {
+            Terminology = flashcards[index].Terminology,
+            Definition = flashcards[index].Definition
+        };
+    }
+
+    private void SaveCard(int index)
+    {
+        if (string.IsNullOrWhiteSpace(tempCard.Terminology))
+        {
+            errorMessage = "⚠️ Thuật ngữ không được để trống!";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(tempCard.Definition))
+        {
+            errorMessage = "⚠️ Định nghĩa không được để trống!";
+            return;
+        }
+
+        flashcards[index] = new FlashcardItem
+        {
+            Terminology = tempCard.Terminology,
+            Definition = tempCard.Definition
+        };
+
+        editingCardIndex = -1;
+        successMessage = "✅ Đã cập nhật thẻ học thành công!";
+        ClearMessagesAfterDelay();
+    }
+
+    private void CancelCardEdit()
+    {
+        editingCardIndex = -1;
+        tempCard = new FlashcardItem();
+    }
+    private void ClearMessagesAfterDelay()
+    {
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            successMessage = "";
+            errorMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
 }
 
 <style>
     @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+    .form-input-edit {
+        background: white;
+        border: 2px solid #ddd6fe;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 15px;
+        outline: none;
+        width: 100%;
+    }
+
+    .answer-input-edit {
+        color: black; /* đổi màu tùy ý, ví dụ xám nhạt */
+        opacity: 1; /* để placeholder không bị mờ */
+        font-style: italic;
+        background: #D5CEFD;
+        margin-bottom: 10px;
+    }
+
+    .flashcard-review-item {
+        background: #D5CEFD;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .form-input-edit:focus {
+        border-color: #5b21b6;
+    }
+
+    .form-textarea-edit {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    .edit-mode {
+        background: #ffffff;
+        border: 2px dashed #5b21b6;
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 10px;
+    }
+
+    .btn-save {
+        background: #059669;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-save:hover {
+            background: #047857;
+        }
+
+    .btn-cancel {
+        background: #6b7280;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+        }
 
     * {
         margin: 0;
@@ -1575,7 +1720,7 @@
     }
 
     .question-review-item {
-        background: #F8F9FA;
+        background: #D5CEFD;
         border: 2px solid #D5CEFD;
         border-radius: 12px;
         padding: 20px;
@@ -1767,7 +1912,8 @@
             width: 100%;
         }
     }
-     .form-grid {
+
+    .form-grid {
         display: grid;
         grid-template-columns: 1fr 200px;
         gap: 30px;
@@ -1797,9 +1943,9 @@
         outline: none;
     }
 
-    .form-input:focus {
-        background: #c4b5fd;
-    }
+        .form-input:focus {
+            background: #c4b5fd;
+        }
 
     .form-textarea {
         min-height: 120px;
@@ -1808,7 +1954,7 @@
 
     .question-type {
         margin-top: 30px;
-        margin-bottom : 20px;
+        margin-bottom: 20px;
     }
 
     .radio-group {
@@ -1825,19 +1971,19 @@
         cursor: pointer;
     }
 
-    .radio-option input[type="radio"] {
-        width: 24px;
-        height: 24px;
-        accent-color: #5b21b6;
-        cursor: pointer;
-    }
+        .radio-option input[type="radio"] {
+            width: 24px;
+            height: 24px;
+            accent-color: #5b21b6;
+            cursor: pointer;
+        }
 
-    .radio-option label {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-        cursor: pointer;
-    }
+        .radio-option label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            cursor: pointer;
+        }
 
     .upload-section {
         background: #ddd6fe;
@@ -1849,16 +1995,16 @@
         transition: all 0.3s;
     }
 
-    .upload-section.dragover {
-        background: #c4b5fd;
-        border: 2px dashed #5b21b6;
-    }
+        .upload-section.dragover {
+            background: #c4b5fd;
+            border: 2px dashed #5b21b6;
+        }
 
-    .upload-section.disabled {
-        background: #e5e7eb;
-        opacity: 0.6;
-        pointer-events: none;
-    }
+        .upload-section.disabled {
+            background: #e5e7eb;
+            opacity: 0.6;
+            pointer-events: none;
+        }
 
     .input-mode-selector {
         display: flex;
@@ -1883,14 +2029,14 @@
         color: #6b7280;
     }
 
-    .input-mode-btn.active {
-        background: #5b21b6;
-        color: white;
-    }
+        .input-mode-btn.active {
+            background: #5b21b6;
+            color: white;
+        }
 
-    .input-mode-btn:hover:not(.active) {
-        background: #e5e7eb;
-    }
+        .input-mode-btn:hover:not(.active) {
+            background: #e5e7eb;
+        }
 
     .text-input-section {
         margin-top: 30px;
@@ -1910,10 +2056,10 @@
         resize: vertical;
     }
 
-    .text-input-area:focus {
-        background: #c4b5fd;
-        border-color: #5b21b6;
-    }
+        .text-input-area:focus {
+            background: #c4b5fd;
+            border-color: #5b21b6;
+        }
 
     .word-count {
         text-align: right;
@@ -1923,13 +2069,13 @@
         font-weight: 600;
     }
 
-    .word-count.warning {
-        color: #black;
-    }
+        .word-count.warning {
+            color: #black;
+        }
 
-    .word-count.valid {
-        color: #059669;
-    }
+        .word-count.valid {
+            color: #059669;
+        }
 
     .upload-icon {
         width: 80px;
@@ -1937,10 +2083,10 @@
         margin: 0 auto 20px;
     }
 
-    .upload-icon svg {
-        width: 100%;
-        height: 100%;
-    }
+        .upload-icon svg {
+            width: 100%;
+            height: 100%;
+        }
 
     .upload-title {
         font-size: 22px;
@@ -1968,9 +2114,9 @@
         transition: background 0.3s;
     }
 
-    .btn-upload:hover {
-        background: #4c1d95;
-    }
+        .btn-upload:hover {
+            background: #4c1d95;
+        }
 
     .file-input {
         display: none;
@@ -2021,9 +2167,9 @@
         font-weight: 600;
     }
 
-    .remove-file:hover {
-        background: #dc2626;
-    }
+        .remove-file:hover {
+            background: #dc2626;
+        }
 
     .btn-submit {
         background: #5b21b6;
@@ -2040,14 +2186,14 @@
         margin-left: 300px;
     }
 
-    .btn-submit:hover {
-        background: #4c1d95;
-    }
+        .btn-submit:hover {
+            background: #4c1d95;
+        }
 
-    .btn-submit:disabled {
-        background: #9ca3af;
-        cursor: not-allowed;
-    }
+        .btn-submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
 
     .loading {
         display: inline-block;
@@ -2061,7 +2207,9 @@
     }
 
     @@keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .error-message {

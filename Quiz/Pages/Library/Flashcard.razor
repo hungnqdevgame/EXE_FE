@@ -10,8 +10,8 @@
         <h1 class="page-title">Thư viện bài học</h1>
 
         <div class="tabs">
-            <button class="tab">Upload tài liệu</button>
-            <button class="tab">Tạo Quiz</button>
+
+            <button class="tab" @onclick="CreatQuiz">Tạo Quiz</button>
             <button class="tab active">Ôn tập</button>
         </div>
 
@@ -157,7 +157,7 @@
                     <div class="quiz-options">
                         @foreach (var (option, index) in GetCurrentQuizOptions().Select((o, i) => (o, i)))
                         {
-                            <button class="quiz-option @GetOptionClass(option)" 
+                            <button class="quiz-option @GetOptionClass(option)"
                                     @onclick="() => SelectAnswer(option)"
                                     disabled="@(selectedAnswer != null)">
                                 <span class="option-letter">@GetOptionLetter(index)</span>
@@ -236,6 +236,10 @@
         await LoadFlashcards();
     }
 
+    void CreatQuiz()
+    {
+        Navigation.NavigateTo($"/revision");
+    }
     private async Task LoadFlashcards()
     {
         isLoading = true;
@@ -252,7 +256,7 @@
                 return;
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Get, 
+            var request = new HttpRequestMessage(HttpMethod.Get,
                 $"https://exe-createquiz.onrender.com/question-api/questions/{setQuizId}");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Trim());
 
@@ -342,7 +346,7 @@
         quizStarted = true;
         currentQuizIndex = 0;
         selectedAnswer = null;
-        
+
         // Reset user answers
         foreach (var card in flashcards)
         {
@@ -385,15 +389,15 @@
     private string GetOptionClass(string option)
     {
         if (selectedAnswer == null) return "";
-        
+
         var correctAnswer = flashcards[currentQuizIndex].Term;
-        
+
         if (option == correctAnswer)
             return "option-correct";
-        
+
         if (option == selectedAnswer && option != correctAnswer)
             return "option-incorrect";
-        
+
         return "option-disabled";
     }
 
@@ -487,19 +491,19 @@
         font-family: 'Baloo 2', cursive;
     }
 
-    .tab.active {
-        color: #4318FF;
-    }
+        .tab.active {
+            color: #4318FF;
+        }
 
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #4318FF;
-    }
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
 
     .section-title {
         font-size: 20px;
@@ -525,7 +529,9 @@
     }
 
     @@keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .error-message {
@@ -558,9 +564,9 @@
         transform-style: preserve-3d;
     }
 
-    .flashcard-content.flipped {
-        transform: rotateY(180deg);
-    }
+        .flashcard-content.flipped {
+            transform: rotateY(180deg);
+        }
 
     .flashcard-front,
     .flashcard-back {
@@ -631,16 +637,16 @@
         justify-content: center;
     }
 
-    .btn-nav:hover:not(:disabled) {
-        background: #805AD5;
-        transform: scale(1.1);
-    }
+        .btn-nav:hover:not(:disabled) {
+            background: #805AD5;
+            transform: scale(1.1);
+        }
 
-    .btn-nav:disabled {
-        background: #CBD5E0;
-        cursor: not-allowed;
-        opacity: 0.5;
-    }
+        .btn-nav:disabled {
+            background: #CBD5E0;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
 
     /* Scroll Indicator */
     .scroll-indicator {
@@ -649,16 +655,24 @@
         color: #718096;
     }
 
-    .scroll-indicator span {
-        font-size: 48px;
-        display: block;
-        animation: bounce 2s infinite;
-    }
+        .scroll-indicator span {
+            font-size: 48px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
 
     @@keyframes bounce {
-        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-        40% { transform: translateY(-10px); }
-        60% { transform: translateY(-5px); }
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-10px);
+        }
+
+        60% {
+            transform: translateY(-5px);
+        }
     }
 
     /* List View */
@@ -727,11 +741,11 @@
         transition: all 0.3s;
     }
 
-    .btn-practice:hover {
-        background: #3311CC;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
-    }
+        .btn-practice:hover {
+            background: #3311CC;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
+        }
 
     /* Quiz Mode */
     .quiz-container {
@@ -799,14 +813,14 @@
         text-align: left;
     }
 
-    .quiz-option:hover:not(:disabled) {
-        border-color: #4318FF;
-        background: #EBF4FF;
-    }
+        .quiz-option:hover:not(:disabled) {
+            border-color: #4318FF;
+            background: #EBF4FF;
+        }
 
-    .quiz-option:disabled {
-        cursor: not-allowed;
-    }
+        .quiz-option:disabled {
+            cursor: not-allowed;
+        }
 
     .option-letter {
         width: 32px;
@@ -832,18 +846,18 @@
         border-color: #059669;
     }
 
-    .option-correct .option-letter {
-        background: #059669;
-    }
+        .option-correct .option-letter {
+            background: #059669;
+        }
 
     .option-incorrect {
         background: #fee2e2;
         border-color: #dc2626;
     }
 
-    .option-incorrect .option-letter {
-        background: #dc2626;
-    }
+        .option-incorrect .option-letter {
+            background: #dc2626;
+        }
 
     .option-disabled {
         opacity: 0.5;
@@ -885,9 +899,9 @@
         transition: all 0.3s;
     }
 
-    .btn-next-question:hover {
-        background: #3311CC;
-    }
+        .btn-next-question:hover {
+            background: #3311CC;
+        }
 
     /* Results */
     .results-container {
@@ -944,15 +958,15 @@
         border: 2px solid #E2E8F0;
     }
 
-    .result-item.correct {
-        border-color: #059669;
-        background: #f0fdf4;
-    }
+        .result-item.correct {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
 
-    .result-item.incorrect {
-        border-color: #dc2626;
-        background: #fef2f2;
-    }
+        .result-item.incorrect {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
 
     .result-header {
         display: flex;
@@ -976,4 +990,4 @@
     .badge-correct {
         background: #d1f
     }
- </style>
+</style>

@@ -27,7 +27,7 @@
         margin-bottom: 10px;
     }
 
-   .tabs {
+    .tabs {
         display: flex;
         gap: 5px;
         border-bottom: 2px solid #e8e8e8;
@@ -46,19 +46,19 @@
         font-family: 'Baloo 2', cursive;
     }
 
-    .tab.active {
-        color: #4318FF;
-    }
+        .tab.active {
+            color: #4318FF;
+        }
 
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #4318FF;
-    }
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
 
 
     .create-section {
@@ -82,9 +82,9 @@
         transition: background 0.3s ease;
     }
 
-    .create-button:hover {
-        background-color: #2A0CD8;
-    }
+        .create-button:hover {
+            background-color: #2A0CD8;
+        }
 
     .folder-label {
         display: flex;
@@ -111,10 +111,10 @@
         transition: all 0.25s ease;
     }
 
-    .quiz-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(29, 5, 157, 0.15);
-    }
+        .quiz-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(29, 5, 157, 0.15);
+        }
 
     .quiz-date {
         font-weight: 600;
@@ -135,26 +135,26 @@
         font-size: 0.9rem;
     }
 
-    .quiz-info span {
-        display: block;
-        font-weight: 600;
-        color: #1D059D;
-    }
+        .quiz-info span {
+            display: block;
+            font-weight: 600;
+            color: #1D059D;
+        }
 </style>
 
 <div class="container">
     <div class="page-title">Thư viện bài học</div>
 
-   <div class="tabs">
-              <button class="tab active" @onclick="() => NavigateToTab(2)">Ôn tập</button>
-           
-            <button class="tab " @onclick="() => NavigateToTab(1)">Tạo Quiz</button>
-          
-        </div>
+    <div class="tabs">
+        <button class="tab active" @onclick="() => NavigateToTab(2)">Ôn tập</button>
+
+        <button class="tab " @onclick="() => NavigateToTab(1)">Tạo Quiz</button>
+
+    </div>
 
 
     <div class="create-section">
-        <button class="create-button">
+        <button class="create-button" @onclick="NavigateToPage">
             <span>➕</span> Tạo mới
         </button>
     </div>
@@ -178,7 +178,6 @@
                     <div class="quiz-date">🕓 @quiz.CreatedAt.ToString("dd/MM/yyyy")</div>
                     <div class="quiz-title">@quiz.Title</div>
                     <div class="quiz-info">
-                       
                     </div>
                 </div>
             }
@@ -198,7 +197,7 @@
     }
     private void NavigateToTab(int tab)
     {
-        switch(tab)
+        switch (tab)
         {
             case 0:
                 Navigation.NavigateTo("/library");
@@ -266,5 +265,8 @@
         }
 
     }
-
+    private void NavigateToPage()
+    {
+        Navigation.NavigateTo("/create-quiz"); // đổi "/trang-dich" thành route bạn muốn
+    }
 }

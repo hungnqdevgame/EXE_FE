@@ -18,10 +18,10 @@
                 <h1 class="page-title">Thư viện bài học</h1>
 
                 <div class="tabs">
-           <button class="tab " @onclick="() => NavigateToTab(2)">Ôn tập</button>
-        <button class="tab active">Tạo Quiz</button>
-    
-    </div>
+                    <button class="tab " @onclick="() => NavigateToTab(2)">Ôn tập</button>
+                    <button class="tab active">Tạo Quiz</button>
+
+                </div>
 
                 <div class="form-grid">
                     <div class="form-group">
@@ -31,14 +31,14 @@
                     <div class="form-group">
                         <label class="form-label">Số câu</label>
                         <input type="number" class="form-input" @bind="quizData.QuestionCount" placeholder="10" min="1"
-                            max="100">
+                               max="100">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Mô tả</label>
                     <textarea class="form-input form-textarea" @bind="quizData.Description"
-                        placeholder="Nhập mô tả..."></textarea>
+                              placeholder="Nhập mô tả..."></textarea>
                 </div>
 
                 <div class="question-type">
@@ -46,14 +46,14 @@
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" id="quiz" name="questionType" value="quiz"
-                                @onchange="() => quizData.QuestionType = QuestionType.Quiz"
-                                checked="@(quizData.QuestionType == QuestionType.Quiz)">
+                                   @onchange="() => quizData.QuestionType = QuestionType.Quiz"
+                                   checked="@(quizData.QuestionType == QuestionType.Quiz)">
                             <label for="quiz">Trắc nghiệm</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" id="flashcard" name="questionType" value="flashcard"
-                                @onchange="() => quizData.QuestionType = QuestionType.Flashcard"
-                                checked="@(quizData.QuestionType == QuestionType.Flashcard)">
+                                   @onchange="() => quizData.QuestionType = QuestionType.Flashcard"
+                                   checked="@(quizData.QuestionType == QuestionType.Flashcard)">
                             <label for="flashcard">Flashcard</label>
                         </div>
                     </div>
@@ -74,10 +74,10 @@
                         <div class="radio-option">
                             @foreach (var tag in tags)
                             {
-                               
-                                    <input type="radio" value="@tag" @onchange="e => ToggleTag(e, tag)"
-                                        checked="@selectedTags.Contains(tag)"  />
-                                         <label class="radio">
+
+                                <input type="radio" value="@tag" @onchange="e => ToggleTag(e, tag)"
+                                       checked="@selectedTags.Contains(tag)" />
+                                <label class="radio">
                                     @tag
                                 </label>
                             }
@@ -106,7 +106,7 @@
             }
             else if (currentStep == 2)
             {
-                if(quizData.QuestionType == QuestionType.Quiz)
+                if (quizData.QuestionType == QuestionType.Quiz)
                 {
                     <div class="step-container fade-in">
                         <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
@@ -199,7 +199,7 @@
                         </div>
                     </div>
                 }
-               
+
             }
         </div>
     </div>
@@ -757,7 +757,7 @@
     {
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
-        public string Type { get; set; } = "";  
+        public string Type { get; set; } = "";
     }
 
     public class GenerateQuestionsResponse
@@ -1046,19 +1046,19 @@ new Answer { Text = "", IsCorrect = false }
         font-family: 'Baloo 2', cursive;
     }
 
-    .tab.active {
-        color: #4318FF;
-    }
+        .tab.active {
+            color: #4318FF;
+        }
 
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #4318FF;
-    }
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
 
     .content-wrapper {
         min-height: 500px;
@@ -1098,32 +1098,32 @@ new Answer { Text = "", IsCorrect = false }
         color: white;
     }
 
-    .option-button:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
-        border-color: #4318FF;
-    }
+        .option-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
+            border-color: #4318FF;
+        }
 
-    .option-button.selected {
-        border-color: #D5CEFD;
-        background: #D5CEFD;
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
-    }
+        .option-button.selected {
+            border-color: #D5CEFD;
+            background: #D5CEFD;
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
+        }
 
-    .option-button.selected h3,
-    .option-button.selected p {
-        color: black;
-    }
+            .option-button.selected h3,
+            .option-button.selected p {
+                color: black;
+            }
 
-    .option-button h3 {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
+        .option-button h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
 
-    .option-button p {
-        font-size: 16px;
-    }
+        .option-button p {
+            font-size: 16px;
+        }
 
     /* Quiz Form */
     .quiz-form {
@@ -1141,18 +1141,18 @@ new Answer { Text = "", IsCorrect = false }
         margin-bottom: 20px;
     }
 
-    .form-group.half {
-        grid-column: 2;
-    }
+        .form-group.half {
+            grid-column: 2;
+        }
 
-    .form-group label {
-        display: block;
-        font-weight: 700;
-        color: #2D3748;
-        margin-bottom: 10px;
-        font-size: 16px;
-        margin-top: 10px;
-    }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
     .counter-display {
         background: #D5CEFD;
@@ -1176,11 +1176,11 @@ new Answer { Text = "", IsCorrect = false }
         transition: border-color 0.3s;
     }
 
-    .form-input:focus,
-    .form-textarea:focus {
-        outline: none;
-        border-color: #4318FF;
-    }
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4318FF;
+        }
 
     .form-textarea {
         resize: vertical;
@@ -1203,11 +1203,11 @@ new Answer { Text = "", IsCorrect = false }
         margin: 0;
     }
 
-    .radio-label input[type="radio"] {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
+        .radio-label input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
 
     .questions-section {
         margin-top: 30px;
@@ -1241,15 +1241,15 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .btn-nav:hover:not(:disabled) {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-nav:hover:not(:disabled) {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
-    .btn-nav:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
     .question-card {
         background: #D5CEFD;
@@ -1288,9 +1288,9 @@ new Answer { Text = "", IsCorrect = false }
         transition: opacity 0.2s;
     }
 
-    .btn-remove:hover {
-        opacity: 1;
-    }
+        .btn-remove:hover {
+            opacity: 1;
+        }
 
     .answer-item {
         display: flex;
@@ -1299,16 +1299,16 @@ new Answer { Text = "", IsCorrect = false }
         margin-bottom: 12px;
     }
 
-    .answer-item input[type="text"] {
-        flex: 1;
-    }
+        .answer-item input[type="text"] {
+            flex: 1;
+        }
 
-    .answer-item input[type="radio"],
-    .answer-item input[type="checkbox"] {
-        width: 22px;
-        height: 22px;
-        cursor: pointer;
-    }
+        .answer-item input[type="radio"],
+        .answer-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
 
     .btn-add-question {
         background: #4318FF;
@@ -1325,10 +1325,10 @@ new Answer { Text = "", IsCorrect = false }
         display: block;
     }
 
-    .btn-add-question:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-add-question:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     /* Buttons */
     .button-group {
@@ -1357,28 +1357,28 @@ new Answer { Text = "", IsCorrect = false }
         margin-left: 340px;
     }
 
-    .btn-next:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background: #4318FF;
-        color: white;
-    }
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #4318FF;
+            color: white;
+        }
 
-    .btn-next:not(:disabled):hover {
-        background: #4318FF;
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
-    }
+        .btn-next:not(:disabled):hover {
+            background: #4318FF;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
+        }
 
     .btn-back {
         background: #E2E8F0;
         color: #2D3748;
     }
 
-    .btn-back:hover {
-        background: #CBD5E0;
-    }
+        .btn-back:hover {
+            background: #CBD5E0;
+        }
 
     .btn-create-quiz {
         background: #1D059D;
@@ -1387,15 +1387,15 @@ new Answer { Text = "", IsCorrect = false }
         margin-top: 20px;
     }
 
-    .btn-create-quiz:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+        .btn-create-quiz:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    .btn-create-quiz:not(:disabled):hover {
-        background: #1f1347;
-        transform: translateY(-3px);
-    }
+        .btn-create-quiz:not(:disabled):hover {
+            background: #1f1347;
+            transform: translateY(-3px);
+        }
 
     /* Review Section */
     .review-section {
@@ -1412,15 +1412,15 @@ new Answer { Text = "", IsCorrect = false }
         margin-bottom: 30px;
     }
 
-    .quiz-info-review p {
-        margin: 10px 0;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .quiz-info-review p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
-    .quiz-info-review strong {
-        color: #2D1B69;
-    }
+        .quiz-info-review strong {
+            color: #2D1B69;
+        }
 
     .questions-list {
         margin-bottom: 30px;
@@ -1470,10 +1470,10 @@ new Answer { Text = "", IsCorrect = false }
         font-size: 14px;
     }
 
-    .btn-edit:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-edit:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     .btn-delete-review {
         background: #FF6B6B;
@@ -1488,20 +1488,20 @@ new Answer { Text = "", IsCorrect = false }
         font-size: 14px;
     }
 
-    .btn-delete-review:hover {
-        background: #FA5252;
-        transform: translateY(-2px);
-    }
+        .btn-delete-review:hover {
+            background: #FA5252;
+            transform: translateY(-2px);
+        }
 
     .question-review-content {
         padding: 15px;
     }
 
-    .question-review-content p {
-        margin-bottom: 15px;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .question-review-content p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
     .answers-review {
         display: flex;
@@ -1520,10 +1520,10 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .answer-review.correct {
-        background: #E6FFE6;
-        border-color: #70E539;
-    }
+        .answer-review.correct {
+            background: #E6FFE6;
+            border-color: #70E539;
+        }
 
     .answer-label {
         background: #1D059D;
@@ -1568,11 +1568,11 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .btn-confirm-quiz:hover {
-        background: #70E539;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px;
-    }
+        .btn-confirm-quiz:hover {
+            background: #70E539;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px;
+        }
 
     /* Animation */
     .fade-in {
@@ -1651,9 +1651,9 @@ new Answer { Text = "", IsCorrect = false }
         outline: none;
     }
 
-    .form-input:focus {
-        background: #c4b5fd;
-    }
+        .form-input:focus {
+            background: #c4b5fd;
+        }
 
     .form-textarea {
         min-height: 120px;
@@ -1678,19 +1678,19 @@ new Answer { Text = "", IsCorrect = false }
         cursor: pointer;
     }
 
-    .radio-option input[type="radio"] {
-        width: 24px;
-        height: 24px;
-        accent-color: #5b21b6;
-        cursor: pointer;
-    }
+        .radio-option input[type="radio"] {
+            width: 24px;
+            height: 24px;
+            accent-color: #5b21b6;
+            cursor: pointer;
+        }
 
-    .radio-option label {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-        cursor: pointer;
-    }
+        .radio-option label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            cursor: pointer;
+        }
 
     .upload-section {
         background: #ddd6fe;
@@ -1702,16 +1702,16 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .upload-section.dragover {
-        background: #c4b5fd;
-        border: 2px dashed #5b21b6;
-    }
+        .upload-section.dragover {
+            background: #c4b5fd;
+            border: 2px dashed #5b21b6;
+        }
 
-    .upload-section.disabled {
-        background: #e5e7eb;
-        opacity: 0.6;
-        pointer-events: none;
-    }
+        .upload-section.disabled {
+            background: #e5e7eb;
+            opacity: 0.6;
+            pointer-events: none;
+        }
 
     .input-mode-selector {
         display: flex;
@@ -1736,14 +1736,14 @@ new Answer { Text = "", IsCorrect = false }
         color: #6b7280;
     }
 
-    .input-mode-btn.active {
-        background: #5b21b6;
-        color: white;
-    }
+        .input-mode-btn.active {
+            background: #5b21b6;
+            color: white;
+        }
 
-    .input-mode-btn:hover:not(.active) {
-        background: #e5e7eb;
-    }
+        .input-mode-btn:hover:not(.active) {
+            background: #e5e7eb;
+        }
 
     .text-input-section {
         margin-top: 30px;
@@ -1763,10 +1763,10 @@ new Answer { Text = "", IsCorrect = false }
         resize: vertical;
     }
 
-    .text-input-area:focus {
-        background: #c4b5fd;
-        border-color: #5b21b6;
-    }
+        .text-input-area:focus {
+            background: #c4b5fd;
+            border-color: #5b21b6;
+        }
 
     .word-count {
         text-align: right;
@@ -1776,13 +1776,13 @@ new Answer { Text = "", IsCorrect = false }
         font-weight: 600;
     }
 
-    .word-count.warning {
-        color: #dc2626;
-    }
+        .word-count.warning {
+            color: #dc2626;
+        }
 
-    .word-count.valid {
-        color: #059669;
-    }
+        .word-count.valid {
+            color: #059669;
+        }
 
     .upload-icon {
         width: 80px;
@@ -1790,10 +1790,10 @@ new Answer { Text = "", IsCorrect = false }
         margin: 0 auto 20px;
     }
 
-    .upload-icon svg {
-        width: 100%;
-        height: 100%;
-    }
+        .upload-icon svg {
+            width: 100%;
+            height: 100%;
+        }
 
     .upload-title {
         font-size: 22px;
@@ -1821,9 +1821,9 @@ new Answer { Text = "", IsCorrect = false }
         transition: background 0.3s;
     }
 
-    .btn-upload:hover {
-        background: #4c1d95;
-    }
+        .btn-upload:hover {
+            background: #4c1d95;
+        }
 
     .file-input {
         display: none;
@@ -1874,9 +1874,9 @@ new Answer { Text = "", IsCorrect = false }
         font-weight: 600;
     }
 
-    .remove-file:hover {
-        background: #dc2626;
-    }
+        .remove-file:hover {
+            background: #dc2626;
+        }
 
     .btn-submit {
         background: #5b21b6;
@@ -1892,14 +1892,14 @@ new Answer { Text = "", IsCorrect = false }
         transition: background 0.3s;
     }
 
-    .btn-submit:hover {
-        background: #4c1d95;
-    }
+        .btn-submit:hover {
+            background: #4c1d95;
+        }
 
-    .btn-submit:disabled {
-        background: #9ca3af;
-        cursor: not-allowed;
-    }
+        .btn-submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
 
     .loading {
         display: inline-block;

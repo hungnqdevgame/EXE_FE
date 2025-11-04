@@ -11,7 +11,7 @@
 
         <!-- Tabs -->
         <div class="tabs">
-             <button class="tab" @onclick="() => NavigateToTab(2)">Ôn tập</button>
+            <button class="tab" @onclick="() => NavigateToTab(2)">Ôn tập</button>
             <button class="tab active" @onclick="() => NavigateToTab(1)">Tạo Quiz</button>
         </div>
 
@@ -48,7 +48,7 @@
                     <button class="btn-next" @onclick="NextStep" disabled="@(string.IsNullOrEmpty(creationMethod))">
                         Tiếp theo →
                     </button>
-                </div>  
+                </div>
             }
             else if (currentStep == 2)
             {
@@ -70,7 +70,7 @@
                             <p>Tạo thẻ học thuật ngữ và định nghĩa</p>
                         </button>
                     </div>
-                    
+
                     <div class="button-group">
                         <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
                         <button class="btn-next" @onclick="ConfirmManualType" disabled="@(string.IsNullOrEmpty(manualType))">
@@ -206,6 +206,7 @@
     private string manualType = ""; // "quiz" hoặc "flashcard"
     private string answerType = "single";
     private int currentQuestionIndex = 0;
+    private string userPlan = "";
 
     // Quiz form data
     private string quizTitle = "";
@@ -222,14 +223,27 @@
         public List<string> CorrectAnswers { get; set; } = new();
     }
 
-    protected override void OnInitialized()
+    protected async Task OnInitializedAsync()
     {
-        // Initialize empty - user will add questions manually
+        userPlan = await JS.InvokeAsync<string>("localStorage.getItem", "userPlan");
+        if (string.IsNullOrEmpty(userPlan))
+        {
+            userPlan = "basic"; // mặc định nếu chưa đăng nhập
+        }
     }
+    private async void SelectCreationMethod(string method)
+    {
+        if ((userPlan == "basic" || userPlan == "pro") && (method == "tag" || method == "extract"))
+        {
+            await JS.InvokeVoidAsync("alert", "⚠️ Gói của bạn không hỗ trợ chức năng này. Vui lòng nâng cấp lên Premium!");
+            return;
+        }
 
+        creationMethod = method;
+    }
     private void NavigateToTab(int tab)
     {
-        switch(tab)
+        switch (tab)
         {
             case 0:
                 Navigation.NavigateTo("/library");
@@ -244,31 +258,31 @@
         }
     }
 
-    private void SelectCreationMethod(string method)
-    {
-        creationMethod = method;
-    }
+    // private void SelectCreationMethod(string method)
+    // {
+    //     creationMethod = method;
+    // }
 
     private void NextStep()
     {
         if (currentStep == 1 && !string.IsNullOrEmpty(creationMethod))
         {
-            if(creationMethod == "ai")
+            if (creationMethod == "ai")
             {
                 Navigation.NavigateTo("/quiz-ai");
                 return;
             }
-            else if(creationMethod == "tag")
+            else if (creationMethod == "tag")
             {
                 Navigation.NavigateTo("/quiz-tag");
                 return;
             }
-            else if(creationMethod == "extract")
+            else if (creationMethod == "extract")
             {
                 Navigation.NavigateTo("/quiz-extract");
                 return;
             }
-            else if(creationMethod == "manual")
+            else if (creationMethod == "manual")
             {
                 // Chuyển sang bước chọn loại (Quiz hoặc Flashcard)
                 currentStep = 2;
@@ -399,7 +413,7 @@
         currentStep = 3;
         currentQuestionIndex = index;
     }
-    
+
     private async Task ConfirmAndCreateQuiz()
     {
         try
@@ -475,17 +489,21 @@
                 }
             }
 
-            await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã được tạo thành công!");
+            //  await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã được tạo thành công!");
+            Console.WriteLine("Tao thanh cong");
 
             ResetForm();
             Navigation.NavigateTo($"/practice/{setQuizId}");
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"⚠️ Lỗi khi tạo quiz: {ex.Message}");
+            //  await JS.InvokeVoidAsync("alert", $"⚠️ Lỗi khi tạo quiz: {ex.Message}");
+            Console.WriteLine("Tao that bai");
+
+
         }
     }
-    
+
     public class SetQuizRequest
     {
         public string Title { get; set; } = string.Empty;
@@ -572,19 +590,19 @@
         font-family: 'Baloo 2', cursive;
     }
 
-    .tab.active {
-        color: #4318FF;
-    }
+        .tab.active {
+            color: #4318FF;
+        }
 
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #4318FF;
-    }
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
 
     .content-wrapper {
         min-height: 500px;
@@ -624,32 +642,32 @@
         color: white;
     }
 
-    .option-button:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
-        border-color: #4318FF;
-    }
+        .option-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
+            border-color: #4318FF;
+        }
 
-    .option-button.selected {
-        border-color: #D5CEFD;
-        background: #D5CEFD;
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
-    }
+        .option-button.selected {
+            border-color: #D5CEFD;
+            background: #D5CEFD;
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
+        }
 
-    .option-button.selected h3,
-    .option-button.selected p {
-        color: black;
-    }
+            .option-button.selected h3,
+            .option-button.selected p {
+                color: black;
+            }
 
-    .option-button h3 {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
+        .option-button h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
 
-    .option-button p {
-        font-size: 16px;
-    }
+        .option-button p {
+            font-size: 16px;
+        }
 
     /* Type Selection (Quiz vs Flashcard) */
     .type-selection {
@@ -670,17 +688,17 @@
         font-family: 'Baloo 2', cursive;
     }
 
-    .type-button:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.15);
-        border-color: #4318FF;
-    }
+        .type-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(67, 24, 255, 0.15);
+            border-color: #4318FF;
+        }
 
-    .type-button.selected {
-        border-color: #1D059D;
-        background: #E9E3FF;
-        box-shadow: 0 8px 25px rgba(29, 5, 157, 0.3);
-    }
+        .type-button.selected {
+            border-color: #1D059D;
+            background: #E9E3FF;
+            box-shadow: 0 8px 25px rgba(29, 5, 157, 0.3);
+        }
 
     .type-icon {
         font-size: 60px;
@@ -715,18 +733,18 @@
         margin-bottom: 20px;
     }
 
-    .form-group.half {
-        grid-column: 2;
-    }
+        .form-group.half {
+            grid-column: 2;
+        }
 
-    .form-group label {
-        display: block;
-        font-weight: 700;
-        color: #2D3748;
-        margin-bottom: 10px;
-        font-size: 16px;
-        margin-top: 10px;
-    }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
     .counter-display {
         background: #D5CEFD;
@@ -749,10 +767,10 @@
         transition: border-color 0.3s;
     }
 
-    .form-input:focus, .form-textarea:focus {
-        outline: none;
-        border-color: #4318FF;
-    }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4318FF;
+        }
 
     .form-textarea {
         resize: vertical;
@@ -790,15 +808,15 @@
         transition: all 0.3s;
     }
 
-    .btn-nav:hover:not(:disabled) {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-nav:hover:not(:disabled) {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
-    .btn-nav:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
     .question-card {
         background: #D5CEFD;
@@ -837,9 +855,9 @@
         transition: opacity 0.2s;
     }
 
-    .btn-remove:hover {
-        opacity: 1;
-    }
+        .btn-remove:hover {
+            opacity: 1;
+        }
 
     .answer-item {
         display: flex;
@@ -848,16 +866,16 @@
         margin-bottom: 12px;
     }
 
-    .answer-item input[type="text"] {
-        flex: 1;
-    }
+        .answer-item input[type="text"] {
+            flex: 1;
+        }
 
-    .answer-item input[type="radio"],
-    .answer-item input[type="checkbox"] {
-        width: 22px;
-        height: 22px;
-        cursor: pointer;
-    }
+        .answer-item input[type="radio"],
+        .answer-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
 
     .btn-add-question {
         background: #4318FF;
@@ -874,10 +892,10 @@
         display: block;
     }
 
-    .btn-add-question:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-add-question:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     /* Buttons */
     .button-group {
@@ -904,28 +922,28 @@
         margin-left: 340px;
     }
 
-    .btn-next:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background: #4318FF;
-        color: white;
-    }
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #4318FF;
+            color: white;
+        }
 
-    .btn-next:not(:disabled):hover {
-        background: #4318FF;
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
-    }
+        .btn-next:not(:disabled):hover {
+            background: #4318FF;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
+        }
 
     .btn-back {
         background: #E2E8F0;
         color: #2D3748;
     }
 
-    .btn-back:hover {
-        background: #CBD5E0;
-    }
+        .btn-back:hover {
+            background: #CBD5E0;
+        }
 
     .btn-create-quiz {
         background: #1D059D;
@@ -934,15 +952,15 @@
         margin-top: 20px;
     }
 
-    .btn-create-quiz:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+        .btn-create-quiz:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    .btn-create-quiz:not(:disabled):hover {
-        background: #1f1347;
-        transform: translateY(-3px);
-    }
+        .btn-create-quiz:not(:disabled):hover {
+            background: #1f1347;
+            transform: translateY(-3px);
+        }
 
     /* Review Section */
     .review-section {
@@ -959,15 +977,15 @@
         margin-bottom: 30px;
     }
 
-    .quiz-info-review p {
-        margin: 10px 0;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .quiz-info-review p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
-    .quiz-info-review strong {
-        color: #2D1B69;
-    }
+        .quiz-info-review strong {
+            color: #2D1B69;
+        }
 
     .questions-list {
         margin-bottom: 30px;
@@ -1017,10 +1035,10 @@
         font-size: 14px;
     }
 
-    .btn-edit:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-edit:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     .btn-delete-review {
         background: #FF6B6B;
@@ -1035,20 +1053,20 @@
         font-size: 14px;
     }
 
-    .btn-delete-review:hover {
-        background: #FA5252;
-        transform: translateY(-2px);
-    }
+        .btn-delete-review:hover {
+            background: #FA5252;
+            transform: translateY(-2px);
+        }
 
     .question-review-content {
         padding: 15px;
     }
 
-    .question-review-content p {
-        margin-bottom: 15px;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .question-review-content p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
     .answers-review {
         display: flex;
@@ -1067,10 +1085,10 @@
         transition: all 0.3s;
     }
 
-    .answer-review.correct {
-        background: #E6FFE6;
-        border-color: #70E539;
-    }
+        .answer-review.correct {
+            background: #E6FFE6;
+            border-color: #70E539;
+        }
 
     .answer-label {
         background: #1D059D;
@@ -1115,11 +1133,11 @@
         transition: all 0.3s;
     }
 
-    .btn-confirm-quiz:hover {
-        background: #70E539;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(112, 229, 57, 0.4);
-    }
+        .btn-confirm-quiz:hover {
+            background: #70E539;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(112, 229, 57, 0.4);
+        }
 
     /* Animation */
     .fade-in {
@@ -1131,6 +1149,7 @@
             opacity: 0;
             transform: translateY(20px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -1173,8 +1192,8 @@
             flex-direction: column;
         }
 
-        .button-group button {
-            width: 100%;
-        }
+            .button-group button {
+                width: 100%;
+            }
     }
 </style>

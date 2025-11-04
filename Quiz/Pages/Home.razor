@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Routing
 @using Quiz.Shared
-
+@inject NavigationManager Navigation
 
 <Header/>
 <!DOCTYPE html>
@@ -95,11 +95,11 @@
           
          
              <span class="v586_1089">
-                <button type="submit" class="submit-btn " style = "margin-left:-100px">
+                <button type="submit" class="submit-btn " style = "margin-left:-100px" >
                     Dùng thử 
                     </button>
                   hoặc
-                   <button type="submit" class="submit-btn" style = "margin-left:50px">
+                   <button type="submit" class="submit-btn" style = "margin-left:50px"    @onclick="NavigateToPage">
                     Đăng ký ngay 
                        
                     </button>
@@ -120,7 +120,7 @@
                        hoặc
                     </div>
                
-                   <button type="submit" class="submit-btn" style = "margin-left:50px">
+                   <button type="submit" class="submit-btn" style = "margin-left:50px"    @onclick="NavigateToPage">
                     Đăng ký ngay 
                        
                     </button>
@@ -1488,5 +1488,10 @@ white-space: nowrap;
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+    }
+
+       private void NavigateToPage()
+    {
+        Navigation.NavigateTo("/register");
     }
 }
