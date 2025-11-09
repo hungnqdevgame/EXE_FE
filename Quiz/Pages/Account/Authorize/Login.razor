@@ -69,7 +69,7 @@
                    
                 </div>
             <div class= "sub-login-card ">
-                <div class="forgot-password">
+                @* <div class="forgot-password">
                     <a href="/forgot-password" @onclick="NavigateToForgotPassword">
                         Ghi nhớ tài khoản
                     </a>
@@ -86,9 +86,9 @@
                     <button class="google-btn mb-4" @onclick="LoginWithGoogleAsync">
                     <img src="images/google_logo_1.png" alt="Google" style="width:50px; height:50px; margin-left:10px;" />
                     </button>
-                </div>
+                </div>  *@
                 
-                <div class="register-link mb-4">
+                <div class="register-link mb-24">
                     Bạn chưa có tài khoản?
                     <NavLink href="/register"  style="text-decoration: underline;">Đăng Ký</NavLink>
                 </div>
@@ -149,6 +149,7 @@
       margin-top: 0; /* không cách trên */
     border-top-left-radius: 0;  /* bỏ bo tròn ở trên */
     border-top-right-radius: 0;
+    margin-bottom : 20px;
     }
 
     .login-card {
@@ -353,6 +354,7 @@
         width: 100%;
         padding-right: 30px;
         padding-left: 15px;
+        
     }
 
     .row {

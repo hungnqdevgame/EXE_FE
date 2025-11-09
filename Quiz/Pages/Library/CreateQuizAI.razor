@@ -190,7 +190,7 @@
                                                 @if (editingQuestionIndex == index)
                                                 {
                                                     <button class="btn-save" @onclick="() => SaveQuestion(index)"> Lưu</button>
-                                                    <button class="btn-cancel" @onclick="CancelEdit">❌ Hủy</button>
+                                                    <button class="btn-cancel" @onclick="CancelEdit"> Hủy</button>
                                                 }
                                                 else
                                                 {
@@ -217,7 +217,7 @@
                                                         @foreach (var (answer, ansIndex) in tempQuestion.Answers.Select((a, i) => (a, i)))
                                                         {
                                                             <div class="answer-edit-item">
-                                                                <span class="answer-label-edit">@GetAnswerLabel(ansIndex)</span>
+                                                                <span class="answer-label-edit" style = "font-size:24px;">@GetAnswerLabel(ansIndex)</span>
 
                                                                 <input type="text"
                                                                        class="answer-input-edit"
@@ -1242,6 +1242,8 @@
         font-style: italic;
         background: #D5CEFD;
         margin-bottom: 10px;
+        padding : 10px;
+        border-radius :5px; 
     }
 
     .flashcard-review-item {
