@@ -1,8 +1,12 @@
 @page "/quiz-ai"
 @using System.Collections
 @using System.Text.Json;
-
+@using iText.Kernel.Pdf;
+@using iText.Kernel.Pdf.Canvas.Parser;
+@using Xceed.Words.NET;
 @using System.Security.Claims;
+@using DocumentFormat.OpenXml.Packaging;
+@using DocumentFormat.OpenXml.Wordprocessing;
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 @inject IHttpClientFactory HttpClientFactory
@@ -483,42 +487,69 @@
         successMessage = "";
 
         var file = e.File;
+        Console.WriteLine($"[INFO] File selected: {file.Name}, Size: {file.Size} bytes, Type: {file.ContentType}");
 
         try
         {
-            // Validate file type
             var extension = Path.GetExtension(file.Name).ToLower();
+            Console.WriteLine($"[DEBUG] File extension: {extension}");
+
             if (extension != ".pdf" && extension != ".docx" && extension != ".txt")
             {
                 errorMessage = "Chỉ hỗ trợ file PDF, DOCX, TXT";
+                Console.WriteLine($"[ERROR] Unsupported file type: {extension}");
                 return;
             }
 
-            // Validate file size
             if (file.Size > MaxFileSize)
             {
                 errorMessage = "File không được vượt quá 10MB";
+                Console.WriteLine($"[ERROR] File size {file.Size} exceeds limit {MaxFileSize}");
                 return;
             }
 
-            // Read file content
-            string content;
+            string content = "";
+
             if (extension == ".txt")
             {
-                // Đọc file text trực tiếp
+                Console.WriteLine("[INFO] Reading text file...");
                 using var stream = file.OpenReadStream(MaxFileSize);
                 using var reader = new StreamReader(stream);
                 content = await reader.ReadToEndAsync();
             }
-            else
+            else if (extension == ".pdf")
             {
-                // Đọc PDF/DOCX dưới dạng base64
+                Console.WriteLine("[INFO] Reading PDF file (extracting text)...");
                 using var stream = file.OpenReadStream(MaxFileSize);
                 using var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
-                var bytes = memoryStream.ToArray();
-                content = Convert.ToBase64String(bytes);
+                memoryStream.Position = 0;
+
+                using var pdfReader = new PdfReader(memoryStream);
+                using var pdfDoc = new PdfDocument(pdfReader);
+                for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
+                {
+                    content += PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(i)) + "\n";
+                }
             }
+            else if (extension == ".docx")
+            {
+                Console.WriteLine("[INFO] Reading DOCX file (extracting text) using Open XML SDK...");
+
+                using var stream = file.OpenReadStream(MaxFileSize);
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+
+                using var wordDoc = WordprocessingDocument.Open(memoryStream, false);
+                var body = wordDoc.MainDocumentPart.Document.Body;
+                content = body.InnerText;
+            }
+
+            Console.WriteLine($"[SUCCESS] File read complete. Text length: {content.Length} characters");
+            Console.WriteLine("---------- FILE CONTENT START ----------");
+            Console.WriteLine(content);
+            Console.WriteLine("----------- FILE CONTENT END -----------");
 
             uploadedFile = new UploadedFile
             {
@@ -528,15 +559,15 @@
                 FileType = file.ContentType
             };
 
-            successMessage = $" Đã tải lên: {file.Name}";
+            successMessage = $"Đã tải lên: {file.Name}";
+            Console.WriteLine($"[SUCCESS] File uploaded: {uploadedFile.Name}");
         }
         catch (Exception ex)
         {
             errorMessage = $"Lỗi đọc file: {ex.Message}";
-            Console.WriteLine($"Error details: {ex}");
+            Console.WriteLine($"[EXCEPTION] {ex}");
         }
     }
-
     private void HandleDragEnter(DragEventArgs e)
     {
         isDragging = true;

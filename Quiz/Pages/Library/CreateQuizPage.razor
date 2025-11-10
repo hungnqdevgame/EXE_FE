@@ -16,39 +16,44 @@
             </div>
 
             <!-- Main Content Area -->
-            <div class="content-wrapper">
-                @if (currentStep == 1)
-                {
-                    <!-- Step 1: Choose Quiz Creation Method -->
-                    <div class="step-container fade-in">
-                        <h2 class="step-title">Chọn công cụ tạo Quiz</h2>
-                        <div class="creation-options">
-                            <button class="option-button @(creationMethod == "manual" ? "selected" : "")"
-                                    @onclick='() => SelectCreationMethod("manual")'>
-                                <h3>Tạo Thủ Công</h3>
-                                <p>Tự tạo câu hỏi và đáp án theo ý muốn</p>
-                            </button>
+        <div class="content-wrapper">
+            @if (currentStep == 1)
+            {
+                <!-- Step 1: Choose Quiz Creation Method -->
+                <div class="step-container fade-in">
+                    <h2 class="step-title">Chọn công cụ tạo Quiz</h2>
+                    <div class="creation-options">
+                        <button class="option-button @(creationMethod == "manual" ? "selected" : "")"
+                                @onclick='async () => await SelectCreationMethod("manual")'>
+                            <h3>Tạo Thủ Công</h3>
+                            <p>Tự tạo câu hỏi và đáp án theo ý muốn</p>
+                        </button>
 
-                            <button class="option-button @(creationMethod == "ai" ? "selected" : "")"
-                                    @onclick='() => SelectCreationMethod("ai")'>
-                                <h3>Sử dụng AI</h3>
-                                <p>AI tự động tạo quiz từ tài liệu của bạn</p>
-                            </button>
-                            <button class="option-button @(creationMethod == "tag" ? "selected" : "")"
-                                    @onclick='() => SelectCreationMethod("tag")'>
-                                <h3>Học cùng AI</h3>
-                                <p>AI tự động tạo quiz theo chủ đề của bạn</p>
-                            </button>
-                            <button class="option-button @(creationMethod == "extract" ? "selected" : "")"
-                                    @onclick='() => SelectCreationMethod("extract")'>
-                                <h3>Tạo quiz tự động</h3>
-                                <p>Tạo quiz theo mẫu</p>
-                            </button>
-                        </div>
-                        <button class="btn-next" @onclick="NextStep" disabled="@(string.IsNullOrEmpty(creationMethod))">
-                            Tiếp theo →
+                        <button class="option-button @(creationMethod == "ai" ? "selected" : "")"
+                                @onclick='async () => await SelectCreationMethod("ai")'>
+                            <h3>Sử dụng AI</h3>
+                            <p>AI tự động tạo quiz từ tài liệu của bạn</p>
+                        </button>
+
+                        <button class="option-button @(creationMethod == "tag" ? "selected" : "")"
+                                @onclick='async () => await SelectCreationMethod("tag")'>
+                            <h3>Học cùng AI</h3>
+                            <p>AI tự động tạo quiz theo chủ đề của bạn</p>
+                        </button>
+
+                        <button class="option-button @(creationMethod == "extract" ? "selected" : "")"
+                                @onclick='async () => await SelectCreationMethod("extract")'>
+                            <h3>Tạo quiz tự động</h3>
+                            <p>Tạo quiz theo mẫu</p>
                         </button>
                     </div>
+
+                    <button class="btn-next" @onclick="NextStep" disabled="@(string.IsNullOrEmpty(creationMethod))">
+                        Tiếp theo →
+                    </button>
+                </div>
+            }
+   
                 }
                 else if (currentStep == 2)
                 {
@@ -271,21 +276,29 @@
         return false;
     }
 
-    private async void SelectCreationMethod(string method)
+    private async Task SelectCreationMethod(string method)
     {
+        // Cập nhật state trước để UI nhận biết ngay
+        creationMethod = method;
+
         if (!CanUseFeature(method))
         {
             await JS.InvokeVoidAsync("alert", "⚠️ Gói của bạn không được phép dùng tính năng này hoặc đã hết lượt sử dụng!");
+            // Reset nếu cần
+            creationMethod = "";
+            StateHasChanged();
             return;
         }
 
+        // Nếu là gói Basic và chọn AI thì tăng counter
         if (subscriptionId == 1 && method == "ai")
         {
             feature2UsedCount++;
             await JS.InvokeVoidAsync("localStorage.setItem", "feature2UsedCount", feature2UsedCount.ToString());
         }
 
-        creationMethod = method;
+        // Render UI ngay
+        StateHasChanged();
     }
      
         private void NavigateToTab(int tab)
