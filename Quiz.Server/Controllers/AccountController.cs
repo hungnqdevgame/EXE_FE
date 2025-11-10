@@ -147,7 +147,8 @@ namespace Quiz.Server.Controllers
                         user.Id,
                         user.Email,
                         user.FullName,
-                        user.Role
+                        user.Role,
+                        user.SubscriptionId
                     }
                 });
             }
