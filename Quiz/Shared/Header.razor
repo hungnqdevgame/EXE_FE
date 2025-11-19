@@ -4,124 +4,293 @@
 @inject IJSRuntime JSRuntime
 @inject HttpClient Http
 @inject NavigationManager Navigation
-<div class="header">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="logo ml-40">
-                <img src="images/logo.svg" alt="Logo" style="width:150px; height:40px;object-fit:cover; " />
-            </div>
- 
-            <div class="button" style = "margin-top:-40px;">
-                <div class="nav-links">
-                    <a href="/">Trang chủ</a>
-                    <a href="/revision">Thư viện</a>
-                    <a href="/supscription">Mua gói</a>
-                    <div style= "font-size:30px;font-weight:900;color:#1D059D;">|</div>
-                   
-                    @if (isLoggedIn)
-                    {
-                        <div class="user-profile">
-                            <div class="profile-avatar">
-                                <a class="avatar-icon" href="/profile">👤 </a>
-                               
-                            </div>
-                            <button @onclick="Logout" class="btn btn-link text-danger">Đăng xuất</button>
-                        </div>
-                    }
-                    else
-                    {
-                        <a href="/login">Đăng nhập</a>
-                        <a href="/register">Đăng kí</a>
-                    }
 
-                </div> <!-- nav-links -->
-            </div> <!-- col -->
-        </div> <!-- row -->
-    </div> <!-- container-fluid -->
-</div> <!-- header -->
+<!-- Thêm style TRƯỚC header để load sớm nhất -->
+<style>
+    /* Force override tất cả CSS khác */
+    .body {
+        padding-top: 20px !important;
+    }
+    
+    .header {
+        position: fixed !important;
+        
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 9999 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08) !important;
+          height: 80px !important;
+        padding: 80px !important;
+       
+    }
+</style>
+
+<div class="header">
+    <div class="header-container">
+        <div class="logo">
+            <img src="images/logo.svg" alt="Logo" />
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Trang chủ</a>
+            <a href="/revision">Thư viện</a>
+            <a href="/supscription">Mua gói</a>
+            
+            <div class="divider">|</div>
+
+            @if (isLoggedIn)
+            {
+                <div class="user-profile">
+                    <a href="/profile" class="profile-avatar">
+                        👤
+                    </a>
+                    <button @onclick="Logout" class="btn-logout">Đăng xuất</button>
+                </div>
+            }
+            else
+            {
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            }
+        </div>
+    </div>
+</div>
 
 <style>
-/* Đẩy nội dung xuống dưới để không bị header đè */
-body {
-    margin: 0;
-    padding-top: 80px; /* chỉnh đúng chiều cao header */
-}
+    @@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
 
-/* Header luôn cố định */
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999; /* cho chắc chắn nằm trên cùng */
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 15px 0;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    font-family: 'Baloo 2', cursive;
-    font-weight: 600;
-    width: 100%;
-}
-
-/* Menu nav-links */
-.nav-links {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end; /* căn phải */
-    gap: 30px;
-    top:0px;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: #090231;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    position: relative;
-    cursor: pointer;
-    padding:5px 10px;
-}
-
-.nav-links a:hover {
-    color: #FFFFFF;
-    font-weight : 900;
-    transform: translateY(-2px);
-    background : #1D059D;
-    border-radius :8px;
+    /* QUAN TRỌNG: Đẩy toàn bộ body xuống - phải có !important để override Tailwind */
+   body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
    
 }
 
+    /* Header cố định - Thêm !important cho TẤT CẢ để override Tailwind CSS */
+    .header {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 9999 !important;
+       background: #ffffff !important;
+    backdrop-filter: none !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08) !important;
+        font-family: 'Baloo 2', cursive !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+       
+    }
 
+    .header-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-top: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        
+    }
 
-/* Avatar user */
-.user-profile {
-    display: flex;
-    align-items: center;
-}
+    .logo {
+        flex-shrink: 0;
+    }
 
-.profile-avatar {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #FFB6D6, #37E4FF);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+    .logo img {
+        width: 150px;
+        height: 40px;
+        object-fit: cover;
+        display: block;
+    }
 
-.profile-avatar:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(55, 228, 255, 0.3);
-}
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
 
-.avatar-icon {
-    color: white;
-    font-size: 1.2rem;
-}
+    .nav-links a {
+        text-decoration: none;
+        color: #090231;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        position: relative;
+        cursor: pointer;
+        padding: 8px 16px;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+
+    .nav-links a:hover {
+        color: #FFFFFF;
+        background: #1D059D;
+        transform: translateY(-2px);
+    }
+
+    .divider {
+        font-size: 28px;
+        font-weight: 900;
+        color: #1D059D;
+        user-select: none;
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .profile-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #FFB6D6, #37E4FF);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 20px;
+    }
+
+    .profile-avatar:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(55, 228, 255, 0.4);
+    }
+
+    .btn-logout {
+        background: transparent;
+        border: 2px solid #ff4444;
+        color: #ff4444;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-family: 'Baloo 2', cursive;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .btn-logout:hover {
+        background: #ff4444;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @@media (max-width: 1200px) {
+        .header-container {
+            padding: 15px 30px;
+        }
+
+        .nav-links {
+            gap: 20px;
+        }
+
+        .nav-links a {
+            font-size: 15px;
+            padding: 6px 12px;
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .header-container {
+            padding: 12px 20px;
+        }
+
+        .logo img {
+            width: 120px;
+            height: 32px;
+        }
+
+        .nav-links {
+            gap: 15px;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+
+        .divider {
+            font-size: 24px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        body {
+            padding-top: 70px !important;
+        }
+
+        .header-container {
+            flex-wrap: wrap;
+            padding: 10px 15px;
+        }
+
+        .logo {
+            order: 1;
+        }
+
+        .nav-links {
+            order: 2;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .nav-links a {
+            font-size: 13px;
+            padding: 5px 8px;
+        }
+
+        .divider {
+            display: none;
+        }
+
+        .profile-avatar {
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+        }
+
+        .btn-logout {
+            padding: 6px 15px;
+            font-size: 13px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        body {
+            padding-top: 110px !important;
+        }
+
+        .logo img {
+            width: 100px;
+            height: 28px;
+        }
+
+        .nav-links a {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+    }
 </style>
+
 @code {
     private bool isLoggedIn = false;
     private string? userName;
@@ -148,8 +317,8 @@ body {
 
     public class UserModel
     {
-        public string FullName { get; set; }
-        public string Email { get; set; }
+        public string FullName { get; set; } = "";
+        public string Email { get; set; } = "";
     }
 
     private async Task Logout()

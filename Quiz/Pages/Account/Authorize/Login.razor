@@ -17,403 +17,161 @@
 
 
 
+
+
+
+
+
+ 
+
 <Quiz.Shared.Header />
 
+<div class="login-wrapper">
+    <div class="login-box">
+        <div class="login-card">
+            <h2 class="login-title">Đăng Nhập</h2>
 
+            <EditForm Model="@loginModel" OnSubmit="LoginAsync">
+                <DataAnnotationsValidator />
 
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
 
-    
-  
-    <!-- Main Content -->
-    <div class="container-fluid main-content">
-            <!-- Login Form -->
-            <div class="col-lg-6">
-                <div class="login-card">
-                    <h2 class="login-title">Đăng Nhập</h2>
-
-                    <EditForm Model="@loginModel" OnSubmit="LoginAsync" FormName="loginForm">
-                        <DataAnnotationsValidator />
-
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <div class="alert alert-danger" role="alert">
-                                @errorMessage
-                            </div>
-                        }
-
-                        <div class="form-group">
-                            <InputText @bind-Value="loginModel.Email"
-                                       class="form-control"
-                                       placeholder="Số điện thoại/ Email:" 
-                                       maxlength="1000" />
-                            <ValidationMessage For="@(() => loginModel.Email)" class="text-danger small" />
-                        </div>
-
-                        <div class="form-group">
-                            <InputText @bind-Value="loginModel.Password"
-                                       type="password"
-                                       class="form-control"
-                                       placeholder="Mật khẩu:" />
-                            <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small" />
-                        </div>
-
-                        <button type="submit" class="btn btn-login" disabled="@isLoading">
-                            @if (isLoading)
-                            {
-                                <i class="fas fa-spinner fa-spin me-2"></i>
-                            }
-                            ĐĂNG NHẬP
-                        </button>
-                    </EditForm>
-                    
-                   
-                </div>
-            <div class= "sub-login-card ">
-                @* <div class="forgot-password">
-                    <a href="/forgot-password" @onclick="NavigateToForgotPassword">
-                        Ghi nhớ tài khoản
-                    </a>
-                    <span class="mx-3">HOẶC</span>
-                    <a href="/forgot-password" @onclick="NavigateToForgotPassword">
-                        Quên mật khẩu?
-                    </a>
+                <div class="form-group">
+                    <InputText @bind-Value="loginModel.Email"
+                               class="form-control"
+                               placeholder="Số điện thoại/ Email:" />
+                    <ValidationMessage For="@(() => loginModel.Email)" class="text-danger small" />
                 </div>
 
-                <div class="divider">
-                    <span>Hoặc đăng nhập với</span>
+                <div class="form-group">
+                    <InputText @bind-Value="loginModel.Password"
+                               type="password"
+                               class="form-control"
+                               placeholder="Mật khẩu:" />
+                    <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small" />
                 </div>
-                <div style="text-align: center;">
-                    <button class="google-btn mb-4" @onclick="LoginWithGoogleAsync">
-                    <img src="images/google_logo_1.png" alt="Google" style="width:50px; height:50px; margin-left:10px;" />
-                    </button>
-                </div>  *@
-                
-                <div class="register-link mb-24">
-                    Bạn chưa có tài khoản?
-                    <NavLink href="/register"  style="text-decoration: underline;">Đăng Ký</NavLink>
-                </div>
+
+                <button type="submit" class="btn btn-login" disabled="@isLoading">
+                    @if (isLoading)
+                    {
+                        <i class="fas fa-spinner fa-spin me-2"></i>
+                    }
+                    ĐĂNG NHẬP
+                </button>
+                <div class="register-link">
+                Bạn chưa có tài khoản?
+                <NavLink href="/register" style="text-decoration: underline;">Đăng Ký</NavLink>
             </div>
-           
-            </div>
+            </EditForm>
+            
         </div>
-   
+
+      
+    </div>
+</div>
+
 <Quiz.Shared.Footer />
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Baloo 2', cursive;
-    }
-    .google-btn {
-    background: transparent;   /* nền trong suốt */
-    border: none;              /* bỏ viền */
-    padding: 0;                /* bỏ khoảng trống */
-    cursor: pointer;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Baloo 2', cursive;
 }
-/* 
-    .login-container {
-       
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-    }
- */
 
+/* --- Tổng layout --- */
+.login-wrapper {
+    width: 100%;
    
-   
-
-    .main-content {
-        padding-top: 100px;
-        flex: 1;
-        display: flex;
-        align-items: center;
-    }
-   
-     .col, .col-auto, .col-lg-6 {
-        position: relative;
-        width: 100%;
-        padding-right: 15px;
-        padding-left: 15px;
-        background : #1D059D;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        border-radius : 25px
-    }
-
-.sub-login-card{
-        
-          border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
-      margin-top: 0; /* không cách trên */
-    border-top-left-radius: 0;  /* bỏ bo tròn ở trên */
-    border-top-right-radius: 0;
-    margin-bottom : 20px;
-    }
-
-    .login-card {
-       
-      border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-        padding: 40px;
-        
-     
-        position: relative;
-        overflow: hidden;
-        margin-bottom : 0px;
-         border-bottom-left-radius: 0; /* bỏ bo tròn ở dưới */
-    border-bottom-right-radius: 0;
-    }
-
-       
-    .login-title {
-        font-size: 32px;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 30px;
-        background: #000000;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        position: relative;
-        z-index: 1;
-    }
-
-    .form-group {
-        margin-bottom: 25px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .form-control {
-        border: 2px solid #e0e0e0;
-        border-radius: 15px;
-        padding: 15px 30px;
-        font-size: 16px;
-        font-family: 'Baloo 2', cursive;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        background: #D5CEFD;
-        width: 100%;
-    }
-
-        .form-control:focus {
-          
-            box-shadow: 0 0 0 0.2rem rgba(255, 182, 214, 0.25);
-            background: white;
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: #999;
-            font-weight: 400;
-        }
-
-    .btn-login {
-        background: #C93668;
-        border: none;
-        border-radius: 15px;
-        padding: 15px;
-        font-size: 18px;
-        font-weight: 600;
-        color: white;
-        width: 100%;
-        margin-bottom: 25px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-        font-family: 'Baloo 2', cursive;
-    }
-
-        .btn-login:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-       
-
-        .btn-login:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 182, 214, 0.4);
-             color: white !important;   /* giữ nguyên màu chữ */
-        }
-
-    .forgot-password {
-        text-align: center;
-        margin-bottom: 25px;
-    }
-
-        .forgot-password a {
-            color:#FFFFFF;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            cursor: pointer;
-        }
-
-            .forgot-password a:hover {
-                color:#C93668;
-            }
-
-    .divider {
-        display: flex;
-        align-items: center;
-        margin: 25px 0;
-    }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e0e0e0;
-        }
-
-        .divider span {
-            padding: 0 20px;
-            color: #FFFFFF;
-            font-weight: 500;
-        }
-
-
-   
-
-    .register-link {
-        text-align: center;
-        color: #FFFFFF;
-        font-weight: 500;
-        
-    }
-
-        .register-link a {
-            
-            color: #FFFFFF;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-            cursor: pointer;
-        }
-
-            .register-link a:hover {
-                color: #C93668;
-            }
-
-    .alert {
-        border-radius: 10px;
-        margin-bottom: 20px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .text-danger {
-        color: #dc3545 !important;
-        font-size: 14px;
-        margin-top: 5px;
-    }
-
-   
-
-   
-    .logo {
-        font-size: 24px;
-    }
-
-    .main-content {
-      padding-top: 100px;
-    flex: 1;
+    padding-top: 120px;        /* Cách header */
+    padding-bottom: 60px;      /* Cách footer */
     display: flex;
-    align-items: center;
-    justify-content: flex-end; /* đẩy form sang phải */
-    }
+    justify-content: flex-end;
+    background: #F5F3FF;       /* nền nhẹ, không ảnh hưởng header/footer */
+}
 
-    .login-card {
-        margin: 20px;
-        padding: 30px 25px;
-    }
+.login-box {
+    width: 50%;
+    margin-right: 60px;        /* Đẩy sang phải */
+    height: 800px;
+}
 
-  
-   
-
+/* --- Card trên --- */
+.login-card {
+    background: #1D059D;
     
+    padding:  180px 120px;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
 
-    }
-
-    
-    
-
-   
-       
-
-
-    }
+}
 
 
-    .container-fluid {
-        width: 100%;
-        padding-right: 30px;
-        padding-left: 15px;
-        
-    }
 
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-right: -15px;
-        margin-left: -15px;
-    }
+/* --- Form --- */
+.login-title {
+    font-size: 48px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+    background: #000000;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-top :-80px;
+}
 
-   
-    .col {
-        flex-basis: 0;
-        flex-grow: 1;
-    }
+.form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 20px 80px;
+    background: #D5CEFD;
+    margin-bottom: 30px;
+}
 
-    .col-auto {
-        flex: 0 0 auto;
-        width: auto;
-    }
+.form-control:focus {
+    background: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(255,182,214,0.25);
+}
 
-    .align-items-center {
-        align-items: center !important;
-    }
+/* --- Button --- */
+.btn-login {
+    background: #C93668;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 15px;
+    width: 100%;
+    border-radius: 15px;
+}
 
-    .justify-content-center {
-        justify-content: center !important;
-    }
+.btn-login:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255,182,214,0.4);
+}
 
-    .d-flex {
-        display: flex !important;
-    }
+/* --- Register link --- */
+.register-link {
+    text-align: center;
+    color: #fff;
+    font-weight: 500;
+    margin-top: 30px;
+}
 
-    .d-none {
-        display: none !important;
-    }
+.register-link a {
+    color: #fff;
+    font-weight: 600;
+}
 
-    .min-vh-100 {
-        min-height: 100vh !important;
-    }
-
-    .me-2 {
-        margin-right: 0.5rem !important;
-    }
-
-    .mx-3 {
-        margin-left: 1rem !important;
-        margin-right: 1rem !important;
-    }
-
-     @@media (min-width: 992px) {
-        .col-lg-6
-
-    {
-        flex: 0 0 auto;
-        width: 50%;
-    } 
-    
-
-    }
+.register-link a:hover {
+    color: #C93668;
+}
 </style>
 
 @code {

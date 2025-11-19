@@ -8,320 +8,201 @@
 @inject NavigationManager Navigation
 
 <Header />
-<div class="form-header">
-    <h2>ĐĂNG KÝ</h2>
-</div>
-<div class="register-container">
-    <div class="register-content">
-        <div class="form-section">
+
+<div class="register-wrapper">
+    <div class="register-box">
+        <div class="register-card">
+            <h2 class="register-title">ĐĂNG KÝ</h2>
+
             <EditForm Model="@registrationModel" OnValidSubmit="@HandleRegistration">
                 <DataAnnotationsValidator />
 
                 <div class="form-group">
-                    <InputText @bind-Value="registrationModel.FullName" placeholder="Họ và tên:" class="form-input" />
+                    <InputText @bind-Value="registrationModel.FullName" class="form-input" placeholder="Họ và tên:" />
                     <ValidationMessage For="@(() => registrationModel.FullName)" />
                 </div>
 
                 <div class="form-group">
-                    <InputText @bind-Value="registrationModel.Phone" placeholder="Số điện thoại:" class="form-input" />
+                    <InputText @bind-Value="registrationModel.Phone" class="form-input" placeholder="Số điện thoại:" />
                     <ValidationMessage For="@(() => registrationModel.Phone)" />
                 </div>
 
                 <div class="form-group">
-                    <InputText @bind-Value="registrationModel.Email" placeholder="Email:" class="form-input" />
+                    <InputText @bind-Value="registrationModel.Email" class="form-input" placeholder="Email:" />
                     <ValidationMessage For="@(() => registrationModel.Email)" />
                 </div>
 
                 <div class="form-group">
-                    <InputText type="password" @bind-Value="registrationModel.Password" placeholder="Mật khẩu:" class="form-input" />
+                    <InputText type="password" @bind-Value="registrationModel.Password" class="form-input" placeholder="Mật khẩu:" />
                     <ValidationMessage For="@(() => registrationModel.Password)" />
                 </div>
 
                 @if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    <div class="error-message">
-                        ❌ @errorMessage
-                    </div>
+                    <div class="error-message">❌ @errorMessage</div>
                 }
 
                 @if (!string.IsNullOrEmpty(successMessage))
                 {
-                    <div class="success-message">
-                        ✓ @successMessage
-                    </div>
+                    <div class="success-message">✓ @successMessage</div>
                 }
 
-                <button type="submit" class="register-btn" disabled="@isLoading">
+                <button class="register-btn" type="submit" disabled="@isLoading">
                     @if (isLoading)
                     {
                         <span class="spinner"></span>
-                        <span>Đang xử lý...</span>
+                         <span>Đang xử lý...</span>
                     }
                     else
                     {
-                        <span>ĐĂNG KÝ</span>
+                      <span>ĐĂNG KÝ</span>
                     }
                 </button>
             </EditForm>
 
-            <div class="divider">
-                <span>HOẶC</span>
-            </div>
-
-            <div class="social-buttons">
-                <button type="button" class="google-btn" @onclick="LoginWithGoogleAsync">
-                    <img src="images/google_logo_1.png" alt="Google" style="width:50px; height:50px; margin-left:10px;" />
-                </button>
-            </div>
-
             <div class="login-link">
-                <span>Bạn đã có tài khoản? <a href="/login" style="text-decoration: underline;"> Đăng nhập</a></span>
+                Bạn đã có tài khoản?
+                <a href="/login">Đăng nhập</a>
             </div>
         </div>
     </div>
 </div>
+
 <Quiz.Shared.Footer />
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Baloo 2', cursive;
+}
 
-    .register-container {
-        font-family: 'Baloo 2', cursive;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        width: 40%;
-        margin-left: 700px;
-    }
+/* --- Layout tổng --- */
+.register-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background: #F5F3FF;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 120px;     /* tránh bị header che */
+    padding-bottom: 60px;   /* khoảng cách dưới */
+}
 
-    .register-content {
-        background: #1D059D;
-        border-radius: 20px;
-        display: flex;
-        max-width: 1000px;
-        width: 100%;
-        min-height: 600px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-    }
+.register-box {
+    width: 50%;
+    margin-right: 60px;     /* căn về bên phải */
+}
 
-    .form-section {
-        flex: 1;
-        padding: 60px 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
+/* --- Card đăng ký --- */
+.register-card {
+    background: #1D059D;
+    padding: 100px;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    color: black;
+}
 
-    .form-header h2 {
-        color: #000000;
-        font-size: 2rem;
-        font-weight: 600;
-        text-align: center;
-        margin-bottom: 30px;
-        font-family: 'Baloo 2', cursive;
-        margin-left: 500px;
-    }
+.register-title {
+    text-align: center;
+    font-size: 48px;
+    margin-bottom: 25px;
+    background: black;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+}
 
-    .form-group {
-        margin-bottom: 20px;
-    }
+/* --- Input --- */
+.form-input {
+    width: 100%;
+    padding: 15px 35px;
+    border-radius: 15px;
+   
+    background: #D5CEFD;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
 
-    .form-input {
-        width: 100%;
-        padding: 15px 20px;
-        border: 2px solid #e1e5e9;
-        border-radius: 25px;
-        font-size: 1rem;
-        font-family: 'Baloo 2', cursive;
-        background: rgba(255, 255, 255, 0.8);
-        transition: all 0.3s ease;
-        box-sizing: border-box;
-    }
+.form-input:focus {
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(197, 160, 255, 0.4);
+}
 
-    .form-input:focus {
-        outline: none;
-        border-color: #D5CEFD;
-        box-shadow: 0 0 0 3px rgba(55, 228, 255, 0.1);
-        background: white;
-    }
+/* --- Alert messages --- */
+.success-message,
+.error-message {
+    padding: 12px 20px;
+    border-radius: 15px;
+    margin: 15px 0;
+    font-weight: bold;
+    text-align: center;
+    animation: fadeIn 0.3s ease-out;
+}
 
-    .form-input::placeholder {
-        color: #999;
-        font-weight: 400;
-    }
+.success-message {
+    background: #d1fae5;
+    color: #065f46;
+}
 
-    /* Success and Error Messages */
-    .success-message,
-    .error-message {
-        padding: 12px 20px;
-        border-radius: 15px;
-        margin-bottom: 20px;
-        font-weight: 600;
-        text-align: center;
-        animation: slideIn 0.3s ease-out;
-    }
+.error-message {
+    background: #fee2e2;
+    color: #991b1b;
+}
 
-    .success-message {
-        background: #d1fae5;
-        color: #065f46;
-        border: 2px solid #10b981;
-    }
+/* --- Button --- */
+.register-btn {
+    background: #C93668;
+    color: white;
+    width: 100%;
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 18px;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
 
-    .error-message {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 2px solid #ef4444;
-    }
+.register-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 182, 214, 0.4);
+}
 
-    @@keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+/* --- Link đăng nhập --- */
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 16px;
+}
 
-    .register-btn {
-        background: #C93668;
-        border: none;
-        border-radius: 15px;
-        padding: 15px;
-        font-size: 18px;
-        font-weight: 600;
-        color: white;
-        width: 100%;
-        margin-bottom: 25px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-        font-family: 'Baloo 2', cursive;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
+.login-link a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration: underline;
+}
 
-    .register-btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(255, 182, 214, 0.4);
-    }
+/* Spinner */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
 
-    .register-btn:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-
-    /* Spinner */
-    .spinner {
-        width: 20px;
-        height: 20px;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-
-    @@keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .divider {
-        display: flex;
-        align-items: center;
-        margin: 25px 0;
-    }
-
-    .divider::before,
-    .divider::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: #e0e0e0;
-    }
-
-    .divider span {
-        padding: 0 20px;
-        color: #FFFFFF;
-        font-weight: 500;
-    }
-
-    .social-buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-
-    .google-btn {
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        transition: transform 0.3s ease;
-    }
-
-    .google-btn:hover {
-        transform: scale(1.1);
-    }
-
-    .login-link {
-        text-align: center;
-        color: #FFFFFF;
-        font-weight: 500;
-    }
-
-    .login-link a {
-        color: #FFFFFF;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .login-link a:hover {
-        text-decoration: underline;
-    }
-
-    /* Validation messages */
-    .validation-message {
-        color: #fee2e2;
-        font-size: 0.875rem;
-        margin-top: 5px;
-        margin-left: 20px;
-        font-weight: 600;
-    }
-
-    /* Responsive design */
-    @@media (max-width: 768px) {
-        .register-container {
-            width: 90%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .register-content {
-            flex-direction: column;
-            max-width: 500px;
-        }
-
-        .form-section {
-            padding: 40px 30px;
-        }
-
-        .form-header h2 {
-            margin-left: 0;
-        }
-    }
+@@keyframes spin {
+    to { transform: rotate(360deg); }
+}
 </style>
+
 
 @code {
     private RegistrationModel registrationModel = new();
