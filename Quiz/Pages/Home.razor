@@ -2,17 +2,20 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Routing
 @using Quiz.Shared
+@inject NavigationManager Navigation
 
 
-<Header/>
 <!DOCTYPE html>
 <html>
+<div class ="tets" style="margin-top:-40px;"> <Header/></div>
+
     <head>
         <link href="https://fonts.googleapis.com/css?family=Baloo+2&display=swap" rel="stylesheet"/>
         <link href="https://fonts.googleapis.com/css?family=Baloo&display=swap" rel="stylesheet"/>
         <link href="https://fonts.googleapis.com/css?family=Baloo+Bhai+2&display=swap" rel="stylesheet"/>
         <link href="./css/main.css" rel="stylesheet"/>
         <title>Document</title>
+        
     </head>
     <body>
         <div class="v72_120">
@@ -95,11 +98,11 @@
           
          
              <span class="v586_1089">
-                <button type="submit" class="submit-btn " style = "margin-left:-100px">
+                <button type="submit" class="submit-btn " style = "margin-left:-100px" >
                     Dùng thử 
                     </button>
                   hoặc
-                   <button type="submit" class="submit-btn" style = "margin-left:50px">
+                   <button type="submit" class="submit-btn" style = "margin-left:50px"    @onclick="NavigateToPage">
                     Đăng ký ngay 
                        
                     </button>
@@ -120,7 +123,7 @@
                        hoặc
                     </div>
                
-                   <button type="submit" class="submit-btn" style = "margin-left:50px">
+                   <button type="submit" class="submit-btn" style = "margin-left:50px"    @onclick="NavigateToPage">
                     Đăng ký ngay 
                        
                     </button>
@@ -251,11 +254,13 @@
             </div>
 
         </div>
+        <Footer />
     </body>
+    
 </html>
 
 
-<Footer />
+
 
 <style>
  * {
@@ -303,7 +308,7 @@ body {
 }
 .v72_120 {
   width: 100%;
-  height: 2977px;
+  height: 2600px;
   background: rgba(255,255,255,1);
   opacity: 1;
   position: relative;
@@ -379,17 +384,19 @@ body {
 }
 .v558_977 {
   width: 261px;
-  height: 193px;
+  height: 200px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
-  top: 1098px;
+  top: 1090px;
   left: 150px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
   overflow: hidden;
+  
+  
 }
 .v558_981 {
   width: 105px;
@@ -414,6 +421,7 @@ body {
   font-size: 20px;
   opacity: 1;
   text-align: center;
+  margin-bottom: 20px;
 }
 .v558_984 {
   width: 43px;
@@ -445,7 +453,7 @@ body {
 
 .v586_947 {
   width: 261px;
-  height: 236px;
+  height: 250px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
@@ -513,7 +521,7 @@ body {
 }
 .v586_986 {
   width: 261px;
-  height: 236px;
+  height: 250px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
@@ -569,7 +577,7 @@ body {
 
 .v586_1024 {
   width: 261px;
-  height: 240px;
+  height: 250px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
@@ -636,7 +644,7 @@ body {
 
 .v586_1043 {
   width: 261px;
-  height: 236px;
+  height: 250px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
@@ -690,11 +698,11 @@ body {
 
 .v558_1000 {
   width: 261px;
-  height: 193px;
+  height: 200px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
-  top: 1098px;
+  top: 1090px;
   left: 431px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -804,7 +812,7 @@ body {
 }
 .v558_1019 {
   width: 261px;
-  height: 193px;
+  height: 200px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
@@ -865,7 +873,7 @@ body {
 }
 .v558_1057 {
   width: 261px;
-  height: 193px;
+  height: 200px;
   background: rgba(213,206,253,1);
   opacity: 1;
   position: absolute;
@@ -1488,5 +1496,10 @@ white-space: nowrap;
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+    }
+
+       private void NavigateToPage()
+    {
+        Navigation.NavigateTo("/register");
     }
 }

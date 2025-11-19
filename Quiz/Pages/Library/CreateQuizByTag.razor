@@ -18,27 +18,27 @@
                 <h1 class="page-title">Thư viện bài học</h1>
 
                 <div class="tabs">
-           <button class="tab " @onclick="() => NavigateToTab(2)">Ôn tập</button>
-        <button class="tab active">Tạo Quiz</button>
-    
-    </div>
+                    <button class="tab " @onclick="() => NavigateToTab(2)">Ôn tập</button>
+                    <button class="tab active">Tạo Quiz</button>
+
+                </div>
 
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Tiêu đề</label>
-                        <input type="text" class="form-input" @bind="quizData.Title" placeholder="Nhập tiêu đề...">
+                        <input type="text" class="form-inputf" @bind="quizData.Title" placeholder="Nhập tiêu đề...">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Số câu</label>
-                        <input type="number" class="form-input" @bind="quizData.QuestionCount" placeholder="10" min="1"
-                            max="100">
+                        <input type="number" class="form-inputf" @bind="quizData.QuestionCount" placeholder="10" min="1"
+                               max="20">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Mô tả</label>
-                    <textarea class="form-input form-textarea" @bind="quizData.Description"
-                        placeholder="Nhập mô tả..."></textarea>
+                    <textarea class="form-inputf form-textareaf" @bind="quizData.Description"
+                              placeholder="Nhập mô tả..."></textarea>
                 </div>
 
                 <div class="question-type">
@@ -46,14 +46,14 @@
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" id="quiz" name="questionType" value="quiz"
-                                @onchange="() => quizData.QuestionType = QuestionType.Quiz"
-                                checked="@(quizData.QuestionType == QuestionType.Quiz)">
+                                   @onchange="() => quizData.QuestionType = QuestionType.Quiz"
+                                   checked="@(quizData.QuestionType == QuestionType.Quiz)">
                             <label for="quiz">Trắc nghiệm</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" id="flashcard" name="questionType" value="flashcard"
-                                @onchange="() => quizData.QuestionType = QuestionType.Flashcard"
-                                checked="@(quizData.QuestionType == QuestionType.Flashcard)">
+                                   @onchange="() => quizData.QuestionType = QuestionType.Flashcard"
+                                   checked="@(quizData.QuestionType == QuestionType.Flashcard)">
                             <label for="flashcard">Flashcard</label>
                         </div>
                     </div>
@@ -74,10 +74,10 @@
                         <div class="radio-option">
                             @foreach (var tag in tags)
                             {
-                               
-                                    <input type="radio" value="@tag" @onchange="e => ToggleTag(e, tag)"
-                                        checked="@selectedTags.Contains(tag)"  />
-                                         <label class="radio">
+
+                                <input type="radio" value="@tag" @onchange="e => ToggleTag(e, tag)"
+                                       checked="@selectedTags.Contains(tag)" />
+                                <label class="radio">
                                     @tag
                                 </label>
                             }
@@ -104,20 +104,18 @@
                     Tạo và ôn tập
                 </button>
             }
-            else if (currentStep == 2)
+             else if (currentStep == 2)
             {
-                if(quizData.QuestionType == QuestionType.Quiz)
+                if (quizData.QuestionType == QuestionType.Quiz)
                 {
                     <div class="step-container fade-in">
                         <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
 
                         <div class="review-section">
                             <div class="quiz-info-review">
-                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tiêu đề:</strong> @quizData.Title</p>
                                 <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
-                                <p>
-                                    <strong>Loại:</strong> @(answerType == "single" ? "Chọn một đáp án" : "Chọn nhiều đáp án")
-                                </p>
+
                             </div>
 
                             <div class="questions-list">
@@ -127,33 +125,81 @@
                                         <div class="question-review-header">
                                             <span class="question-review-number">Câu @(index + 1)</span>
                                             <div class="question-review-actions">
-                                                <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
-                                                <button class="btn-delete-review"
-                                                        @onclick="() => DeleteQuestionFromReview(index)">
-                                                    Xóa
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="question-review-content">
-                                            <p><strong>Câu hỏi:</strong> @question.Text</p>
-                                            <div class="answers-review">
-                                                @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                                @if (editingQuestionIndex == index)
                                                 {
-                                                    <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
-                                                        <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
-                                                        <span class="answer-text">@answer.Text</span>
-                                                        @if (answer.IsCorrect)
-                                                        {
-                                                            <span class="correct-badge">Đúng</span>
-                                                        }
-                                                    </div>
+                                                    <button class="btn-edit" @onclick="() => SaveQuestion(index)"> Lưu</button>
+                                                    <button class="btn-delete-review" @onclick="CancelEdit"> Hủy</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn-edit" @onclick="() => EditQuestion(index)"> Sửa</button>
+                                                    <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)"> Xóa</button>
                                                 }
                                             </div>
+                                        </div>
+
+                                        <div class="question-review-content">
+                                            @if (editingQuestionIndex == index)
+                                            {
+                                                <!-- Chế độ chỉnh sửa -->
+                                                <div class="edit-mode">
+                                                    <div class="form-group">
+                                                        <label class="form-label"><strong>Câu hỏi:</strong></label>
+                                                        <textarea class="form-input form-textarea-edit"
+                                                                  @bind="tempQuestion.Text"
+                                                                  placeholder="Nhập câu hỏi..."></textarea>
+                                                    </div>
+
+                                                    <div class="answers-edit-section" >
+                                                        <label class="form-label"><strong>Các đáp án:</strong></label>
+                                                        @foreach (var (answer, ansIndex) in tempQuestion.Answers.Select((a, i) => (a, i)))
+                                                        {
+                                                            <div class="answer-edit-item" >
+                                                                <span class="answer-label-edit" style = "font-size:24px;margin-right:10px;">@GetAnswerLabel(ansIndex)</span>
+
+                                                                <input type="text"
+                                                                       class="answer-input-edit"
+                                                                       @bind="tempQuestion.Answers[ansIndex].Text"
+                                                                       placeholder="Nhập đáp án..." style="width: 75%;flex: 1;" />
+
+                                                                <label class="correct-checkbox" style="margin-left :40px;">
+                                                                    <input type="checkbox"
+                                                                           checked="@answer.IsCorrect"
+                                                                           @onchange="@((e) => SetCorrectAnswerInEdit(ansIndex, (bool)e.Value))" />
+                                                                    <span>Đúng</span>
+                                                                </label>
+
+                                                                @* <button class="btn-delete-answer"
+                                                @onclick="@(() => DeleteAnswer(ansIndex))" style ="margin-left:30px;">Xóa</button>*@
+                                                            </div>
+                                                        }
+
+                                                        @* <button class="btn-add-answer" @onclick="AddAnswer">➕ Thêm đáp án</button>*@
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <!-- Chế độ xem -->
+                                                <p><strong>Câu hỏi:</strong> @question.Text</p>
+                                                <div class="answers-review">
+                                                    @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                                    {
+                                                        <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
+                                                            <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                                            <span class="answer-text">@answer.Text</span>
+                                                            @if (answer.IsCorrect)
+                                                            {
+                                                                <span class="correct-badge"> Đúng</span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 }
                             </div>
-
                             <div class="button-group">
                                 <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
                                 <button class="btn-confirm-quiz" @onclick="SaveAndCreate">Xác nhận tạo Quiz</button>
@@ -168,7 +214,7 @@
 
                         <div class="review-section">
                             <div class="quiz-info-review">
-                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tiêu đề:</strong> @quizData.Title</p>
                                 <p><strong>Tổng số thẻ:</strong> @flashcards.Count thẻ</p>
                             </div>
 
@@ -176,17 +222,49 @@
                                 @foreach (var (card, index) in flashcards.Select((f, i) => (f, i)))
                                 {
                                     <div class="flashcard-review-item">
-                                        <div class="flashcard-review-header">
-                                            <span class="flashcard-number">Thẻ @(index + 1)</span>
+                                        <div class="flashcard-review-header" style="display: flex; align-items: center; justify-content: space-between;">
+                                            <span class="flashcard-number" style="font-size :24px;">Thẻ @(index + 1)</span>
                                             <div class="flashcard-review-actions">
-                                                <button class="btn-edit" @onclick="() => EditCard(index)">Sửa</button>
-                                                <button class="btn-delete-review" @onclick="() => DeleteCard(index)">Xóa</button>
+                                                @if (editingCardIndex == index)
+                                                {
+                                                    <button class="btn-save" @onclick="() => SaveCard(index)">Lưu</button>
+                                                    <button class="btn-cancel" @onclick="CancelCardEdit">Hủy</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn-edit" @onclick="() => EditCard(index)"> Sửa</button>
+                                                    <button class="btn-delete-review" @onclick="() => DeleteCard(index)"> Xóa</button>
+                                                }
                                             </div>
                                         </div>
 
                                         <div class="flashcard-review-content">
-                                            <p><strong>Thuật ngữ:</strong> @card.Terminology</p>
-                                            <p><strong>Định nghĩa:</strong> @card.Definition</p>
+                                            @if (editingCardIndex == index)
+                                            {
+                                                <!-- Chế độ chỉnh sửa Flashcard -->
+                                                <div class="edit-mode">
+                                                    <div class="form-group">
+                                                        <label class="form-label"><strong>Thuật ngữ:</strong></label>
+                                                        <input type="text"
+                                                               class="form-input form-input-edit"
+                                                               @bind="tempCard.Terminology"
+                                                               placeholder="Nhập thuật ngữ..." />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label class="form-label"><strong>Định nghĩa:</strong></label>
+                                                        <textarea class="form-input form-textarea-edit"
+                                                                  @bind="tempCard.Definition"
+                                                                  placeholder="Nhập định nghĩa..."></textarea>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <!-- Chế độ xem -->
+                                                <p><strong>Thuật ngữ:</strong> @card.Terminology</p>
+                                                <p><strong>Định nghĩa:</strong> @card.Definition</p>
+                                            }
                                         </div>
                                     </div>
                                 }
@@ -199,24 +277,92 @@
                         </div>
                     </div>
                 }
-               
+
+
             }
         </div>
     </div>
 </div>
 <Quiz.Shared.Footer />
 @code {
+      private Question tempQuestion = new();
     private QuizData quizData = new();
     private List<string>? tags;
     private HashSet<string> selectedTags = new HashSet<string>();
     private List<FlashcardItem> flashcards = new();
     private string message = "";
     private bool isLoading = false;
+        private int editingQuestionIndex = -1;
+
+        private int editingCardIndex = -1;
+    private FlashcardItem tempCard = new();
+
+     private void SetCorrectAnswerInEdit(int answerIndex, bool isCorrect)
+    {
+        tempQuestion.Answers[answerIndex].IsCorrect = isCorrect;
+    }
+      private void SaveCard(int index)
+    {
+        if (string.IsNullOrWhiteSpace(tempCard.Terminology))
+        {
+            errorMessage = "⚠️ Thuật ngữ không được để trống!";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(tempCard.Definition))
+        {
+            errorMessage = "⚠️ Định nghĩa không được để trống!";
+            return;
+        }
+
+        flashcards[index] = new FlashcardItem
+        {
+            Terminology = tempCard.Terminology,
+            Definition = tempCard.Definition
+        };
+
+        editingCardIndex = -1;
+        successMessage = "✅ Đã cập nhật thẻ học thành công!";
+        ClearMessagesAfterDelay();
+    }
+     private void ClearMessagesAfterDelay()
+    {
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            successMessage = "";
+            errorMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+    private void CancelCardEdit()
+    {
+        editingCardIndex = -1;
+        tempCard = new FlashcardItem();
+    }
+    private void AddAnswer()
+    {
+        tempQuestion.Answers.Add(new Answer { Text = "", IsCorrect = false });
+    }
+
+    private void DeleteAnswer(int index)
+    {
+        if (tempQuestion.Answers.Count > 1)
+        {
+            tempQuestion.Answers.RemoveAt(index);
+        }
+    }
+
     private void EditCard(int index)
     {
-        currentStep = 2;
-        //   currentCardIndex = index;
+        editingCardIndex = index;
+        var original = flashcards[index];
+        tempCard = new FlashcardItem
+        {
+            Terminology = flashcards[index].Terminology,
+            Definition = flashcards[index].Definition
+        };
     }
+
     public class FlashcardItem
     {
         public string Terminology { get; set; }
@@ -242,6 +388,49 @@
             errorMessage = "Phải có ít nhất 1 thẻ!";
         }
     }
+    private void SaveQuestion(int index)
+    {
+        if (string.IsNullOrWhiteSpace(tempQuestion.Text))
+        {
+            errorMessage = "⚠️ Câu hỏi không được để trống!";
+            return;
+        }
+
+        if (tempQuestion.Answers.Any(a => string.IsNullOrWhiteSpace(a.Text)))
+        {
+            errorMessage = "⚠️ Các đáp án không được để trống!";
+            return;
+        }
+
+        if (!tempQuestion.Answers.Any(a => a.IsCorrect))
+        {
+            errorMessage = "⚠️ Phải có ít nhất 1 đáp án đúng!";
+            return;
+        }
+
+        questions[index] = new Question
+        {
+            Text = tempQuestion.Text,
+            Answers = tempQuestion.Answers.Select(a => new Answer
+            {
+                Text = a.Text,
+                IsCorrect = a.IsCorrect
+            }).ToList(),
+            CorrectAnswers = tempQuestion.Answers
+                .Where(a => a.IsCorrect)
+                .Select(a => a.Text)
+                .ToList()
+        };
+
+        editingQuestionIndex = -1;
+    }
+
+    private void CancelEdit()
+    {
+        editingQuestionIndex = -1;
+        tempQuestion = new Question();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -550,14 +739,14 @@
                     }
                 }
 
-                successMessage = $"✅ Đã tạo {flashcards.Count} Flashcard thành công!";
+                successMessage = $" Đã tạo {flashcards.Count} Flashcard thành công!";
             }
 
             currentStep = 2;
         }
         catch (Exception ex)
         {
-            errorMessage = $"❌ Lỗi: {ex.Message}";
+            errorMessage = $" Lỗi: {ex.Message}";
         }
         finally
         {
@@ -637,14 +826,14 @@
             {
                 Title = quizData.Title,
                 Description = quizData.Description,
-                Type = quizData.QuestionType.ToString()
+                Type = quizData.QuestionType == QuestionType.Quiz ? "multiple" : "flashcard"
             };
 
-            var setQuizResponse = await backendClient.PostAsJsonAsync("https://localhost:7102/api/SetQuiz/create", setQuizPayload);
+            var setQuizResponse = await backendClient.PostAsJsonAsync("https://exe-backend-j428.onrender.com/api/SetQuiz/create", setQuizPayload);
             if (!setQuizResponse.IsSuccessStatusCode)
             {
                 var error = await setQuizResponse.Content.ReadAsStringAsync();
-                errorMessage = $"❌ Lỗi khi tạo SetQuiz: {error}";
+                errorMessage = $" Lỗi khi tạo SetQuiz: {error}";
                 return;
             }
 
@@ -670,7 +859,7 @@
                     var answers = new Dictionary<string, string>();
                     for (int i = 0; i < question.Answers.Count; i++)
                     {
-                        answers.Add($"additionalProp1{i + 1}", question.Answers[i].Text);
+                        answers.Add($"additionalProp{i + 1}", question.Answers[i].Text);
                     }
 
                     var correctAnswers = question.Answers
@@ -757,7 +946,7 @@
     {
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
-        public string Type { get; set; } = "";  
+        public string Type { get; set; } = "";
     }
 
     public class GenerateQuestionsResponse
@@ -963,11 +1152,20 @@ new Answer { Text = "", IsCorrect = false }
         currentStep = 3;
     }
 
-    private void EditQuestion(int index)
+     private void EditQuestion(int index)
     {
-        // Quay lại bước 2 để sửa câu hỏi
-        currentStep = 2;
-        currentQuestionIndex = index;
+        editingQuestionIndex = index;
+        var original = questions[index];
+        tempQuestion = new Question
+        {
+            Text = original.Text,
+            Answers = original.Answers.Select(a => new Answer
+            {
+                Text = a.Text,
+                IsCorrect = a.IsCorrect
+            }).ToList(),
+            CorrectAnswers = new List<string>(original.CorrectAnswers)
+        };
     }
 
 
@@ -1006,11 +1204,16 @@ new Answer { Text = "", IsCorrect = false }
         padding: 0;
         box-sizing: border-box;
     }
-
+   
     .quiz-creator-container {
         font-family: 'Baloo 2', cursive;
         min-height: 100vh;
         background: #ffffff;
+    }
+    .answer-input-edit{
+        margin-bottom: 10px;
+        font-size: 20px;
+        border-radius: 12px;
     }
 
     .container {
@@ -1046,19 +1249,19 @@ new Answer { Text = "", IsCorrect = false }
         font-family: 'Baloo 2', cursive;
     }
 
-    .tab.active {
-        color: #4318FF;
-    }
+        .tab.active {
+            color: #4318FF;
+        }
 
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #4318FF;
-    }
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
 
     .content-wrapper {
         min-height: 500px;
@@ -1098,32 +1301,32 @@ new Answer { Text = "", IsCorrect = false }
         color: white;
     }
 
-    .option-button:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
-        border-color: #4318FF;
-    }
+        .option-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
+            border-color: #4318FF;
+        }
 
-    .option-button.selected {
-        border-color: #D5CEFD;
-        background: #D5CEFD;
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
-    }
+        .option-button.selected {
+            border-color: #D5CEFD;
+            background: #D5CEFD;
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
+        }
 
-    .option-button.selected h3,
-    .option-button.selected p {
-        color: black;
-    }
+            .option-button.selected h3,
+            .option-button.selected p {
+                color: black;
+            }
 
-    .option-button h3 {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
+        .option-button h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
 
-    .option-button p {
-        font-size: 16px;
-    }
+        .option-button p {
+            font-size: 16px;
+        }
 
     /* Quiz Form */
     .quiz-form {
@@ -1141,18 +1344,18 @@ new Answer { Text = "", IsCorrect = false }
         margin-bottom: 20px;
     }
 
-    .form-group.half {
-        grid-column: 2;
-    }
+        .form-group.half {
+            grid-column: 2;
+        }
 
-    .form-group label {
-        display: block;
-        font-weight: 700;
-        color: #2D3748;
-        margin-bottom: 10px;
-        font-size: 16px;
-        margin-top: 10px;
-    }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
     .counter-display {
         background: #D5CEFD;
@@ -1175,12 +1378,23 @@ new Answer { Text = "", IsCorrect = false }
         background: white;
         transition: border-color 0.3s;
     }
-
-    .form-input:focus,
-    .form-textarea:focus {
-        outline: none;
-        border-color: #4318FF;
+     .form-inputf,
+    .form-textareaf {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #D5CEFD;
+        border-radius: 12px;
+        font-size: 16px;
+        font-family: 'Baloo 2', cursive;
+        background: #D5CEFD;
+        transition: border-color 0.3s;
     }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4318FF;
+        }
 
     .form-textarea {
         resize: vertical;
@@ -1203,11 +1417,11 @@ new Answer { Text = "", IsCorrect = false }
         margin: 0;
     }
 
-    .radio-label input[type="radio"] {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
+        .radio-label input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
 
     .questions-section {
         margin-top: 30px;
@@ -1241,15 +1455,15 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .btn-nav:hover:not(:disabled) {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-nav:hover:not(:disabled) {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
-    .btn-nav:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
     .question-card {
         background: #D5CEFD;
@@ -1288,9 +1502,9 @@ new Answer { Text = "", IsCorrect = false }
         transition: opacity 0.2s;
     }
 
-    .btn-remove:hover {
-        opacity: 1;
-    }
+        .btn-remove:hover {
+            opacity: 1;
+        }
 
     .answer-item {
         display: flex;
@@ -1299,16 +1513,16 @@ new Answer { Text = "", IsCorrect = false }
         margin-bottom: 12px;
     }
 
-    .answer-item input[type="text"] {
-        flex: 1;
-    }
+        .answer-item input[type="text"] {
+            flex: 1;
+        }
 
-    .answer-item input[type="radio"],
-    .answer-item input[type="checkbox"] {
-        width: 22px;
-        height: 22px;
-        cursor: pointer;
-    }
+        .answer-item input[type="radio"],
+        .answer-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
 
     .btn-add-question {
         background: #4318FF;
@@ -1325,10 +1539,10 @@ new Answer { Text = "", IsCorrect = false }
         display: block;
     }
 
-    .btn-add-question:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-add-question:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     /* Buttons */
     .button-group {
@@ -1357,28 +1571,28 @@ new Answer { Text = "", IsCorrect = false }
         margin-left: 340px;
     }
 
-    .btn-next:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background: #4318FF;
-        color: white;
-    }
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #4318FF;
+            color: white;
+        }
 
-    .btn-next:not(:disabled):hover {
-        background: #4318FF;
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
-    }
+        .btn-next:not(:disabled):hover {
+            background: #4318FF;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
+        }
 
     .btn-back {
         background: #E2E8F0;
         color: #2D3748;
     }
 
-    .btn-back:hover {
-        background: #CBD5E0;
-    }
+        .btn-back:hover {
+            background: #CBD5E0;
+        }
 
     .btn-create-quiz {
         background: #1D059D;
@@ -1387,15 +1601,15 @@ new Answer { Text = "", IsCorrect = false }
         margin-top: 20px;
     }
 
-    .btn-create-quiz:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+        .btn-create-quiz:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    .btn-create-quiz:not(:disabled):hover {
-        background: #1f1347;
-        transform: translateY(-3px);
-    }
+        .btn-create-quiz:not(:disabled):hover {
+            background: #1f1347;
+            transform: translateY(-3px);
+        }
 
     /* Review Section */
     .review-section {
@@ -1412,22 +1626,22 @@ new Answer { Text = "", IsCorrect = false }
         margin-bottom: 30px;
     }
 
-    .quiz-info-review p {
-        margin: 10px 0;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .quiz-info-review p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
-    .quiz-info-review strong {
-        color: #2D1B69;
-    }
+        .quiz-info-review strong {
+            color: #2D1B69;
+        }
 
     .questions-list {
         margin-bottom: 30px;
     }
 
     .question-review-item {
-        background: #F8F9FA;
+        background: #D5CEFD;
         border: 2px solid #D5CEFD;
         border-radius: 12px;
         padding: 20px;
@@ -1470,10 +1684,10 @@ new Answer { Text = "", IsCorrect = false }
         font-size: 14px;
     }
 
-    .btn-edit:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-edit:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     .btn-delete-review {
         background: #FF6B6B;
@@ -1488,20 +1702,20 @@ new Answer { Text = "", IsCorrect = false }
         font-size: 14px;
     }
 
-    .btn-delete-review:hover {
-        background: #FA5252;
-        transform: translateY(-2px);
-    }
+        .btn-delete-review:hover {
+            background: #FA5252;
+            transform: translateY(-2px);
+        }
 
     .question-review-content {
         padding: 15px;
     }
 
-    .question-review-content p {
-        margin-bottom: 15px;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .question-review-content p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
     .answers-review {
         display: flex;
@@ -1520,10 +1734,10 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .answer-review.correct {
-        background: #E6FFE6;
-        border-color: #70E539;
-    }
+        .answer-review.correct {
+            background: #E6FFE6;
+            border-color: #70E539;
+        }
 
     .answer-label {
         background: #1D059D;
@@ -1568,11 +1782,11 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .btn-confirm-quiz:hover {
-        background: #70E539;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px;
-    }
+        .btn-confirm-quiz:hover {
+            background: #70E539;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px;
+        }
 
     /* Animation */
     .fade-in {
@@ -1641,7 +1855,7 @@ new Answer { Text = "", IsCorrect = false }
     }
 
     .form-input {
-        background: #ddd6fe;
+        background: white;
         border: none;
         border-radius: 12px;
         padding: 15px 20px;
@@ -1651,9 +1865,9 @@ new Answer { Text = "", IsCorrect = false }
         outline: none;
     }
 
-    .form-input:focus {
-        background: #c4b5fd;
-    }
+        .form-input:focus {
+            background: #c4b5fd;
+        }
 
     .form-textarea {
         min-height: 120px;
@@ -1678,19 +1892,19 @@ new Answer { Text = "", IsCorrect = false }
         cursor: pointer;
     }
 
-    .radio-option input[type="radio"] {
-        width: 24px;
-        height: 24px;
-        accent-color: #5b21b6;
-        cursor: pointer;
-    }
+        .radio-option input[type="radio"] {
+            width: 24px;
+            height: 24px;
+            accent-color: #5b21b6;
+            cursor: pointer;
+        }
 
-    .radio-option label {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-        cursor: pointer;
-    }
+        .radio-option label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            cursor: pointer;
+        }
 
     .upload-section {
         background: #ddd6fe;
@@ -1702,16 +1916,16 @@ new Answer { Text = "", IsCorrect = false }
         transition: all 0.3s;
     }
 
-    .upload-section.dragover {
-        background: #c4b5fd;
-        border: 2px dashed #5b21b6;
-    }
+        .upload-section.dragover {
+            background: #c4b5fd;
+            border: 2px dashed #5b21b6;
+        }
 
-    .upload-section.disabled {
-        background: #e5e7eb;
-        opacity: 0.6;
-        pointer-events: none;
-    }
+        .upload-section.disabled {
+            background: #e5e7eb;
+            opacity: 0.6;
+            pointer-events: none;
+        }
 
     .input-mode-selector {
         display: flex;
@@ -1736,14 +1950,14 @@ new Answer { Text = "", IsCorrect = false }
         color: #6b7280;
     }
 
-    .input-mode-btn.active {
-        background: #5b21b6;
-        color: white;
-    }
+        .input-mode-btn.active {
+            background: #5b21b6;
+            color: white;
+        }
 
-    .input-mode-btn:hover:not(.active) {
-        background: #e5e7eb;
-    }
+        .input-mode-btn:hover:not(.active) {
+            background: #e5e7eb;
+        }
 
     .text-input-section {
         margin-top: 30px;
@@ -1763,10 +1977,10 @@ new Answer { Text = "", IsCorrect = false }
         resize: vertical;
     }
 
-    .text-input-area:focus {
-        background: #c4b5fd;
-        border-color: #5b21b6;
-    }
+        .text-input-area:focus {
+            background: #c4b5fd;
+            border-color: #5b21b6;
+        }
 
     .word-count {
         text-align: right;
@@ -1776,13 +1990,13 @@ new Answer { Text = "", IsCorrect = false }
         font-weight: 600;
     }
 
-    .word-count.warning {
-        color: #dc2626;
-    }
+        .word-count.warning {
+            color: #dc2626;
+        }
 
-    .word-count.valid {
-        color: #059669;
-    }
+        .word-count.valid {
+            color: #059669;
+        }
 
     .upload-icon {
         width: 80px;
@@ -1790,10 +2004,10 @@ new Answer { Text = "", IsCorrect = false }
         margin: 0 auto 20px;
     }
 
-    .upload-icon svg {
-        width: 100%;
-        height: 100%;
-    }
+        .upload-icon svg {
+            width: 100%;
+            height: 100%;
+        }
 
     .upload-title {
         font-size: 22px;
@@ -1821,9 +2035,9 @@ new Answer { Text = "", IsCorrect = false }
         transition: background 0.3s;
     }
 
-    .btn-upload:hover {
-        background: #4c1d95;
-    }
+        .btn-upload:hover {
+            background: #4c1d95;
+        }
 
     .file-input {
         display: none;
@@ -1874,9 +2088,9 @@ new Answer { Text = "", IsCorrect = false }
         font-weight: 600;
     }
 
-    .remove-file:hover {
-        background: #dc2626;
-    }
+        .remove-file:hover {
+            background: #dc2626;
+        }
 
     .btn-submit {
         background: #5b21b6;
@@ -1892,14 +2106,14 @@ new Answer { Text = "", IsCorrect = false }
         transition: background 0.3s;
     }
 
-    .btn-submit:hover {
-        background: #4c1d95;
-    }
+        .btn-submit:hover {
+            background: #4c1d95;
+        }
 
-    .btn-submit:disabled {
-        background: #9ca3af;
-        cursor: not-allowed;
-    }
+        .btn-submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
 
     .loading {
         display: inline-block;

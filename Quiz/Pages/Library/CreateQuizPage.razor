@@ -9,13 +9,13 @@
     <div class="container">
         <h1 class="page-title">Thư viện bài học</h1>
 
-        <!-- Tabs -->
-        <div class="tabs">
-             <button class="tab" @onclick="() => NavigateToTab(2)">Ôn tập</button>
-            <button class="tab active" @onclick="() => NavigateToTab(1)">Tạo Quiz</button>
-        </div>
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab" @onclick="() => NavigateToTab(2)">Ôn tập</button>
+                <button class="tab active" @onclick="() => NavigateToTab(1)">Tạo Quiz</button>
+            </div>
 
-        <!-- Main Content Area -->
+            <!-- Main Content Area -->
         <div class="content-wrapper">
             @if (currentStep == 1)
             {
@@ -24,278 +24,352 @@
                     <h2 class="step-title">Chọn công cụ tạo Quiz</h2>
                     <div class="creation-options">
                         <button class="option-button @(creationMethod == "manual" ? "selected" : "")"
-                                @onclick='() => SelectCreationMethod("manual")'>
+                                @onclick='async () => await SelectCreationMethod("manual")'>
                             <h3>Tạo Thủ Công</h3>
                             <p>Tự tạo câu hỏi và đáp án theo ý muốn</p>
                         </button>
 
                         <button class="option-button @(creationMethod == "ai" ? "selected" : "")"
-                                @onclick='() => SelectCreationMethod("ai")'>
+                                @onclick='async () => await SelectCreationMethod("ai")'>
                             <h3>Sử dụng AI</h3>
                             <p>AI tự động tạo quiz từ tài liệu của bạn</p>
                         </button>
+
                         <button class="option-button @(creationMethod == "tag" ? "selected" : "")"
-                                @onclick='() => SelectCreationMethod("tag")'>
+                                @onclick='async () => await SelectCreationMethod("tag")'>
                             <h3>Học cùng AI</h3>
                             <p>AI tự động tạo quiz theo chủ đề của bạn</p>
                         </button>
+
                         <button class="option-button @(creationMethod == "extract" ? "selected" : "")"
-                                @onclick='() => SelectCreationMethod("extract")'>
+                                @onclick='async () => await SelectCreationMethod("extract")'>
                             <h3>Tạo quiz tự động</h3>
                             <p>Tạo quiz theo mẫu</p>
                         </button>
                     </div>
+
                     <button class="btn-next" @onclick="NextStep" disabled="@(string.IsNullOrEmpty(creationMethod))">
                         Tiếp theo →
                     </button>
-                </div>  
-            }
-            else if (currentStep == 2)
-            {
-                <!-- Step 2: Choose Manual Type (Quiz or Flashcard) -->
-                <div class="step-container fade-in">
-                    <h2 class="step-title">Chọn loại bài học</h2>
-                    <div class="type-selection">
-                        <button class="type-button @(manualType == "multiple" ? "selected" : "")"
-                                @onclick='() => manualType = "multiple"'>
-                            <div class="type-icon">📝</div>
-                            <h3>Trắc nghiệm</h3>
-                            <p>Tạo câu hỏi trắc nghiệm với nhiều đáp án</p>
-                        </button>
-
-                        <button class="type-button @(manualType == "flashcard" ? "selected" : "")"
-                                @onclick='() => manualType = "flashcard"'>
-                            <div class="type-icon">🗂️</div>
-                            <h3>Flashcard</h3>
-                            <p>Tạo thẻ học thuật ngữ và định nghĩa</p>
-                        </button>
-                    </div>
-                    
-                    <div class="button-group">
-                        <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
-                        <button class="btn-next" @onclick="ConfirmManualType" disabled="@(string.IsNullOrEmpty(manualType))">
-                            Tiếp theo →
-                        </button>
-                    </div>
                 </div>
             }
-            else if (currentStep == 3)
-            {
-                <!-- Step 3: Manual Quiz Creation Form -->
-                <div class="step-container fade-in">
-                    <h2 class="step-title">Tạo Quiz</h2>
+   
+                }
+                else if (currentStep == 2)
+                {
+                    <!-- Step 2: Choose Manual Type (Quiz or Flashcard) -->
+                    <div class="step-container fade-in">
+                        <h2 class="step-title">Chọn loại bài học</h2>
+                        <div class="type-selection">
+                            <button class="type-button @(manualType == "multiple" ? "selected" : "")"
+                                    @onclick='() => manualType = "multiple"'>
+                                <div class="type-icon">📝</div>
+                                <h3>Trắc nghiệm</h3>
+                                <p>Tạo câu hỏi trắc nghiệm với nhiều đáp án</p>
+                            </button>
 
-                    <div class="quiz-form">
-                        <!-- Quiz Info -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Tiêu đề</label>
-                                <input type="text" @bind="quizTitle" class="form-input" placeholder="Nhập tiêu đề bài quiz..." />
-                                <label>Mô tả</label>
-                                <textarea @bind="quizDescription" class="form-textarea" rows="4" placeholder="Nhập mô tả bài quiz..."></textarea>
-                            </div>
-                            <div class="form-group half">
-                                <div class="counter-display" style="margin-top:45px;">Tổng cộng: <strong>@questions.Count</strong> câu</div>
-                            </div>
-                        </div>
-
-                        <!-- Current Question View -->
-                        <div class="questions-section">
-                            @if (questions.Count > 0)
-                            {
-                                <div class="question-navigation">
-                                    <button class="btn-nav" @onclick="PreviousQuestion" disabled="@(currentQuestionIndex <= 0)">
-                                        ← Câu trước
-                                    </button>
-                                    <span class="question-counter">Câu @(currentQuestionIndex + 1) / @questions.Count</span>
-                                    <button class="btn-nav" @onclick="NextQuestion" disabled="@(currentQuestionIndex >= questions.Count - 1)">
-                                        Câu sau →
-                                    </button>
-                                </div>
-
-                                <div class="question-card">
-                                    <div class="question-header">
-                                        <span class="question-number">@(currentQuestionIndex + 1)</span>
-                                        <button class="btn-remove" @onclick="() => RemoveQuestion(currentQuestionIndex)">🗑️</button>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <textarea @bind="questions[currentQuestionIndex].Text" class="form-textarea" rows="3" placeholder="Nhập câu hỏi..."></textarea>
-                                    </div>
-
-                                    @foreach (var (answer, ansIndex) in questions[currentQuestionIndex].Answers.Select((a, i) => (a, i)))
-                                    {
-                                        <div class="answer-item">
-                                            <input type="text" @bind="answer.Text" class="form-input" placeholder="Đáp án @(GetAnswerLabel(ansIndex))" />
-                                            <input type="checkbox" @bind="answer.IsCorrect" />
-                                        </div>
-                                    }
-                                </div>
-
-                                <button class="btn-add-question" @onclick="AddNewQuestion">
-                                    + Thêm câu hỏi
-                                </button>
-                            }
-                        </div>
-
-                        <button class="btn-create-quiz" @onclick="CreateQuiz" disabled="@(questions.Count == 0 || string.IsNullOrWhiteSpace(quizTitle))">
-                            Xem lại & Xác nhận
-                        </button>
-                    </div>
-
-                    <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
-                </div>
-            }
-            else if (currentStep == 4)
-            {
-                <!-- Step 4: Review All Questions -->
-                <div class="step-container fade-in">
-                    <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
-
-                    <div class="review-section">
-                        <div class="quiz-info-review">
-                            <p><strong>Tiêu đề:</strong> @quizTitle</p>
-                            <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
-                        </div>
-
-                        <div class="questions-list">
-                            @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
-                            {
-                                <div class="question-review-item">
-                                    <div class="question-review-header">
-                                        <span class="question-review-number">Câu @(index + 1)</span>
-                                        <div class="question-review-actions">
-                                            <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
-                                            <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)">Xóa</button>
-                                        </div>
-                                    </div>
-                                    <div class="question-review-content">
-                                        <p><strong>Câu hỏi:</strong> @question.Text</p>
-                                        <div class="answers-review">
-                                            @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
-                                            {
-                                                <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
-                                                    <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
-                                                    <span class="answer-text">@answer.Text</span>
-                                                    @if (answer.IsCorrect)
-                                                    {
-                                                        <span class="correct-badge">Đúng</span>
-                                                    }
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            }
+                            <button class="type-button @(manualType == "flashcard" ? "selected" : "")"
+                                    @onclick='() => manualType = "flashcard"'>
+                                <div class="type-icon">🗂️</div>
+                                <h3>Flashcard</h3>
+                                <p>Tạo thẻ học thuật ngữ và định nghĩa</p>
+                            </button>
                         </div>
 
                         <div class="button-group">
-                            <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
-                            <button class="btn-confirm-quiz" @onclick="ConfirmAndCreateQuiz">Xác nhận tạo Quiz</button>
+                            <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
+                            <button class="btn-next" @onclick="ConfirmManualType" disabled="@(string.IsNullOrEmpty(manualType))">
+                                Tiếp theo →
+                            </button>
                         </div>
                     </div>
-                </div>
-            }
+                }
+                else if (currentStep == 3)
+                {
+                    <!-- Step 3: Manual Quiz Creation Form -->
+                    <div class="step-container fade-in">
+                        <h2 class="step-title">Tạo Quiz</h2>
+
+                        <div class="quiz-form">
+                            <!-- Quiz Info -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tiêu đề</label>
+                                    <input type="text" @bind="quizTitle" class="form-input" placeholder="Nhập tiêu đề bài quiz..." />
+                                    <label>Mô tả</label>
+                                    <textarea @bind="quizDescription" class="form-textarea" rows="4" placeholder="Nhập mô tả bài quiz..."></textarea>
+                                </div>
+                                <div class="form-group half">
+                                    <div class="counter-display" style="margin-top:45px;">Tổng cộng: <strong>@questions.Count</strong> câu</div>
+                                </div>
+                            </div>
+
+                            <!-- Current Question View -->
+                            <div class="questions-section">
+                                @if (questions.Count > 0)
+                                {
+                                    <div class="question-navigation">
+                                        <button class="btn-nav" @onclick="PreviousQuestion" disabled="@(currentQuestionIndex <= 0)">
+                                            ← Câu trước
+                                        </button>
+                                        <span class="question-counter">Câu @(currentQuestionIndex + 1) / @questions.Count</span>
+                                        <button class="btn-nav" @onclick="NextQuestion" disabled="@(currentQuestionIndex >= questions.Count - 1)">
+                                            Câu sau →
+                                        </button>
+                                    </div>
+
+                                    <div class="question-card">
+                                        <div class="question-header">
+                                            <span class="question-number">@(currentQuestionIndex + 1)</span>
+                                            <button class="btn-remove" @onclick="() => RemoveQuestion(currentQuestionIndex)">🗑️</button>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <textarea @bind="questions[currentQuestionIndex].Text" class="form-textarea" rows="3" placeholder="Nhập câu hỏi..."></textarea>
+                                        </div>
+
+                                        @foreach (var (answer, ansIndex) in questions[currentQuestionIndex].Answers.Select((a, i) => (a, i)))
+                                        {
+                                            <div class="answer-item">
+                                                <input type="text" @bind="answer.Text" class="form-input" placeholder="Đáp án @(GetAnswerLabel(ansIndex))" />
+                                                <input type="checkbox" @bind="answer.IsCorrect" />
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <button class="btn-add-question" @onclick="AddNewQuestion">
+                                        + Thêm câu hỏi
+                                    </button>
+                                }
+                            </div>
+
+                            <button class="btn-create-quiz" @onclick="CreateQuiz" disabled="@(questions.Count == 0 || string.IsNullOrWhiteSpace(quizTitle))">
+                                Xem lại & Xác nhận
+                            </button>
+                        </div>
+
+                        <button class="btn-back" @onclick="PreviousStep">← Quay lại</button>
+                    </div>
+                }
+                else if (currentStep == 4)
+                {
+                    <!-- Step 4: Review All Questions -->
+                    <div class="step-container fade-in">
+                        <h2 class="step-title">Xem lại tất cả câu hỏi</h2>
+
+                        <div class="review-section">
+                            <div class="quiz-info-review">
+                                <p><strong>Tiêu đề:</strong> @quizTitle</p>
+                                <p><strong>Tổng câu hỏi:</strong> @questions.Count câu</p>
+                            </div>
+
+                            <div class="questions-list">
+                                @foreach (var (question, index) in questions.Select((q, i) => (q, i)))
+                                {
+                                    <div class="question-review-item">
+                                        <div class="question-review-header">
+                                            <span class="question-review-number">Câu @(index + 1)</span>
+                                            <div class="question-review-actions">
+                                                <button class="btn-edit" @onclick="() => EditQuestion(index)">Sửa</button>
+                                                <button class="btn-delete-review" @onclick="() => DeleteQuestionFromReview(index)">Xóa</button>
+                                            </div>
+                                        </div>
+                                        <div class="question-review-content">
+                                            <p><strong>Câu hỏi:</strong> @question.Text</p>
+                                            <div class="answers-review">
+                                                @foreach (var (answer, ansIndex) in question.Answers.Select((a, i) => (a, i)))
+                                                {
+                                                    <div class="answer-review @(answer.IsCorrect ? "correct" : "")">
+                                                        <span class="answer-label">@GetAnswerLabel(ansIndex)</span>
+                                                        <span class="answer-text">@answer.Text</span>
+                                                        @if (answer.IsCorrect)
+                                                        {
+                                                            <span class="correct-badge">Đúng</span>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="button-group">
+                                <button class="btn-back" @onclick="PreviousStep">← Quay lại sửa</button>
+                                <button class="btn-confirm-quiz" @onclick="ConfirmAndCreateQuiz">Xác nhận tạo Quiz</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-</div>
-<Quiz.Shared.Footer />
-@code {
-    private int currentStep = 1;
-    private string creationMethod = "";
-    private string manualType = ""; // "quiz" hoặc "flashcard"
-    private string answerType = "single";
-    private int currentQuestionIndex = 0;
+    <Quiz.Shared.Footer />
+    @code {
+        private int currentStep = 1;
+        private string creationMethod = "";
+        private string manualType = ""; // "quiz" hoặc "flashcard"
+        private string answerType = "single";
+        private int currentQuestionIndex = 0;
+        private string userPlan = "";
+        private int subscriptionId = 1; // mặc định nếu chưa có
+        private int feature2UsedCount = 0;
+        private const int feature2Limit = 5;
 
-    // Quiz form data
-    private string quizTitle = "";
-    private int quizTime = 30;
-    private string quizDescription = "";
+        // Quiz form data
+        private string quizTitle = "";
+        private int quizTime = 30;
+        private string quizDescription = "";
 
-    private List<Question> questions = new List<Question>();
+        private List<Question> questions = new List<Question>();
 
-    public class QuestionCreateRequest
-    {
-        public int SetQuizId { get; set; }
-        public string Question { get; set; } = string.Empty;
-        public Dictionary<string, string> Answers { get; set; } = new();
-        public List<string> CorrectAnswers { get; set; } = new();
-    }
-
-    protected override void OnInitialized()
-    {
-        // Initialize empty - user will add questions manually
-    }
-
-    private void NavigateToTab(int tab)
-    {
-        switch(tab)
+        public class QuestionCreateRequest
         {
-            case 0:
-                Navigation.NavigateTo("/library");
-                break;
-
-            case 2:
-                Navigation.NavigateTo("/revision");
-                break;
-            default:
-                Navigation.NavigateTo("/");
-                break;
+            public int SetQuizId { get; set; }
+            public string Question { get; set; } = string.Empty;
+            public Dictionary<string, string> Answers { get; set; } = new();
+            public List<string> CorrectAnswers { get; set; } = new();
         }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var subStr = await JS.InvokeAsync<string>("localStorage.getItem", "subscriptionId");
+        if (int.TryParse(subStr, out var sid))
+            subscriptionId = sid;
+
+        var usedStr = await JS.InvokeAsync<string>("localStorage.getItem", "feature2UsedCount");
+        if (int.TryParse(usedStr, out var used))
+            feature2UsedCount = used;
+
+        userPlan = await JS.InvokeAsync<string>("localStorage.getItem", "userPlan") ?? "basic";
     }
 
-    private void SelectCreationMethod(string method)
+    private bool CanUseFeature(string method)
     {
+        int featureId = method switch
+        {
+            "manual" => 1,
+            "ai" => 2,
+            "tag" => 3,
+            "extract" => 4,
+            _ => 0
+        };
+
+        // Gói Basic
+        if (subscriptionId == 1)
+        {
+            if (featureId == 1 || featureId == 4)
+                return true;
+            if (featureId == 2 && feature2UsedCount < feature2Limit)
+                return true;
+            return false;
+        }
+
+        // Gói Pro
+        if (subscriptionId == 2 || subscriptionId == 3)
+            return featureId == 2;
+
+        // Gói Premium trở lên
+        if (subscriptionId >= 4)
+            return true;
+
+        return false;
+    }
+
+    private async Task SelectCreationMethod(string method)
+    {
+        // Cập nhật state trước để UI nhận biết ngay
         creationMethod = method;
-    }
 
-    private void NextStep()
-    {
-        if (currentStep == 1 && !string.IsNullOrEmpty(creationMethod))
+        if (!CanUseFeature(method))
         {
-            if(creationMethod == "ai")
+            await JS.InvokeVoidAsync("alert", "⚠️ Gói của bạn không được phép dùng tính năng này hoặc đã hết lượt sử dụng!");
+            // Reset nếu cần
+            creationMethod = "";
+            StateHasChanged();
+            return;
+        }
+
+        // Nếu là gói Basic và chọn AI thì tăng counter
+        if (subscriptionId == 1 && method == "ai")
+        {
+            feature2UsedCount++;
+            await JS.InvokeVoidAsync("localStorage.setItem", "feature2UsedCount", feature2UsedCount.ToString());
+        }
+
+        // Render UI ngay
+        StateHasChanged();
+    }
+     
+        private void NavigateToTab(int tab)
+        {
+            switch (tab)
             {
-                Navigation.NavigateTo("/quiz-ai");
-                return;
-            }
-            else if(creationMethod == "tag")
-            {
-                Navigation.NavigateTo("/quiz-tag");
-                return;
-            }
-            else if(creationMethod == "extract")
-            {
-                Navigation.NavigateTo("/quiz-extract");
-                return;
-            }
-            else if(creationMethod == "manual")
-            {
-                // Chuyển sang bước chọn loại (Quiz hoặc Flashcard)
-                currentStep = 2;
+                case 0:
+                    Navigation.NavigateTo("/library");
+                    break;
+
+                case 2:
+                    Navigation.NavigateTo("/revision");
+                    break;
+                default:
+                    Navigation.NavigateTo("/");
+                    break;
             }
         }
-    }
 
-    private void ConfirmManualType()
-    {
-        if (!string.IsNullOrEmpty(manualType))
+        // private void SelectCreationMethod(string method)
+        // {
+        //     creationMethod = method;
+        // }
+
+        private void NextStep()
         {
-            if (manualType == "flashcard")
+            if (currentStep == 1 && !string.IsNullOrEmpty(creationMethod))
             {
-                // Chuyển sang trang flashcard-create
-                Navigation.NavigateTo("/flashcard-create");
-            }
-            else if (manualType == "multiple")
-            {
-                // Tiếp tục tạo quiz trắc nghiệm
-                currentStep = 3;
-                if (questions.Count == 0)
+                if (creationMethod == "ai")
                 {
-                    AddNewQuestion();
+                    Navigation.NavigateTo("/quiz-ai");
+                    return;
+                }
+                else if (creationMethod == "tag")
+                {
+                    Navigation.NavigateTo("/quiz-tag");
+                    return;
+                }
+                else if (creationMethod == "extract")
+                {
+                    Navigation.NavigateTo("/quiz-extract");
+                    return;
+                }
+                else if (creationMethod == "manual")
+                {
+                    // Chuyển sang bước chọn loại (Quiz hoặc Flashcard)
+                    currentStep = 2;
                 }
             }
         }
-    }
+
+        private void ConfirmManualType()
+        {
+            if (!string.IsNullOrEmpty(manualType))
+            {
+                if (manualType == "flashcard")
+                {
+                    // Chuyển sang trang flashcard-create
+                    Navigation.NavigateTo("/flashcard-create");
+                }
+                else if (manualType == "multiple")
+                {
+                    // Tiếp tục tạo quiz trắc nghiệm
+                    currentStep = 3;
+                    if (questions.Count == 0)
+                    {
+                        AddNewQuestion();
+                    }
+                }
+            }
+        }
 
     private void PreviousStep()
     {
@@ -399,7 +473,7 @@
         currentStep = 3;
         currentQuestionIndex = index;
     }
-    
+
     private async Task ConfirmAndCreateQuiz()
     {
         try
@@ -475,17 +549,21 @@
                 }
             }
 
-            await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã được tạo thành công!");
+            //  await JS.InvokeVoidAsync("alert", $"✅ Quiz '{quizTitle}' đã được tạo thành công!");
+            Console.WriteLine("Tao thanh cong");
 
             ResetForm();
             Navigation.NavigateTo($"/practice/{setQuizId}");
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"⚠️ Lỗi khi tạo quiz: {ex.Message}");
+            //  await JS.InvokeVoidAsync("alert", $"⚠️ Lỗi khi tạo quiz: {ex.Message}");
+            Console.WriteLine("Tao that bai");
+
+
         }
     }
-    
+
     public class SetQuizRequest
     {
         public string Title { get; set; } = string.Empty;
@@ -572,19 +650,19 @@
         font-family: 'Baloo 2', cursive;
     }
 
-    .tab.active {
-        color: #4318FF;
-    }
+        .tab.active {
+            color: #4318FF;
+        }
 
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #4318FF;
-    }
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
 
     .content-wrapper {
         min-height: 500px;
@@ -624,32 +702,32 @@
         color: white;
     }
 
-    .option-button:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
-        border-color: #4318FF;
-    }
+        .option-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.2);
+            border-color: #4318FF;
+        }
 
-    .option-button.selected {
-        border-color: #D5CEFD;
-        background: #D5CEFD;
-        box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
-    }
+        .option-button.selected {
+            border-color: #D5CEFD;
+            background: #D5CEFD;
+            box-shadow: 0 12px 35px rgba(67, 24, 255, 0.4);
+        }
 
-    .option-button.selected h3,
-    .option-button.selected p {
-        color: black;
-    }
+            .option-button.selected h3,
+            .option-button.selected p {
+                color: black;
+            }
 
-    .option-button h3 {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
+        .option-button h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
 
-    .option-button p {
-        font-size: 16px;
-    }
+        .option-button p {
+            font-size: 16px;
+        }
 
     /* Type Selection (Quiz vs Flashcard) */
     .type-selection {
@@ -670,17 +748,17 @@
         font-family: 'Baloo 2', cursive;
     }
 
-    .type-button:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.15);
-        border-color: #4318FF;
-    }
+        .type-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(67, 24, 255, 0.15);
+            border-color: #4318FF;
+        }
 
-    .type-button.selected {
-        border-color: #1D059D;
-        background: #E9E3FF;
-        box-shadow: 0 8px 25px rgba(29, 5, 157, 0.3);
-    }
+        .type-button.selected {
+            border-color: #1D059D;
+            background: #E9E3FF;
+            box-shadow: 0 8px 25px rgba(29, 5, 157, 0.3);
+        }
 
     .type-icon {
         font-size: 60px;
@@ -715,18 +793,18 @@
         margin-bottom: 20px;
     }
 
-    .form-group.half {
-        grid-column: 2;
-    }
+        .form-group.half {
+            grid-column: 2;
+        }
 
-    .form-group label {
-        display: block;
-        font-weight: 700;
-        color: #2D3748;
-        margin-bottom: 10px;
-        font-size: 16px;
-        margin-top: 10px;
-    }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
     .counter-display {
         background: #D5CEFD;
@@ -749,10 +827,10 @@
         transition: border-color 0.3s;
     }
 
-    .form-input:focus, .form-textarea:focus {
-        outline: none;
-        border-color: #4318FF;
-    }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4318FF;
+        }
 
     .form-textarea {
         resize: vertical;
@@ -790,15 +868,15 @@
         transition: all 0.3s;
     }
 
-    .btn-nav:hover:not(:disabled) {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-nav:hover:not(:disabled) {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
-    .btn-nav:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
     .question-card {
         background: #D5CEFD;
@@ -837,9 +915,9 @@
         transition: opacity 0.2s;
     }
 
-    .btn-remove:hover {
-        opacity: 1;
-    }
+        .btn-remove:hover {
+            opacity: 1;
+        }
 
     .answer-item {
         display: flex;
@@ -848,16 +926,16 @@
         margin-bottom: 12px;
     }
 
-    .answer-item input[type="text"] {
-        flex: 1;
-    }
+        .answer-item input[type="text"] {
+            flex: 1;
+        }
 
-    .answer-item input[type="radio"],
-    .answer-item input[type="checkbox"] {
-        width: 22px;
-        height: 22px;
-        cursor: pointer;
-    }
+        .answer-item input[type="radio"],
+        .answer-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
 
     .btn-add-question {
         background: #4318FF;
@@ -874,10 +952,10 @@
         display: block;
     }
 
-    .btn-add-question:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-add-question:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     /* Buttons */
     .button-group {
@@ -904,28 +982,28 @@
         margin-left: 340px;
     }
 
-    .btn-next:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background: #4318FF;
-        color: white;
-    }
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #4318FF;
+            color: white;
+        }
 
-    .btn-next:not(:disabled):hover {
-        background: #4318FF;
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
-    }
+        .btn-next:not(:disabled):hover {
+            background: #4318FF;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 24, 255, 0.4);
+        }
 
     .btn-back {
         background: #E2E8F0;
         color: #2D3748;
     }
 
-    .btn-back:hover {
-        background: #CBD5E0;
-    }
+        .btn-back:hover {
+            background: #CBD5E0;
+        }
 
     .btn-create-quiz {
         background: #1D059D;
@@ -934,15 +1012,15 @@
         margin-top: 20px;
     }
 
-    .btn-create-quiz:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+        .btn-create-quiz:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    .btn-create-quiz:not(:disabled):hover {
-        background: #1f1347;
-        transform: translateY(-3px);
-    }
+        .btn-create-quiz:not(:disabled):hover {
+            background: #1f1347;
+            transform: translateY(-3px);
+        }
 
     /* Review Section */
     .review-section {
@@ -959,15 +1037,15 @@
         margin-bottom: 30px;
     }
 
-    .quiz-info-review p {
-        margin: 10px 0;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .quiz-info-review p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
-    .quiz-info-review strong {
-        color: #2D1B69;
-    }
+        .quiz-info-review strong {
+            color: #2D1B69;
+        }
 
     .questions-list {
         margin-bottom: 30px;
@@ -1017,10 +1095,10 @@
         font-size: 14px;
     }
 
-    .btn-edit:hover {
-        background: #2D1B69;
-        transform: translateY(-2px);
-    }
+        .btn-edit:hover {
+            background: #2D1B69;
+            transform: translateY(-2px);
+        }
 
     .btn-delete-review {
         background: #FF6B6B;
@@ -1035,20 +1113,20 @@
         font-size: 14px;
     }
 
-    .btn-delete-review:hover {
-        background: #FA5252;
-        transform: translateY(-2px);
-    }
+        .btn-delete-review:hover {
+            background: #FA5252;
+            transform: translateY(-2px);
+        }
 
     .question-review-content {
         padding: 15px;
     }
 
-    .question-review-content p {
-        margin-bottom: 15px;
-        font-size: 16px;
-        color: #2D3748;
-    }
+        .question-review-content p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #2D3748;
+        }
 
     .answers-review {
         display: flex;
@@ -1067,10 +1145,10 @@
         transition: all 0.3s;
     }
 
-    .answer-review.correct {
-        background: #E6FFE6;
-        border-color: #70E539;
-    }
+        .answer-review.correct {
+            background: #E6FFE6;
+            border-color: #70E539;
+        }
 
     .answer-label {
         background: #1D059D;
@@ -1115,11 +1193,11 @@
         transition: all 0.3s;
     }
 
-    .btn-confirm-quiz:hover {
-        background: #70E539;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(112, 229, 57, 0.4);
-    }
+        .btn-confirm-quiz:hover {
+            background: #70E539;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(112, 229, 57, 0.4);
+        }
 
     /* Animation */
     .fade-in {
@@ -1131,6 +1209,7 @@
             opacity: 0;
             transform: translateY(20px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -1173,8 +1252,8 @@
             flex-direction: column;
         }
 
-        .button-group button {
-            width: 100%;
-        }
+            .button-group button {
+                width: 100%;
+            }
     }
 </style>

@@ -43,7 +43,7 @@
                 <span class="icon">⚙️</span> Cài đặt và thông báo
             </a> *@
             <a href="#" class="menu-item" @onclick="Logout">
-                <span class="icon">↪️</span> Đăng xuất
+                <span class="icon">↪️</span> Quay lại
             </a>
         </nav>
     </div>
@@ -344,7 +344,7 @@
 
     private void Logout()
     {
-        // TODO: Implement logout logic
+        Navigate.NavigateTo("/");
     }
 
     public class UserProfile

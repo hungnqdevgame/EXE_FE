@@ -12,12 +12,11 @@
 
         <!-- Tabs -->
         <div class="tabs">
-         <button class="tab ">Ôn tập</button>
+            <button class="tab " @onclick="NavigateToPage">Ôn tập</button>
             <button class="tab active">Tạo Quiz</button>
-            
+
         </div>
 
-       >
 
         @if (currentStep == 1)
         {
@@ -33,54 +32,54 @@
                     <textarea class="form-textarea" @bind="description" placeholder="Nhập mô tả..."></textarea>
                 </div>
 
-                 <div class="step-content">
-                <div class="progress-indicator">
-                    Thẻ @(currentCardIndex + 1)/@(flashcards.Count)
-                </div>
+                <div class="step-content">
+                    <div class="progress-indicator">
+                        Thẻ @(currentCardIndex + 1)/@(flashcards.Count)
+                    </div>
 
-                <div class="flashcard-single-input">
-                    <div class="flashcard-number">@(currentCardIndex + 1)</div>
-                    
-                    <div class="flashcard-fields">
-                        <div class="form-group">
-                            <label class="form-label">Thuật ngữ</label>
-                            <input type="text" 
-                                   class="form-inputa" 
-                                   @bind="flashcards[currentCardIndex].Term" 
-                                   placeholder="Nhập thuật ngữ..." />
-                        </div>
+                    <div class="flashcard-single-input">
+                        <div class="flashcard-number">@(currentCardIndex + 1)</div>
 
-                        <div class="form-group">
-                            <label class="form-label">Định nghĩa</label>
-                            <textarea class="form-textareab" 
-                                      @bind="flashcards[currentCardIndex].Definition" 
-                                      placeholder="Nhập định nghĩa..."></textarea>
+                        <div class="flashcard-fields">
+                            <div class="form-group">
+                                <label class="form-label">Thuật ngữ</label>
+                                <input type="text"
+                                       class="form-inputa"
+                                       @bind="flashcards[currentCardIndex].Term"
+                                       placeholder="Nhập thuật ngữ..." />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Định nghĩa</label>
+                                <textarea class="form-textareab"
+                                          @bind="flashcards[currentCardIndex].Definition"
+                                          placeholder="Nhập định nghĩa..."></textarea>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="navigation-buttons">
-                    <button class="btn-back" @onclick="PreviousCard" disabled="@(currentCardIndex == 0)">
-                        ← Lùi lại
-                    </button>
-                    
-                    @if (currentCardIndex < flashcards.Count - 1)
-                    {
-                        <button class="btn-next" @onclick="NextCard">
-                            Tiếp theo →
+                    <div class="navigation-buttons">
+                        <button class="btn-back" @onclick="PreviousCard" disabled="@(currentCardIndex == 0)">
+                            ← Lùi lại
                         </button>
-                    }
-                    else
-                    {
-                        <button class="btn-add-more" @onclick="AddFlashcard">
-                            + Thêm thẻ mới
-                        </button>
-                        <button class="btn-review" @onclick="() => currentStep = 3">
-                            Xem lại
-                        </button>
-                    }
+
+                        @if (currentCardIndex < flashcards.Count - 1)
+                        {
+                            <button class="btn-next" @onclick="NextCard">
+                                Tiếp theo →
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn-add-more" @onclick="AddFlashcard">
+                                + Thêm thẻ mới
+                            </button>
+                            <button class="btn-review" @onclick="() => currentStep = 3">
+                                Xem lại
+                            </button>
+                        }
+                    </div>
                 </div>
-            </div>
             </div>
         }
         else if (currentStep == 2)
@@ -93,20 +92,20 @@
 
                 <div class="flashcard-single-input">
                     <div class="flashcard-number">@(currentCardIndex + 1)</div>
-                    
+
                     <div class="flashcard-fields">
                         <div class="form-group">
                             <label class="form-label">Thuật ngữ</label>
-                            <input type="text" 
-                                   class="form-inputa" 
-                                   @bind="flashcards[currentCardIndex].Term" 
+                            <input type="text"
+                                   class="form-inputa"
+                                   @bind="flashcards[currentCardIndex].Term"
                                    placeholder="Nhập thuật ngữ..." />
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Định nghĩa</label>
-                            <textarea class="form-textarea" 
-                                      @bind="flashcards[currentCardIndex].Definition" 
+                            <textarea class="form-textarea" style="background: white;"
+                                      @bind="flashcards[currentCardIndex].Definition"
                                       placeholder="Nhập định nghĩa..."></textarea>
                         </div>
                     </div>
@@ -116,7 +115,7 @@
                     <button class="btn-back" @onclick="PreviousCard" disabled="@(currentCardIndex == 0)">
                         ← Lùi lại
                     </button>
-                    
+
                     @if (currentCardIndex < flashcards.Count - 1)
                     {
                         <button class="btn-next" @onclick="NextCard">
@@ -153,10 +152,10 @@
                                 <span class="review-number">Thẻ @(index + 1)</span>
                                 <div class="review-actions">
                                     <button class="btn-edit" @onclick="() => EditCard(index)">
-                                        ✏️ Sửa
+                                        Sửa
                                     </button>
                                     <button class="btn-delete" @onclick="() => DeleteCard(index)">
-                                        🗑️ Xóa
+                                        Xóa
                                     </button>
                                 </div>
                             </div>
@@ -173,11 +172,11 @@
                 </div>
 
                 <div class="navigation-buttons">
-                    <button class="btn-back" @onclick="() => currentStep = 1">
+                    <button class="btn-back" @onclick="PreviousStep">
                         ← Quay lại chỉnh sửa
                     </button>
                     <button class="btn-submit" @onclick="CreateFlashcardSet">
-                        ✓ Xác nhận và tạo
+                        Xác nhận và tạo
                     </button>
                 </div>
             </div>
@@ -186,14 +185,14 @@
         @if (!string.IsNullOrEmpty(errorMessage))
         {
             <div class="error-message">
-                ❌ @errorMessage
+                @errorMessage
             </div>
         }
 
         @if (!string.IsNullOrEmpty(successMessage))
         {
             <div class="success-message">
-                ✓ @successMessage
+                @successMessage
             </div>
         }
     </div>
@@ -206,11 +205,31 @@
     private string description = "";
     private string errorMessage = "";
     private string successMessage = "";
-    
+    private void NavigateToPage()
+    {
+        Navigation.NavigateTo("/revision"); // đổi "/trang-dich" thành route bạn muốn
+    }
+
     private List<FlashcardItem> flashcards = new List<FlashcardItem>
     {
         new FlashcardItem()
     };
+
+    private void PreviousStep()
+    {
+        currentStep = 1;
+
+        // Đảm bảo currentCardIndex luôn hợp lệ khi quay lại
+        if (flashcards.Count > 0)
+        {
+            if (currentCardIndex >= flashcards.Count)
+                currentCardIndex = flashcards.Count - 1;
+        }
+        else
+        {
+            currentCardIndex = 0;
+        }
+    }
 
     public class FlashcardItem
     {
@@ -253,9 +272,10 @@
             flashcards.RemoveAt(index);
             successMessage = "Đã xóa thẻ thành công!";
             StateHasChanged();
-            
+
             // Clear message after 3 seconds
-            Task.Delay(3000).ContinueWith(_ => {
+            Task.Delay(3000).ContinueWith(_ =>
+            {
                 successMessage = "";
                 InvokeAsync(StateHasChanged);
             });
@@ -266,8 +286,8 @@
         }
     }
 
-   
-       private async Task CreateFlashcardSet()
+
+    private async Task CreateFlashcardSet()
     {
         try
         {
@@ -275,7 +295,7 @@
             var token = await JS.InvokeAsync<string>("localStorage.getItem", "authToken");
             if (string.IsNullOrEmpty(token))
             {
-                await JS.InvokeVoidAsync("alert", "⚠️ Bạn cần đăng nhập trước khi tạo quiz.");
+                await JS.InvokeVoidAsync("alert", " Bạn cần đăng nhập trước khi tạo quiz.");
                 Navigation.NavigateTo("/login");
                 return;
             }
@@ -340,22 +360,22 @@
             }
 
             // 🔹 Thành công
-            await JS.InvokeVoidAsync("alert", $"✅ Flashcard set '{title}' đã được tạo thành công!");
-
-       //     ResetForm();
+            //await JS.InvokeVoidAsync("alert", $"✅ Flashcard set '{title}' đã được tạo thành công!");
+            Console.WriteLine($"✅ Flashcard set '{title}' đã được tạo thành công!");
+            // ResetForm();
             Navigation.NavigateTo($"/practice/{setQuizId}");
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"⚠️ Lỗi khi tạo flashcard set: {ex.Message}");
+            Console.WriteLine($"⚠️ Lỗi khi tạo flashcard set: {ex.Message}");
         }
-    
+
     }
     private void ResetForm()
     {
         currentStep = 1;
-      
-      
+
+
     }
 
     public class SetQuizRequest
@@ -433,23 +453,23 @@
         transition: color 0.3s;
     }
 
-    .tab:hover {
-        color: #4318FF;
-    }
+        .tab:hover {
+            color: #4318FF;
+        }
 
-    .tab.active {
-        color: #4318FF;
-    }
+        .tab.active {
+            color: #4318FF;
+        }
 
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #4318FF;
-    }
+            .tab.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: #4318FF;
+            }
 
     /* Section Title */
     .section-title {
@@ -469,6 +489,7 @@
             opacity: 0;
             transform: translateY(10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -487,6 +508,7 @@
         color: #2D3748;
         margin-bottom: 8px;
     }
+
     .form-inputa {
         width: 100%;
         background: white;
@@ -499,6 +521,7 @@
         outline: none;
         transition: background 0.3s;
     }
+
     .form-input {
         width: 100%;
         background: #E9E3FF;
@@ -512,9 +535,10 @@
         transition: background 0.3s;
     }
 
-    .form-input:focus {
-        background: #D5CEFD;
-    }
+        .form-input:focus {
+            background: #D5CEFD;
+        }
+
     .form-textareab {
         width: 100%;
         min-height: 120px;
@@ -545,9 +569,9 @@
         transition: background 0.3s;
     }
 
-    .form-textarea:focus {
-        background: #D5CEFD;
-    }
+        .form-textarea:focus {
+            background: #D5CEFD;
+        }
 
     /* Progress Indicator */
     .progress-indicator {
@@ -614,14 +638,14 @@
         color: #2D3748;
     }
 
-    .btn-back:hover:not(:disabled) {
-        background: #CBD5E0;
-    }
+        .btn-back:hover:not(:disabled) {
+            background: #CBD5E0;
+        }
 
-    .btn-back:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
+        .btn-back:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
     .btn-next,
     .btn-submit {
@@ -629,32 +653,32 @@
         color: white;
     }
 
-    .btn-next:hover,
-    .btn-submit:hover {
-        background: #2A0CD8;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(29, 5, 157, 0.3);
-    }
+        .btn-next:hover,
+        .btn-submit:hover {
+            background: #2A0CD8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 5, 157, 0.3);
+        }
 
     .btn-add-more {
         background: #48BB78;
         color: white;
     }
 
-    .btn-add-more:hover {
-        background: #38A169;
-        transform: translateY(-2px);
-    }
+        .btn-add-more:hover {
+            background: #38A169;
+            transform: translateY(-2px);
+        }
 
     .btn-review {
         background: #805AD5;
         color: white;
     }
 
-    .btn-review:hover {
-        background: #6B46C1;
-        transform: translateY(-2px);
-    }
+        .btn-review:hover {
+            background: #6B46C1;
+            transform: translateY(-2px);
+        }
 
     /* Review Section */
     .review-header {
@@ -666,11 +690,11 @@
         border-bottom: 2px solid #E9E3FF;
     }
 
-    .review-header h3 {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1D059D;
-    }
+        .review-header h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1D059D;
+        }
 
     .review-count {
         background: #E9E3FF;
@@ -694,10 +718,10 @@
         transition: all 0.3s;
     }
 
-    .flashcard-review-item:hover {
-        border-color: #4318FF;
-        box-shadow: 0 4px 15px rgba(67, 24, 255, 0.1);
-    }
+        .flashcard-review-item:hover {
+            border-color: #4318FF;
+            box-shadow: 0 4px 15px rgba(67, 24, 255, 0.1);
+        }
 
     .review-item-header {
         display: flex;
@@ -734,20 +758,20 @@
         color: white;
     }
 
-    .btn-edit:hover {
-        background: #3182CE;
-        transform: scale(1.05);
-    }
+        .btn-edit:hover {
+            background: #3182CE;
+            transform: scale(1.05);
+        }
 
     .btn-delete {
         background: #F56565;
         color: white;
     }
 
-    .btn-delete:hover {
-        background: #E53E3E;
-        transform: scale(1.05);
-    }
+        .btn-delete:hover {
+            background: #E53E3E;
+            transform: scale(1.05);
+        }
 
     .review-item-content {
         background: white;
@@ -763,14 +787,14 @@
         line-height: 1.6;
     }
 
-    .review-term strong,
-    .review-definition strong {
-        color: #1D059D;
-    }
+        .review-term strong,
+        .review-definition strong {
+            color: #1D059D;
+        }
 
-    .review-definition:last-child {
-        margin-bottom: 0;
-    }
+        .review-definition:last-child {
+            margin-bottom: 0;
+        }
 
     /* Messages */
     .error-message,
@@ -802,9 +826,9 @@
             flex-direction: column;
         }
 
-        .navigation-buttons button {
-            width: 100%;
-        }
+            .navigation-buttons button {
+                width: 100%;
+            }
 
         .review-header {
             flex-direction: column;
