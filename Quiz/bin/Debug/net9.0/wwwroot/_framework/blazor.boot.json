@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Quiz",
   "resources": {
-    "hash": "sha256-/MStddS+JDWS/vw6YRtxqP/A/6fhVk79W2MaZgDBPPo=",
+    "hash": "sha256-7kqI2sKhuCtGPID2Sb05Ftvl/yoc1MobNhQ8QDExUoM=",
     "fingerprinting": {
       "DocumentFormat.OpenXml.mww8o1gizm.wasm": "DocumentFormat.OpenXml.wasm",
       "DocumentFormat.OpenXml.Framework.vqjfsr32ha.wasm": "DocumentFormat.OpenXml.Framework.wasm",
@@ -52,7 +52,7 @@
       "NetcodeHub.Packages.Extensions.LocalStorage.1bkocjkxyl.wasm": "NetcodeHub.Packages.Extensions.LocalStorage.wasm",
       "Newtonsoft.Json.se2bgyj0tw.wasm": "Newtonsoft.Json.wasm",
       "SkiaSharp.26lzoruyax.wasm": "SkiaSharp.wasm",
-      "System.IO.Packaging.aaww7bz53t.wasm": "System.IO.Packaging.wasm",
+      "System.IO.Packaging.kyoypuukwu.wasm": "System.IO.Packaging.wasm",
       "System.Security.Cryptography.Pkcs.i57qjmj3ug.wasm": "System.Security.Cryptography.Pkcs.wasm",
       "System.Security.Cryptography.Xml.2ik7yfe9ul.wasm": "System.Security.Cryptography.Xml.wasm",
       "Xceed.Document.NET.chyh8rm63i.wasm": "Xceed.Document.NET.wasm",
@@ -235,10 +235,10 @@
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
       "icudt_EFIGS.tptq2av103.dat": "icudt_EFIGS.dat",
       "icudt_no_CJK.lfu7j35m59.dat": "icudt_no_CJK.dat",
-      "Share.uzt5bfw4hj.wasm": "Share.wasm",
-      "Share.2isjoeh5vd.pdb": "Share.pdb",
-      "Quiz.ddxiptr9mz.wasm": "Quiz.wasm",
-      "Quiz.3nh590xu9o.pdb": "Quiz.pdb"
+      "Share.3btntr68tp.wasm": "Share.wasm",
+      "Share.fvlk1vli9x.pdb": "Share.pdb",
+      "Quiz.a74drb7fiw.wasm": "Quiz.wasm",
+      "Quiz.kts37o60gc.pdb": "Quiz.pdb"
     },
     "jsModuleNative": {
       "dotnet.native.9ih887ebfz.js": "sha256-oS7IRiQoVt9ThQ7Y2UM3XoeY0JqPD02cg9IvRdufn2w="
@@ -308,7 +308,7 @@
       "NetcodeHub.Packages.Extensions.LocalStorage.1bkocjkxyl.wasm": "sha256-M0vX/rDWhYWHuNQ2EkOSRs9IwDE+HEzJ9Bvw1os9Uoc=",
       "Newtonsoft.Json.se2bgyj0tw.wasm": "sha256-DBfpbduzEP2lTeFZddrFGuNDOcOwgBPZwFsTYJEFsSA=",
       "SkiaSharp.26lzoruyax.wasm": "sha256-FuaZRL1BQxWKGMtmMq8twUVP906lz1iAN+r+CSxuA/k=",
-      "System.IO.Packaging.aaww7bz53t.wasm": "sha256-jrFCv372wDbSGUzcsq+W4kV76FTsxRhdrAiBLd0ID7U=",
+      "System.IO.Packaging.kyoypuukwu.wasm": "sha256-3INhGGuB6NgchBTE0OYgqy2f9J1KywkcZ2UUkFaeUjY=",
       "System.Security.Cryptography.Pkcs.i57qjmj3ug.wasm": "sha256-tqFq4a4hWRoVGTq5A1BkQs3+u3yEIdXNGh5DygAR62A=",
       "System.Security.Cryptography.Xml.2ik7yfe9ul.wasm": "sha256-ioHhmI9cjMYJ6xpq+EWDqel+61CxDzI3tg48nQe6/l0=",
       "Xceed.Document.NET.chyh8rm63i.wasm": "sha256-MAPb7nZgVh/4CrZHlHrvF86NzDRJMCQ4gMJP6cZj1Dc=",
@@ -482,12 +482,12 @@
       "WindowsBase.vy2l5u79y6.wasm": "sha256-ufB9Mo5joMyUs3DzXWWBFFIZNEVrt6h9N5stYB6Oln4=",
       "mscorlib.xd6mv31d55.wasm": "sha256-1YSLR2eZt3ceALFV//vZUF2AloxVil3VlrW1zZYPSEI=",
       "netstandard.kaml52uspo.wasm": "sha256-HLEwBpLfzKw2/zGSVzHzFJxznCkt/WIjahrziiMrOpA=",
-      "Share.uzt5bfw4hj.wasm": "sha256-Gq4FhOksUDBlgxNJ/0Y6hRoM8gszPw+SoPYTJI6i3mY=",
-      "Quiz.ddxiptr9mz.wasm": "sha256-cbYbeTGq7gN/wBGWk0jyApNcUFKpLWn/m5WjMB0Bmqs="
+      "Share.3btntr68tp.wasm": "sha256-H930MrqGWNxfdHyS/BmDiwGfW1uCDcGOPQxro09YKNU=",
+      "Quiz.a74drb7fiw.wasm": "sha256-enLslq9mfqfpRXsjcaPyIrAFmId6HaeMXn8wtTqRkFM="
     },
     "pdb": {
-      "Share.2isjoeh5vd.pdb": "sha256-9ogLQYrR4Kyv2c1brI0cc6FFebBPGPEdVmj5n62P74o=",
-      "Quiz.3nh590xu9o.pdb": "sha256-jyHA7Z32F0hzEZ4rYXRSJA7fcZP9q1Ax7HVLiBoJIbA="
+      "Share.fvlk1vli9x.pdb": "sha256-RQeU9JX6FHqKDyJ/2ODYgMT8SmLEkpRFiuC2VjxinTc=",
+      "Quiz.kts37o60gc.pdb": "sha256-WCSQrki4cQO1AfbxnD2RHY3UxF2ilFYg+/2Q6Nm1b6Y="
     }
   },
   "cacheBootResources": true,
