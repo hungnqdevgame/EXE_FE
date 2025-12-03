@@ -203,31 +203,31 @@
     </div>
 </div>
 <Quiz.Shared.Footer />
-    @code {
-        private int currentStep = 1;
-        private string creationMethod = "";
-        private string manualType = ""; // "quiz" hoặc "flashcard"
-        private string answerType = "single";
-        private int currentQuestionIndex = 0;
-        private string userPlan = "";
-        private int subscriptionId = 1; // mặc định nếu chưa có
-        private int feature2UsedCount = 0;
-        private const int feature2Limit = 5;
+@code {
+    private int currentStep = 1;
+    private string creationMethod = "";
+    private string manualType = ""; // "quiz" hoặc "flashcard"
+    private string answerType = "single";
+    private int currentQuestionIndex = 0;
+    private string userPlan = "";
+    private int subscriptionId = 1; // mặc định nếu chưa có
+    private int feature2UsedCount = 0;
+    private const int feature2Limit = 5;
 
-        // Quiz form data
-        private string quizTitle = "";
-        private int quizTime = 30;
-        private string quizDescription = "";
+    // Quiz form data
+    private string quizTitle = "";
+    private int quizTime = 30;
+    private string quizDescription = "";
 
-        private List<Question> questions = new List<Question>();
+    private List<Question> questions = new List<Question>();
 
-        public class QuestionCreateRequest
-        {
-            public int SetQuizId { get; set; }
-            public string Question { get; set; } = string.Empty;
-            public Dictionary<string, string> Answers { get; set; } = new();
-            public List<string> CorrectAnswers { get; set; } = new();
-        }
+    public class QuestionCreateRequest
+    {
+        public int SetQuizId { get; set; }
+        public string Question { get; set; } = string.Empty;
+        public Dictionary<string, string> Answers { get; set; } = new();
+        public List<string> CorrectAnswers { get; set; } = new();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -298,76 +298,76 @@
         // Render UI ngay
         StateHasChanged();
     }
-     
-        private void NavigateToTab(int tab)
-        {
-            switch (tab)
-            {
-                case 0:
-                    Navigation.NavigateTo("/library");
-                    break;
 
-                case 2:
-                    Navigation.NavigateTo("/revision");
-                    break;
-                default:
-                    Navigation.NavigateTo("/");
-                    break;
+    private void NavigateToTab(int tab)
+    {
+        switch (tab)
+        {
+            case 0:
+                Navigation.NavigateTo("/library");
+                break;
+
+            case 2:
+                Navigation.NavigateTo("/revision");
+                break;
+            default:
+                Navigation.NavigateTo("/");
+                break;
+        }
+    }
+
+    // private void SelectCreationMethod(string method)
+    // {
+    //     creationMethod = method;
+    // }
+
+    private void NextStep()
+    {
+        if (currentStep == 1 && !string.IsNullOrEmpty(creationMethod))
+        {
+            if (creationMethod == "ai")
+            {
+                Navigation.NavigateTo("/quiz-ai");
+                return;
+            }
+            else if (creationMethod == "tag")
+            {
+                Navigation.NavigateTo("/quiz-tag");
+                return;
+            }
+            else if (creationMethod == "extract")
+            {
+                Navigation.NavigateTo("/quiz-extract");
+                return;
+            }
+            else if (creationMethod == "manual")
+            {
+                // Chuyển sang bước chọn loại (Quiz hoặc Flashcard)
+                currentStep = 2;
             }
         }
+    }
 
-        // private void SelectCreationMethod(string method)
-        // {
-        //     creationMethod = method;
-        // }
-
-        private void NextStep()
+    private void ConfirmManualType()
+    {
+        if (!string.IsNullOrEmpty(manualType))
         {
-            if (currentStep == 1 && !string.IsNullOrEmpty(creationMethod))
+            if (manualType == "flashcard")
             {
-                if (creationMethod == "ai")
+                // Chuyển sang trang flashcard-create
+                Navigation.NavigateTo("/flashcard-create");
+            }
+            else if (manualType == "multiple")
+            {
+                // Tiếp tục tạo quiz trắc nghiệm
+                currentStep = 3;
+                if (questions.Count == 0)
                 {
-                    Navigation.NavigateTo("/quiz-ai");
-                    return;
-                }
-                else if (creationMethod == "tag")
-                {
-                    Navigation.NavigateTo("/quiz-tag");
-                    return;
-                }
-                else if (creationMethod == "extract")
-                {
-                    Navigation.NavigateTo("/quiz-extract");
-                    return;
-                }
-                else if (creationMethod == "manual")
-                {
-                    // Chuyển sang bước chọn loại (Quiz hoặc Flashcard)
-                    currentStep = 2;
+                    AddNewQuestion();
                 }
             }
         }
-
-        private void ConfirmManualType()
-        {
-            if (!string.IsNullOrEmpty(manualType))
-            {
-                if (manualType == "flashcard")
-                {
-                    // Chuyển sang trang flashcard-create
-                    Navigation.NavigateTo("/flashcard-create");
-                }
-                else if (manualType == "multiple")
-                {
-                    // Tiếp tục tạo quiz trắc nghiệm
-                    currentStep = 3;
-                    if (questions.Count == 0)
-                    {
-                        AddNewQuestion();
-                    }
-                }
-            }
-        }
+    }
 
     private void PreviousStep()
     {
@@ -551,7 +551,15 @@
             Console.WriteLine("Tao thanh cong");
 
             ResetForm();
-            Navigation.NavigateTo($"/practice/{setQuizId}");
+
+            if(manualType =="multiple")
+            {
+                Navigation.NavigateTo($"/practice/{setQuizId}");
+            }
+            else if (manualType == "flashcard")
+            {
+                Navigation.NavigateTo($"/flashcard-practice/{setQuizId}");
+            }
         }
         catch (Exception ex)
         {

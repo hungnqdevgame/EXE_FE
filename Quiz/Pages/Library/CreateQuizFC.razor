@@ -363,7 +363,7 @@
             //await JS.InvokeVoidAsync("alert", $"✅ Flashcard set '{title}' đã được tạo thành công!");
             Console.WriteLine($"✅ Flashcard set '{title}' đã được tạo thành công!");
             // ResetForm();
-            Navigation.NavigateTo($"/practice/{setQuizId}");
+            Navigation.NavigateTo($"/flashcard-practice/{setQuizId}");
         }
         catch (Exception ex)
         {
