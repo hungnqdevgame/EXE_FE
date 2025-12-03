@@ -755,7 +755,7 @@
 
         try
         {
-            if (quizData.QuestionType == QuestionType.Quiz || quizData.QuestionType == QuestionType.Flashcard &&
+            if ((quizData.QuestionType == QuestionType.Quiz || quizData.QuestionType == QuestionType.Flashcard) &&
                 (questions == null || !questions.Any()))
             {
                 errorMessage = "⚠️ Chưa có câu hỏi nào được tạo. Hãy tạo trước khi lưu!";

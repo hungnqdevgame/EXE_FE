@@ -148,7 +148,7 @@ namespace Quiz.Server.Controllers
                         user.Email,
                         user.FullName,
                         user.Role,
-                        user.SubscriptionId
+                        SubscriptionId = user.SubscriptionId ?? 0  // Always return a value (0 if null)
                     }
                 });
             }

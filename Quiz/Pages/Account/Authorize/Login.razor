@@ -213,12 +213,54 @@
             var json = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
 
-            var token = doc.RootElement.GetProperty("token").GetString();
-            var userJson = doc.RootElement.GetProperty("user").ToString();
+            var root = doc.RootElement;
+
+            // try token with different casings
+            string? token = null;
+            if (root.TryGetProperty("token", out var tElem) || root.TryGetProperty("Token", out tElem))
+            {
+                token = tElem.GetString();
+            }
+
+            // try user object with different casings
+            JsonElement userElem = default;
+            bool hasUser = false;
+            if (root.TryGetProperty("user", out var uElem) || root.TryGetProperty("User", out uElem))
+            {
+                userElem = uElem;
+                hasUser = true;
+            }
+
+            string userJson = hasUser ? userElem.ToString() : string.Empty;
+
+            // try to read subscription id (handle different casings)
+            int? subscriptionId = null;
+            if (hasUser)
+            {
+                if (userElem.TryGetProperty("subscriptionId", out var sElem) || userElem.TryGetProperty("SubscriptionId", out sElem))
+                {
+                    if (sElem.ValueKind == JsonValueKind.Number && sElem.TryGetInt32(out var sid))
+                        subscriptionId = sid;
+                    else if (sElem.ValueKind == JsonValueKind.String && int.TryParse(sElem.GetString(), out var sid2))
+                        subscriptionId = sid2;
+                }
+            }
+
+            // Ensure token exists
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                errorMessage = "Có lỗi xảy ra: không nhận được token từ server.";
+                return;
+            }
 
             // ✅ Lưu token & thông tin user vào localStorage
             await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "userInfo", userJson);
+            if (!string.IsNullOrEmpty(userJson))
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "userInfo", userJson);
+
+            // Always save a subscriptionId key (0 when not present)
+            var subscriptionToSave = subscriptionId ?? 0;
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "subscriptionId", subscriptionToSave.ToString());
 
             Navigation.NavigateTo("/", true);
         }
@@ -296,4 +338,4 @@
     // {
     //     public string Token { get; set; } = string.Empty;
     // }
-}
+}}
