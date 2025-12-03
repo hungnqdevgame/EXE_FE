@@ -223,12 +223,12 @@
                                 {
                                     <div class="flashcard-review-item">
                                         <div class="flashcard-review-header" style="display: flex; align-items: center; justify-content: space-between;">
-                                            <span class="flashcard-number" style="font-size :24px;">Thẻ @(index + 1)</span>
+                                            <span class="question-review-number" style="font-size :14px;">Thẻ @(index + 1)</span>
                                             <div class="flashcard-review-actions">
                                                 @if (editingCardIndex == index)
                                                 {
-                                                    <button class="btn-save" @onclick="() => SaveCard(index)">Lưu</button>
-                                                    <button class="btn-cancel" @onclick="CancelCardEdit">Hủy</button>
+                                                    <button class="btn-edit" @onclick="() => SaveCard(index)">Lưu</button>
+                                                    <button class="btn-delete-review" @onclick="CancelCardEdit">Hủy</button>
                                                 }
                                                 else
                                                 {
@@ -1236,7 +1236,12 @@ new Answer { Text = "", IsCorrect = false }
         border-bottom: 2px solid #e8e8e8;
         margin-bottom: 40px;
     }
-
+    .flashcard-review-item{
+        background: #D5CEFD;
+        margin-bottom: 25px;
+        border-radius: 16px;
+    }
+   
     .tab {
         background: transparent;
         border: none;
@@ -1342,6 +1347,7 @@ new Answer { Text = "", IsCorrect = false }
 
     .form-group {
         margin-bottom: 20px;
+       
     }
 
         .form-group.half {
@@ -1367,6 +1373,9 @@ new Answer { Text = "", IsCorrect = false }
         margin-bottom: 15px;
     }
 
+    .flashcard-number{
+        background: #4318FF;
+    }
     .form-input,
     .form-textarea {
         width: 100%;
@@ -1375,8 +1384,9 @@ new Answer { Text = "", IsCorrect = false }
         border-radius: 12px;
         font-size: 16px;
         font-family: 'Baloo 2', cursive;
-        background: white;
+        background: black;
         transition: border-color 0.3s;
+        margin-bottom: 10px;
     }
      .form-inputf,
     .form-textareaf {
@@ -1840,6 +1850,7 @@ new Answer { Text = "", IsCorrect = false }
         grid-template-columns: 1fr 200px;
         gap: 30px;
         margin-bottom: 30px;
+       
     }
 
     .form-group {
