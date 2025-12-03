@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Quiz",
   "resources": {
-    "hash": "sha256-6jg+3HPUbPC+HGV8dXzuBJlHYq3ZdooyPbyyELZjQRI=",
+    "hash": "sha256-CL+HsR2XPVNBM8n+BpbO0gb/8EF87WeA2nZwn3dQCxE=",
     "fingerprinting": {
       "DocumentFormat.OpenXml.Framework.vqjfsr32ha.wasm": "DocumentFormat.OpenXml.Framework.wasm",
       "DocumentFormat.OpenXml.mww8o1gizm.wasm": "DocumentFormat.OpenXml.wasm",
@@ -58,8 +58,8 @@
       "NetcodeHub.Packages.Extensions.LocalStorage.1bkocjkxyl.wasm": "NetcodeHub.Packages.Extensions.LocalStorage.wasm",
       "netstandard.kaml52uspo.wasm": "netstandard.wasm",
       "Newtonsoft.Json.se2bgyj0tw.wasm": "Newtonsoft.Json.wasm",
-      "Quiz.8mwxcixgfd.wasm": "Quiz.wasm",
-      "Share.tit4nkf6hk.wasm": "Share.wasm",
+      "Quiz.ip4h5gujkj.wasm": "Quiz.wasm",
+      "Share.q8tdc3vvni.wasm": "Share.wasm",
       "SkiaSharp.26lzoruyax.wasm": "SkiaSharp.wasm",
       "System.AppContext.s2mli7k045.wasm": "System.AppContext.wasm",
       "System.Buffers.d8ayacj23s.wasm": "System.Buffers.wasm",
@@ -312,8 +312,8 @@
       "NetcodeHub.Packages.Extensions.LocalStorage.1bkocjkxyl.wasm": "sha256-M0vX/rDWhYWHuNQ2EkOSRs9IwDE+HEzJ9Bvw1os9Uoc=",
       "netstandard.kaml52uspo.wasm": "sha256-HLEwBpLfzKw2/zGSVzHzFJxznCkt/WIjahrziiMrOpA=",
       "Newtonsoft.Json.se2bgyj0tw.wasm": "sha256-DBfpbduzEP2lTeFZddrFGuNDOcOwgBPZwFsTYJEFsSA=",
-      "Quiz.8mwxcixgfd.wasm": "sha256-oLjczeki7abee0Q7X4gVSYRIs4E9jDT8AeE3CC+CW/c=",
-      "Share.tit4nkf6hk.wasm": "sha256-i9rh8QSlZ+P/5OOJcTX41eB6NB6DoqlChvO+ey4716Y=",
+      "Quiz.ip4h5gujkj.wasm": "sha256-FjcpT5+qIphQ64f1iQlauGSILcgj6LAlKUQobKnHfFU=",
+      "Share.q8tdc3vvni.wasm": "sha256-Sv14lTbnLdEKxDrO1J+sR9/Tjhfnui5LMK8RySZyB0E=",
       "SkiaSharp.26lzoruyax.wasm": "sha256-FuaZRL1BQxWKGMtmMq8twUVP906lz1iAN+r+CSxuA/k=",
       "System.AppContext.s2mli7k045.wasm": "sha256-/I6jhbBWOR/lWglc7Rxpwv34dmUTZap2GRZ8U5MUw+4=",
       "System.Buffers.d8ayacj23s.wasm": "sha256-TRLW74tFyYdejiCs6uJIuxPhS/Rh0NTqVByoAZ5fZTQ=",

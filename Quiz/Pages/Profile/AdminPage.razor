@@ -14,13 +14,13 @@
                 <div class="stat-label">Tổng Users</div>
             </div>
             <div class="stat-card basic">
-                <div class="stat-number">2</div>
-                <div class="stat-label"> Basic</div>
+                <div class="stat-number">@(subscriptionCounts[1] )</div>
+                <div class="stat-label">🔵 Basic</div>
             </div>
            
             <div class="stat-card pro">
                 <div class="stat-number">@(subscriptionCounts[2] + subscriptionCounts[3])</div>
-                <div class="stat-label">🔵 Pro </div>
+                <div class="stat-label">🟢 Pro </div>
             </div>
             <div class="stat-card premium">
                 <div class="stat-number">@subscriptionCounts[4] </div>
@@ -62,11 +62,11 @@
                 </button>
                 <button class="filter-btn filter-basic @(filterStatus == "basic" ? "active" : "")"
                         @onclick="@(() => SetFilter("basic"))">
-                    🟢 Basic (@subscriptionCounts[2])
+                    🔵 Basic (@subscriptionCounts[1])
                 </button>
                 <button class="filter-btn filter-pro @(filterStatus == "pro" ? "active" : "")"
                         @onclick="@(() => SetFilter("pro"))">
-                    🔵 Pro (@(subscriptionCounts[1] + subscriptionCounts[3]))
+                    🟢 Pro (@(subscriptionCounts[2] + subscriptionCounts[3]))
                 </button>
                 <button class="filter-btn filter-premium @(filterStatus == "premium" ? "active" : "")"
                         @onclick="@(() => SetFilter("premium"))">
@@ -125,7 +125,7 @@
                                     <span class="user-phone">@user.PhoneNumber</span>
                                 </td>
                                 <td>
-                                    <span class="subscription-badge subscription-@user.SubscriptionId">
+                                    <span class="subscription-badge subscription- @user.SubscriptionId">
                                         @GetSubscriptionName(user.SubscriptionId)
                                     </span>
                                 </td>
@@ -244,8 +244,8 @@
             // Filter by subscription/status
             bool statusMatch = filterStatus switch
             {
-                "basic" => u.SubscriptionId == 2 && !u.IsDeleted,
-                "pro" => (u.SubscriptionId == 1 || u.SubscriptionId == 3) && !u.IsDeleted,
+                "basic" => u.SubscriptionId == 1 && !u.IsDeleted,
+                "pro" => (u.SubscriptionId == 2 || u.SubscriptionId == 3) && !u.IsDeleted,
                 "premium" => u.SubscriptionId == 4 && !u.IsDeleted,
                 "deleted" => u.IsDeleted,
                 _ => true
